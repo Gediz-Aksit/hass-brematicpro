@@ -2,7 +2,7 @@
   "domain": "brematicpro",
   "name": "BrematicPro",
   "config_flow": true,
-  "version": "0.1.2"
+  "version": "0.1.2",
   "documentation": "https://github.com/Gediz-Aksit/hass-brematicpro",
   "dependencies": [],
   "codeowners": [
