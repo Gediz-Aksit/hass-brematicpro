@@ -4,6 +4,7 @@
   "config_flow": true,
   "version": "0.1.2",
   "documentation": "https://github.com/Gediz-Aksit/hass-brematicpro",
+  "requirements": [],
   "dependencies": [],
   "codeowners": [
     "@Gediz-Aksit"
