@@ -1,0 +1,10 @@
+{
+  "domain": "brematicpro",
+  "name": "BrematicPro",
+  "documentation": "https://github.com/Gediz-Aksit/hass-brematicpro",
+  "dependencies": [],
+  "codeowners": [
+    "@Gediz-Aksit"
+  ],
+  "version": "0.0.1"
+}
