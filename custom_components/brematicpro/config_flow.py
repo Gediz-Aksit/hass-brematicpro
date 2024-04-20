@@ -20,12 +20,8 @@ class SimpleConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                vol.Required(CONF_HOST): str,
-                vol.Required(CONF_TOKEN): str,
+            vol.Required(CONF_SYSTEM_CODE): vol.Schema(str, description="Enter your system code"),
+            vol.Required(CONF_CONFIG_JSON): vol.Schema(str, description="Enter your configuration JSON")
             }),
-            description_placeholders={
-                CONF_SYSTEM_CODE: "System Code",
-                CONF_CONFIG_JSON: "Configuration JSON"
-            },
             errors=errors
         )
