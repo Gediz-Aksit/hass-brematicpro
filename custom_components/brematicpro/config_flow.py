@@ -23,5 +23,9 @@ class SimpleConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_HOST): str,
                 vol.Required(CONF_TOKEN): str,
             }),
+            description_placeholders={
+                CONF_SYSTEM_CODE: "System Code",
+                CONF_CONFIG_JSON: "Configuration JSON"
+            },
             errors=errors
         )
