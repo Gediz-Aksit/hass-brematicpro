@@ -1,6 +1,6 @@
 """BrematicPro integration for Home Assistant"""
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 CONF_SYSTEM_CODE = "brematic_system_code"
 CONF_CONFIG_JSON = "brematic_config_json"
