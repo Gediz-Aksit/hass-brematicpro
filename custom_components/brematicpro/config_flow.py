@@ -1,9 +1,9 @@
-from homeassistant import config_entries, exceptions
 import voluptuous as vol
+from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON  # Import the constants
+from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON  # ensure these are defined in your const.py
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
@@ -16,28 +16,18 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Validate the filename
-            valid = await self._validate_filename(user_input[CONF_CONFIG_JSON])
-            if valid:
-                return self.async_create_entry(title="BrematicPro", data=user_input)
-            else:
-                errors["base"] = "file_not_found"
+            # Here, add your validation logic
+            return self.async_create_entry(title="BrematicPro", data=user_input)
+
+        # Update your schema to include descriptions
+        data_schema = vol.Schema({
+            vol.Required(CONF_SYSTEM_CODE, description={"suggested_value": "Your system code"}): str,
+            vol.Required(CONF_CONFIG_JSON, description={"suggested_value": "Filename for configuration JSON"}): str,
+        })
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({
-                vol.Required(CONF_SYSTEM_CODE): str,
-                vol.Required(CONF_CONFIG_JSON): str
-            }),
+            data_schema=data_schema,
             errors=errors
         )
 
-    async def _validate_filename(self, filename):
-        """Validate the filename to check if file exists in HA directory."""
-        file_path = self.hass.config.path(filename)
-        try:
-            with open(file_path, 'r') as file:
-                # If necessary, add further file validation here
-                return True
-        except FileNotFoundError:
-            return False
