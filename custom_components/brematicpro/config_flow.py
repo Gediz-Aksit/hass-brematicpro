@@ -1,9 +1,9 @@
-import voluptuous as vol
 from homeassistant import config_entries
+import voluptuous as vol
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON  # ensure these are defined in your const.py
+from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON  # Ensure these are imported
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
@@ -16,18 +16,18 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Here, add your validation logic
+            # Here, you'd typically add your validation logic
             return self.async_create_entry(title="BrematicPro", data=user_input)
-
-        # Update your schema to include descriptions
-        data_schema = vol.Schema({
-            vol.Required(CONF_SYSTEM_CODE, description={"suggested_value": "Your system code"}): str,
-            vol.Required(CONF_CONFIG_JSON, description={"suggested_value": "Filename for configuration JSON"}): str,
-        })
 
         return self.async_show_form(
             step_id="user",
-            data_schema=data_schema,
-            errors=errors
+            data_schema=vol.Schema({
+                vol.Required(CONF_SYSTEM_CODE): str,
+                vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str
+            }),
+            errors=errors,
+            description_placeholders={
+                'system_code': 'System Code',  # Example placeholder, replace as necessary
+                'config_json': 'Filename for configuration JSON'  # Example placeholder, replace as necessary
+            }
         )
-
