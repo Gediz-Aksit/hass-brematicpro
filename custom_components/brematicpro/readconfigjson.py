@@ -1,4 +1,5 @@
 import json
+import os
 import logging
 from homeassistant.core import HomeAssistant
 from .const import CONF_CONFIG_JSON, DOMAIN
@@ -15,15 +16,8 @@ def read_and_transform_json(hass: HomeAssistant, entry):
             transformed_data = []
 
             for item in data.values():
-                freq = 0  # Default frequency
-                if item['sys'] == 'B8':
-                    freq = 868
-                elif item['sys'] == 'B4':
-                    freq = 433
-
-                commands = {cmd: item['local'] + item['commands'][cmd]['url']
-                            for cmd in item['commands']}
-
+                freq = 868 if item['sys'] == 'B8' else 433 if item['sys'] == 'B4' else 0
+                commands = {cmd: item['local'] + item['commands'][cmd]['url'] for cmd in item['commands']}
                 transformed_data.append({
                     "uniqueid": item['address'],
                     "name": item['name'],
@@ -32,7 +26,11 @@ def read_and_transform_json(hass: HomeAssistant, entry):
                     "commands": commands
                 })
 
-            return transformed_data
+            # Save the transformed data to BrematicProDevices.json
+            output_path = hass.config.path('BrematicProDevices.json')
+            with open(output_path, 'w') as outfile:
+                json.dump(transformed_data, outfile, indent=4)
+            _LOGGER.info("Transformed data saved to %s", output_path)
 
     except FileNotFoundError:
         _LOGGER.error("File not found: %s", path)
@@ -40,15 +38,4 @@ def read_and_transform_json(hass: HomeAssistant, entry):
         _LOGGER.error("Error decoding JSON from file: %s", path)
     except Exception as e:
         _LOGGER.error("An error occurred: %s", e)
-    return None
 
-def save_data_to_file(hass: HomeAssistant, data, filename):
-    """Save transformed data to a JSON file within Home Assistant's configuration directory."""
-    path = hass.config.path(filename)  # Ensures file is saved in the config directory
-
-    try:
-        with open(path, 'w') as file:
-            json.dump(data, file, indent=2)
-        _LOGGER.info("Data successfully saved to %s", path)
-    except Exception as e:
-        _LOGGER.error("Failed to write data to file %s: %s", path, e)
