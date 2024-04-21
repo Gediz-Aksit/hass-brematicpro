@@ -44,13 +44,13 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-    if user_input is not None:
-        # Assuming this checks if 'reload' is True to perform the action
-        if user_input.get('reload', False):
-            await self.hass.async_add_executor_job(
-                read_and_transform_json, self.hass, self.config_entry
-            )
-            return self.async_create_entry(title="", data={})
+		if user_input is not None:
+			# Assuming this checks if 'reload' is True to perform the action
+			if user_input.get('reload', False):
+				await self.hass.async_add_executor_job(
+					read_and_transform_json, self.hass, self.config_entry
+				)
+				return self.async_create_entry(title="", data={})
         
         return self.async_show_form(
             step_id="init",
