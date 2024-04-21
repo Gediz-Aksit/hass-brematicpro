@@ -5,6 +5,8 @@ from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON  
 
+from .readconfigjson import read_and_transform_json
+
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
 
@@ -30,6 +32,11 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 'config_json': 'Filename for configuration JSON'  
             }
         )
+		
+    @staticmethod
+    @config_entries.OPTIONS_FLOW
+    def async_get_options_flow(config_entry):
+        return BrematicProOptionsFlow(config_entry)
 
 class BrematicProOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry):
@@ -37,11 +44,13 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-        if user_input is not None:
+    if user_input is not None:
+        # Assuming this checks if 'reload' is True to perform the action
+        if user_input.get('reload', False):
             await self.hass.async_add_executor_job(
-                your_reload_function, self.hass, self.config_entry
+                read_and_transform_json, self.hass, self.config_entry
             )
-            return self.async_create_entry(title="", data=user_input)
+            return self.async_create_entry(title="", data={})
         
         return self.async_show_form(
             step_id="init",

@@ -1,10 +1,16 @@
 """BrematicPro integration for Home Assistant"""
+import logging
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN
+from .config_flow import BrematicProOptionsFlow
+
+from .readconfigjson import read_and_transform_json
+
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up the services for the BrematicPro integration."""
@@ -27,10 +33,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    )
-	
-    hass.config_entries.register_options_flow(
-        entry.entry_id, BrematicProOptionsFlow
     )
     return True
 
