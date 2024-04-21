@@ -2,31 +2,26 @@ import json
 import logging
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.typing import HomeAssistantType
 
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_platform(
-        hass: HomeAssistant,
-        config: ConfigType,
-        async_add_entities: AddEntitiesCallback,
-        discovery_info: DiscoveryInfoType = None):
-    """Set up the switch platform from configuration file."""
-    
-    # Load the data from the JSON file
+async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry, async_add_entities):
+    """Set up BrematicPro switch from a config entry."""
+    # Load the data from the JSON file specified in the config entry
     file_path = hass.config.path('BrematicProDevices.json')
     try:
         with open(file_path, 'r') as file:
             devices = json.load(file)
-        
+
         entities = []
         for device in devices:
             if device['type'] == 'switch':
                 entities.append(BrematicSwitch(device))
-        
+
         async_add_entities(entities, True)
     except FileNotFoundError:
         _LOGGER.error("BrematicProDevices.json file not found at %s", file_path)
