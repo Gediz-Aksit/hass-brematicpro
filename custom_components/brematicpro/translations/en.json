@@ -1,0 +1,21 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configure BrematicPro",
+                "description": "Please enter your configuration details.",
+                "data": {
+                    "brematic_system_code": "System Code",
+                    "brematic_config_json": "Configuration JSON Filename"
+                }
+            }
+        },
+        "error": {
+            "invalid_auth": "Authentication failed, please try again.",
+            "cannot_connect": "Failed to connect, please check your settings."
+        },
+        "success": {
+            "create_entry": "Successfully configured BrematicPro."
+        }
+    }
+}
