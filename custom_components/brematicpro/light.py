@@ -15,7 +15,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
-        # Properly get the area registry without awaiting
         area_registry = ar.async_get(hass)
         entities = []
         for device in devices:
@@ -55,14 +54,18 @@ class BrematicLight(LightEntity):
 
     async def async_turn_on(self, **kwargs):
         """Turn the light on."""
-        response = await self._session.post(self._commands['on'])
+        url = self._commands['on']
+        response = await self._session.post(url)
+        _LOGGER.info(f"Sending 'ON' command to {url}, response status: {response.status}, response text: {await response.text()}")
         if response.status == 200:
             self._is_on = True
             self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         """Turn the light off."""
-        response = await self._session.post(self._commands['off'])
+        url = self._commands['off']
+        response = await self._session.post(url)
+        _LOGGER.info(f"Sending 'OFF' command to {url}, response status: {response.status}, response text: {await response.text()}")
         if response.status == 200:
             self._is_on = False
             self.async_write_ha_state()
