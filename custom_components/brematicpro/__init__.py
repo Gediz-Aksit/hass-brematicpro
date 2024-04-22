@@ -22,7 +22,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     data = await hass.async_add_executor_job(read_and_transform_json, hass, devices_filename, rooms_filename)
     if data:
         json_data = json.dumps(data)
-        entry.data[CONF_INTERNAL_JSON] = json_data  # Store data directly in the entry data
+        # Update the entry's data
+        hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_JSON: json_data})
         _LOGGER.debug("Stored BrematicPro configuration data as JSON.")
     else:
         _LOGGER.error("Failed to load or transform data for BrematicPro")
@@ -35,7 +36,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
     unload_ok = all([
-        await hass.config_entries.async_forward_entry_unload(entry, 'switch'),
-        await hass.config_entries.async_forward_entry_unload(entry, 'light')
+        #await hass.config_entries.async_forward_entry_unload(entry, 'switch'),
+        #await hass.config_entries.async_forward_entry_unload(entry, 'light')
     ])
     return unload_ok
