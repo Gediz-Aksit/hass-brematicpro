@@ -46,7 +46,7 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
-                vol.Optional("reload", default=False): bool,
+                vol.Optional('reload', default=False): vol.All(bool, vol.Coerce(bool)),
             }),
-            description_placeholders={"reload": "Check to reload JSON"}
+            description_placeholders={"reload": "Reload the configuration file: " + CONF_CONFIG_JSON + " in Home Assistant root directory."}
         )
