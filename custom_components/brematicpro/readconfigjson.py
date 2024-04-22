@@ -1,14 +1,14 @@
 import json
 import os
 
-def read_and_transform_json(hass, entry):
-    config_json_path = hass.config.path(entry.data.get('BrematicPro.json', 'BrematicPro.json'))
-    rooms_json_path = hass.config.path('BrematicProRooms.json')
+def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_filename='BrematicProRooms.json'):
+    devices_json_path = hass.config.path(devices_filename)
+    rooms_json_path = hass.config.path(rooms_filename)
 
     try:
         with open(rooms_json_path, 'r') as file:
             rooms = json.load(file)
-        with open(config_json_path, 'r') as file:
+        with open(devices_json_path, 'r') as file:
             devices = json.load(file)
             transformed_data = []
 
