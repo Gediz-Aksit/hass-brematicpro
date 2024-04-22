@@ -4,8 +4,9 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.area_registry import async_get_area_registry  # Correct import
+
 from .const import DOMAIN, CONF_INTERNAL_JSON
-from homeassistant.helpers.area_registry import async_get as async_get_area_registry  # Correct import
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +34,10 @@ class BrematicSwitch(SwitchEntity):
         self._is_on = False
         self._commands = device_info['commands']
         self._session = async_get_clientsession(hass)
-        self._area_id = self._find_area_id(hass, device_info.get('room'))
+        self.area_id = None  # Initialize with None
+
+        # Set area id if the room matches any Home Assistant area
+        hass.async_create_task(self.assign_area(hass, device_info.get('room')))
 
     @property
     def unique_id(self):
@@ -64,11 +68,11 @@ class BrematicSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
-    def _find_area_id(self, hass, room_name):
-        """Attempt to match the room name to an area in Home Assistant."""
+    async def assign_area(self, hass, room_name):
+        """Async function to assign area based on the room name."""
         if room_name:
-            area_registry = async_get_area_registry(hass)  # Correctly get the area registry
+            area_registry = async_get_area_registry(hass)
             for area in area_registry.async_list_areas():
                 if area.name.lower() == room_name.lower():
-                    return area.id
-        return None
+                    self.area_id = area.id
+                    break
