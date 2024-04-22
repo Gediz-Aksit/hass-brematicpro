@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {}
-
+        
     devices_filename = entry.data.get(CONF_CONFIG_JSON, 'BrematicPro.json')
     rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
     data = await hass.async_add_executor_job(read_and_transform_json, hass, devices_filename, rooms_filename)
@@ -43,7 +43,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False  # Return False to indicate the setup failed
 
-    await hass.config_entries.async_forward_entry_setups(entry, ['switch', 'light'])
+    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
+    await hass.config_entries.async_forward_entry_setup(entry, 'light')
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -53,5 +54,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         await hass.config_entries.async_forward_entry_unload(entry, 'light')
     ])
     if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id, None)
+        if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
+            hass.data[DOMAIN].pop(entry.entry_id, None)
     return unload_ok
