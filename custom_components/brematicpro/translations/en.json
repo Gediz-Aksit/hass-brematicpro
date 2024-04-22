@@ -16,6 +16,14 @@
         },
         "success": {
             "create_entry": "Successfully configured BrematicPro."
+        },
+        "options": {
+            "init": {
+                "title": "Options for BrematicPro",
+                "data": {
+                    "reload": "Reload the configuration file now?"
+                }
+            }
         }
     }
 }

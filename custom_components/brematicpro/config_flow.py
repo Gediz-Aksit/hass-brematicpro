@@ -14,7 +14,12 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            return self.async_create_entry(title="BrematicPro", data=user_input)
+            # Save the user input in the configuration entry
+            config_data = {
+                CONF_SYSTEM_CODE: user_input[CONF_SYSTEM_CODE],
+                CONF_CONFIG_JSON: user_input[CONF_CONFIG_JSON]
+            }
+            return self.async_create_entry(title="BrematicPro", data=config_data)
 
         return self.async_show_form(
             step_id="user",
@@ -39,16 +44,21 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
         """Manage the options."""
         errors = {}
         if user_input is not None and user_input.get('reload', False):
+            # Reload the configuration from the file
             await self.hass.async_add_executor_job(
                 read_and_transform_json, self.hass, self.config_entry
             )
             return self.async_create_entry(title="", data={})
 
+        config_json_filename = self.config_entry.data.get(CONF_CONFIG_JSON, 'DefaultFilename.json')
+        description = f"Current configuration file: {config_json_filename}. " \
+                      "Would you like to reload the configuration now?"
+
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
-                vol.Optional('reload', default=False): vol.All(bool, vol.Coerce(bool)),
+                vol.Optional('reload', default=False): bool,
             }),
-            description="Check the box below to reload the configuration file: " + CONF_CONFIG_JSON + " from the Home Assistant root directory.",
+            description=description,
             errors=errors
         )
