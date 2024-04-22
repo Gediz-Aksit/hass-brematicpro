@@ -1,4 +1,3 @@
-import json
 import logging
 from homeassistant.components.light import LightEntity
 from homeassistant.core import HomeAssistant
@@ -10,19 +9,13 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up BrematicPro light from a config entry."""
-    file_path = hass.config.path('BrematicProDevices.json')
-    if not os.path.isfile(file_path):
-        _LOGGER.error("BrematicProDevices.json does not exist at %s", file_path)
-        return
-
-    try:
-        with open(file_path, 'r') as file:
-            devices = json.load(file)
+    """Set up BrematicPro lights from a config entry."""
+    if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
+        devices = hass.data[DOMAIN][entry.entry_id]
         entities = [BrematicLight(device, hass) for device in devices if device['type'] == 'light']
         async_add_entities(entities, True)
-    except Exception as e:
-        _LOGGER.error("An error occurred: %s", e)
+    else:
+        _LOGGER.error("No light data available for BrematicPro.")
 
 class BrematicLight(LightEntity):
     """Representation of a BrematicPro Light."""

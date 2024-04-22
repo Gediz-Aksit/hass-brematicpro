@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN, CONF_CONFIG_JSON, CONF_ROOMS_JSON
+from .const import DOMAIN
 from .readconfigjson import read_and_transform_json
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,19 +29,20 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     hass.services.async_register(DOMAIN, "reload_json", reload_json)
     return True
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up BrematicPro from a config entry."""
-
-    if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
-        devices = hass.data[DOMAIN][entry.entry_id]
-        entities = [BrematicSwitch(device, hass) for device in devices if device['type'] == 'switch']
-        async_add_entities(entities, True)
-    else:
-        _LOGGER.error("No data available for BrematicProDevices")
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Setup from a config entry."""
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, 'switch')
+    )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, 'light')
+    )
+    return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch')
+    unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'light')
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
     return unload_ok
