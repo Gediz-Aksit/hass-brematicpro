@@ -54,7 +54,6 @@ class BrematicLight(LightEntity):
 
     async def async_turn_on(self, **kwargs):
         _LOGGER.info("Attempting to turn on the light.")
-		"""Turn the light on."""
         url = self._commands['on']
         response = await self._session.post(url)
         _LOGGER.info(f"Sending 'ON' command to {url}, response status: {response.status}, response text: {await response.text()}")
@@ -64,7 +63,6 @@ class BrematicLight(LightEntity):
 
     async def async_turn_off(self, **kwargs):
         _LOGGER.info("Attempting to turn off the light.")
-		"""Turn the light off."""
         url = self._commands['off']
         response = await self._session.post(url)
         _LOGGER.info(f"Sending 'OFF' command to {url}, response status: {response.status}, response text: {await response.text()}")
