@@ -43,7 +43,7 @@ class BrematicSwitch(SwitchEntity):
         self._is_on = False
         self._commands = device_info['commands']
         self._session = async_get_clientsession(hass)
-        self.area_id = self.find_area_id(hass, device_info.get('room'), area_registry)
+        self.area_id = find_area_id(hass, device_info.get('room'), area_registry)
 
     @property
     def unique_id(self):
