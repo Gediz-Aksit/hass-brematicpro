@@ -4,7 +4,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.area_registry import async_get  # Correct import
+from homeassistant.helpers import area_registry as ar
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
 
@@ -15,10 +15,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
+        area_registry = await ar.async_get(hass)
         entities = []
         for device in devices:
             if device['type'] == 'switch':
-                entity = BrematicSwitch(device, hass)
+                entity = BrematicSwitch(device, hass, area_registry)
                 entities.append(entity)
         async_add_entities(entities, True)
     else:
@@ -27,17 +28,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
 
-    def __init__(self, device_info, hass):
+    def __init__(self, device_info, hass, area_registry):
         """Initialize the switch."""
         self._unique_id = device_info['uniqueid']
         self._name = device_info['name']
         self._is_on = False
         self._commands = device_info['commands']
         self._session = async_get_clientsession(hass)
-        self.area_id = None  # Initialize with None
-
-        # Set area id if the room matches any Home Assistant area
-        hass.async_create_task(self.assign_area(hass, device_info.get('room')))
+        self.area_id = self.find_area_id(area_registry, device_info.get('room'))
 
     @property
     def unique_id(self):
@@ -68,11 +66,10 @@ class BrematicSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
-    async def assign_area(self, hass, room_name):
-        """Async function to assign area based on the room name."""
+    def find_area_id(self, area_registry, room_name):
+        """Find area ID by matching room name with area names."""
         if room_name:
-            area_registry = await async_get(hass)
             for area in area_registry.areas.values():
                 if area.name.lower() == room_name.lower():
-                    self.area_id = area.id
-                    break
+                    return area.id
+        return None
