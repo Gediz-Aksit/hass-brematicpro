@@ -1,11 +1,11 @@
 import logging
 import json
-
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import DOMAIN, CONF_INTERNAL_JSON
+from homeassistant.helpers.area_registry import async_get as async_get_area_registry  # Correct import
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class BrematicSwitch(SwitchEntity):
         self._is_on = False
         self._commands = device_info['commands']
         self._session = async_get_clientsession(hass)
-        self._area_id = self._find_area_id(hass, device_info['room'])
+        self._area_id = self._find_area_id(hass, device_info.get('room'))
 
     @property
     def unique_id(self):
@@ -56,8 +56,6 @@ class BrematicSwitch(SwitchEntity):
         if response.status == 200:
             self._is_on = True
             self.async_write_ha_state()
-        else:
-            _LOGGER.error("Failed to turn on: %s", self._name)
 
     async def async_turn_off(self, **kwargs):
         """Turn the switch off."""
@@ -65,12 +63,12 @@ class BrematicSwitch(SwitchEntity):
         if response.status == 200:
             self._is_on = False
             self.async_write_ha_state()
-        else:
-            _LOGGER.error("Failed to turn off: %s", self._name)
 
     def _find_area_id(self, hass, room_name):
         """Attempt to match the room name to an area in Home Assistant."""
-        for area in hass.config.area_registry.async_list_areas():
-            if area.name.lower() == room_name.lower():
-                return area.id
+        if room_name:
+            area_registry = async_get_area_registry(hass)  # Correctly get the area registry
+            for area in area_registry.async_list_areas():
+                if area.name.lower() == room_name.lower():
+                    return area.id
         return None
