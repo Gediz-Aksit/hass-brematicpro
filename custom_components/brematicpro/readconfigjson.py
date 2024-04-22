@@ -4,8 +4,8 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_filename='BrematicProRooms.json'):
-    devices_json_path = hass.path(devices_filename)
-    rooms_json_path = hass.path(rooms_filename)
+    devices_json_path = hass.config.path(devices_filename)
+    rooms_json_path = hass.config.path(rooms_filename)
 
     try:
         with open(rooms_json_path, 'r') as file:
