@@ -5,27 +5,25 @@
                 "title": "Configure BrematicPro",
                 "description": "Please enter your configuration details.",
                 "data": {
-                    "brematic_system_code": "System Code",
-                    "brematic_config_json": "Configuration JSON Filename"
+                    "brematic_system_code": "Please enter the system code for your BrematicPro device.",
+                    "brematic_config_json": "Enter the configuration file name. Default is 'BrematicPro.json'."
                 }
             },
             "init": {
-                "title": "Reload Configuration",
-                "description": "Current configuration file: {filename}. Would you like to reload the configuration now?"
+                "description": "Current configuration file is {filename}. Reload configuration?"
             }
         },
         "error": {
-            "invalid_auth": "Authentication failed, please try again.",
-            "cannot_connect": "Failed to connect, please check your settings."
+            "cannot_connect": "Failed to connect, please check your settings.",
+            "invalid_auth": "Authentication failed, please try again."
         },
         "success": {
             "create_entry": "Successfully configured BrematicPro."
-        }
-    },
-    "options": {
-        "init": {
-            "title": "Additional Settings",
-            "description": "Current configuration file: {filename}. Check below to reload the configuration file."
+        },
+        "options": {
+            "init": {
+                "reload": "Check this box if you want to reload the configuration file now."
+            }
         }
     }
 }
