@@ -15,7 +15,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
-        area_registry = await ar.async_get(hass)
+        # Properly get the area registry without awaiting
+        area_registry = ar.async_get(hass)
         entities = []
         for device in devices:
             if device['type'] == 'switch':
