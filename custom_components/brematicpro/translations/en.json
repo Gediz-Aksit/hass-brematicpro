@@ -8,6 +8,10 @@
                     "brematic_system_code": "System Code",
                     "brematic_config_json": "Configuration JSON Filename"
                 }
+            },
+            "init": {
+                "title": "Reload Configuration",
+                "description": "Current configuration file: {filename}. Would you like to reload the configuration now?"
             }
         },
         "error": {
@@ -16,14 +20,12 @@
         },
         "success": {
             "create_entry": "Successfully configured BrematicPro."
-        },
-        "options": {
-            "init": {
-                "title": "Options for BrematicPro",
-                "data": {
-                    "reload": "Reload the configuration file now?"
-                }
-            }
+        }
+    },
+    "options": {
+        "init": {
+            "title": "Additional Settings",
+            "description": "Current configuration file: {filename}. Check below to reload the configuration file."
         }
     }
 }
