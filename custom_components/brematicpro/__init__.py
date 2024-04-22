@@ -12,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up the services for the BrematicPro integration."""
-    hass.data[DOMAIN] = {}
+    hass.data.setdefault(DOMAIN, {})
 
     async def reload_json(call):
         """Service to reload JSON configuration data."""
@@ -31,18 +31,16 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
-    # Load data here
     devices_filename = entry.data.get(CONF_CONFIG_JSON, 'BrematicPro.json')
     rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
     data = await hass.async_add_executor_job(read_and_transform_json, hass, devices_filename, rooms_filename)
     if data:
-        hass.data[DOMAIN][entry.entry_id] = data
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = data
         _LOGGER.debug("Loaded data for BrematicPro: %s", data)
     else:
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False  # Prevent further setup if data loading fails
 
-    # Forward entry setup to switch and light components
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(entry, 'switch')
     )
