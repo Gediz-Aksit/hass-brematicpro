@@ -9,10 +9,15 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up BrematicPro lights from a config entry."""
+    """Set up BrematicPro light from a config entry."""
     if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
         devices = hass.data[DOMAIN][entry.entry_id]
-        entities = [BrematicLight(device, hass) for device in devices if device['type'] == 'light']
+        light_devices = [device for device in devices if device['type'] == 'light']
+        if not light_devices:
+            _LOGGER.error("No devices of type 'light' found in the data.")
+            return
+        
+        entities = [BrematicLight(device, hass) for device in light_devices]
         async_add_entities(entities, True)
     else:
         _LOGGER.error("No light data available for BrematicPro.")
@@ -60,5 +65,5 @@ class BrematicLight(LightEntity):
 
     async def async_update(self):
         """Fetch new state data for this light."""
-        # Here, you could potentially make an API call to check the current state if available
+        # This method can optionally be implemented to fetch real-time status.
         pass

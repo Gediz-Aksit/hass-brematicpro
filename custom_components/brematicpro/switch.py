@@ -12,7 +12,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     """Set up BrematicPro switches from a config entry."""
     if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
         devices = hass.data[DOMAIN][entry.entry_id]
-        entities = [BrematicSwitch(device, hass) for device in devices if device['type'] == 'switch']
+        switch_devices = [device for device in devices if device['type'] == 'switch']
+        if not switch_devices:
+            _LOGGER.error("No devices of type 'switch' found in the data.")
+            return
+        
+        entities = [BrematicSwitch(device, hass) for device in switch_devices]
         async_add_entities(entities, True)
     else:
         _LOGGER.error("No switch data available for BrematicPro.")
@@ -59,15 +64,16 @@ class BrematicSwitch(SwitchEntity):
     async def async_turn_off(self, **kwargs):
         """Turn the switch off."""
         url = self._commands['off']
-        try:
+        try {
             response = await self._session.post(url)
-            if response.status == 200:
+            if response.status == 200 {
                 self._is_on = False
                 _LOGGER.info("Successfully turned off %s", self._name)
-            else:
+            } else {
                 _LOGGER.error("Failed to turn off %s with status: %s", self._name, response.status)
-        except Exception as e:
+        } except Exception as e {
             _LOGGER.error("Error turning off %s: %s", self._name, str(e))
+    }
 
     async def async_update(self):
         """Fetch new state data for this switch."""
