@@ -33,19 +33,22 @@ class BrematicLight(LightEntity):
         self._session = async_get_clientsession(hass)
 
     @property
-    def unique_id(self):
-        """Return the unique ID."""
-        return self._unique_id
-
-    @property
-    def name(self):
-        """Return the name."""
-        return self._name
-
-    @property
     def is_on(self):
         """Return if the light is on or off."""
         return self._is_on
 
     async def async_turn_on(self, **kwargs):
-        """Turn the
+        """Turn the light on."""
+        response = await self._session.post(self._commands['on'])
+        if response.status == 200:
+            self._is_on = True
+        else:
+            _LOGGER.error("Failed to turn on: %s", self._name)
+
+    async def async_turn_off(self, **kwargs):
+        """Turn the light off."""
+        response = await self._session.post(self._commands['off'])
+        if response.status == 200:
+            self._is_on = False
+        else:
+            _LOGGER.error("Failed to turn off: %s", self._name)
