@@ -5,7 +5,7 @@ from .readconfigjson import read_and_transform_json
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
-
+    
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
@@ -31,7 +31,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 class BrematicProOptionsFlow(config_entries.OptionsFlow):
     """Options flow for BrematicPro."""
-
+    
     def __init__(self, config_entry):
         self.config_entry = config_entry
 
@@ -49,6 +49,6 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
             data_schema=vol.Schema({
                 vol.Optional('reload', default=False): vol.All(bool, vol.Coerce(bool)),
             }),
-            description="reload": "Reload the configuration file: " + CONF_CONFIG_JSON + " in Home Assistant root directory.",
+            description="Check the box below to reload the configuration file: " + CONF_CONFIG_JSON + " from the Home Assistant root directory.",
             errors=errors
         )
