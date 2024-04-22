@@ -12,10 +12,13 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro switches from a config entry."""
+    # Prevent setup from running more than once per entry
+    if entry.entry_id in hass.data.get(DOMAIN, {}):
+        return False
+
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
-        # Properly get the area registry without awaiting
         area_registry = ar.async_get(hass)
         entities = []
         for device in devices:
@@ -23,8 +26,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 entity = BrematicSwitch(device, hass, area_registry)
                 entities.append(entity)
         async_add_entities(entities, True)
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities  # Store references to entities
+        return True
     else:
         _LOGGER.error("No configuration data found for BrematicPro switches.")
+        return False
 
 class BrematicSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
@@ -36,7 +42,7 @@ class BrematicSwitch(SwitchEntity):
         self._is_on = False
         self._commands = device_info['commands']
         self._session = async_get_clientsession(hass)
-        self.area_id = self.find_area_id(area_registry, device_info.get('room'))
+        self.area_id = self.find_area_id(hass, device_info.get('room'), area_registry)
 
     @property
     def unique_id(self):
@@ -69,10 +75,11 @@ class BrematicSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
-    def find_area_id(self, area_registry, room_name):
+    def find_area_id(self, hass, room_name, area_registry):
         """Find area ID by matching room name with area names."""
         if room_name:
+            room_name = room_name.lower()
             for area in area_registry.areas.values():
-                if area.name.lower() == room_name.lower():
+                if area.name.lower() == room_name:
                     return area.id
         return None
