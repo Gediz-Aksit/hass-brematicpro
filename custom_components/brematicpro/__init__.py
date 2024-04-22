@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_CONFIG_JSON, CONF_ROOMS_JSON
 from .readconfigjson import read_and_transform_json
 
 _LOGGER = logging.getLogger(__name__)
