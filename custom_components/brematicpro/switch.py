@@ -53,19 +53,22 @@ class BrematicSwitch(SwitchEntity):
         """Return the on/off state of the switch."""
         return self._is_on
 
-    async def async_turn_on(self, **kwargs):
-        """Turn the switch on."""
-        response = await self._session.post(self._commands['on'])
-        if response.status == 200:
-            self._is_on = True
-            self.async_write_ha_state()
 
-    async def async_turn_off(self, **kwargs):
-        """Turn the switch off."""
-        response = await self._session.post(self._commands['off'])
-        if response.status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
+	async def async_turn_on(self, **kwargs):
+		"""Turn the light on."""
+		response = await self._session.post(self._commands['on'])
+		_LOGGER.info(f"Turn on response: {response.status} - {await response.text()}")
+		if response.status == 200:
+			self._is_on = True
+			self.async_write_ha_state()
+
+	async def async_turn_off(self, **kwargs):
+		"""Turn the light off."""
+		response = await self._session.post(self._commands['off'])
+		_LOGGER.info(f"Turn off response: {response.status} - {await response.text()}")
+		if response.status == 200:
+			self._is_on = False
+			self.async_write_ha_state()
 
     def find_area_id(self, area_registry, room_name):
         """Find area ID by matching room name with area names."""
