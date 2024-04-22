@@ -17,12 +17,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     if json_data:
         devices = json.loads(json_data)
         area_registry = ar.async_get(hass)
-        entities = []
+        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        new_entities = []
+
         for device in devices:
             if device['type'] == 'light':
-                entity = BrematicLight(device, hass, area_registry)
-                entities.append(entity)
-        async_add_entities(entities, True)
+                unique_id = device['uniqueid']
+                if unique_id in existing_entities:
+                    # Update existing entity
+                    entity = existing_entities[unique_id]
+                    entity.update_device(device)
+                else:
+                    # Create new entity
+                    entity = BrematicLight(device, hass, area_registry)
+                    new_entities.append(entity)
+
+        async_add_entities(new_entities, True)
+        # Update the stored entities
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = existing_entities.values() + new_entities
     else:
         _LOGGER.error("No configuration data found for BrematicPro lights.")
 
@@ -70,6 +82,13 @@ class BrematicLight(LightEntity):
         if response.status == 200:
             self._is_on = False
             self.async_write_ha_state()
+
+    def update_device(self, device_info):
+        """Update the light device with new configuration."""
+        self._name = device_info['name']
+        self._commands = device_info['commands']
+        self.area_id = self.find_area_id(ar.async_get(self.hass), device_info.get('room'))
+        self.async_write_ha_state()
 
     def find_area_id(self, area_registry, room_name):
         """Find area ID by matching room name with area names."""
