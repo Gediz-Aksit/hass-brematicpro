@@ -15,15 +15,15 @@ def find_area_id(hass, room_name):
                 return area.id
         _LOGGER.debug("No match found")
     return None
-	
-def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_filename='BrematicProRooms.json'):
-    devices_json_path = hass.config.path(devices_filename)
-    rooms_json_path = hass.config.path(rooms_filename)
+
+def read_and_transform_json(hass, config_json='BrematicProConfig.json', rooms_json='BrematicProRooms.json'):
+    config_json_path = hass.config.path(config_json)
+    rooms_json_path = hass.config.path(rooms_json)
 
     try:
         with open(rooms_json_path, 'r') as file:
             rooms = json.load(file)
-        with open(devices_json_path, 'r') as file:
+        with open(config_json_path, 'r') as file:
             devices = json.load(file)
 
     except FileNotFoundError as e:
@@ -50,8 +50,11 @@ def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_fil
         # Assuming 'sys' field maps directly to frequency
         freq = 868 if item['sys'] == 'B8' else 433 if item['sys'] == 'B4' else 0
 
-        # Augment commands with the local URL
-        commands = {cmd: item['local'] + item['commands'][cmd]['url'] for cmd in item['commands']}
+        # Retrieve system_code from config and integrate it into command URLs
+        system_code = item.get('system_code', 'default_code')
+
+        # Augment commands with the local URL and system_code with correct parameter name
+        commands = {cmd: f"{item['local']}{item['commands'][cmd]['url']}&at={system_code}" for cmd in item['commands']}
 
         transformed_data.append({
             "uniqueid": item.get('address', 'NoID'),  # Default 'NoID' if no address is provided
