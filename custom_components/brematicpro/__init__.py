@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN, CONF_CONFIG_JSON, CONF_ROOMS_JSON
-from .readconfigjson import read_and_transform_json, save_data_to_file
+from .readconfigjson import read_and_transform_json
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
             rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
             data = await hass.async_add_executor_job(read_and_transform_json, hass, devices_filename, rooms_filename)
             if data:
-                save_data_to_file(hass, data, 'BrematicProDevices.json')
+                hass.data[DOMAIN][entry.entry_id] = data
                 _LOGGER.info("BrematicPro data reloaded successfully")
             else:
                 _LOGGER.error("Failed to reload BrematicPro data")
@@ -29,23 +29,15 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     hass.services.async_register(DOMAIN, "reload_json", reload_json)
     return True
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Setup from a config entry."""
-    devices_filename = entry.data.get(CONF_CONFIG_JSON, 'BrematicPro.json')
-    rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
-	
-    data = await hass.async_add_executor_job(read_and_transform_json, hass, devices_filename, rooms_filename)
-    if data:
-        save_data_to_file(hass, data, 'BrematicProDevices.json')
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, 'switch')
-        )
-        return True
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
+    """Set up BrematicPro switches from a config entry."""
+    if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
+        devices = hass.data[DOMAIN][entry.entry_id]
+        entities = [BrematicSwitch(device, hass) for device in devices if device['type'] == 'switch']
+        async_add_entities(entities, True)
     else:
-        _LOGGER.error("Failed to load BrematicPro configuration data")
-        return False
+        _LOGGER.error("No data available for BrematicProDevices")
 
-	
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch')
