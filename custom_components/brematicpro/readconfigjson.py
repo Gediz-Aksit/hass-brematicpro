@@ -1,6 +1,8 @@
 import json
 import os
 
+_LOGGER = logging.getLogger(__name__)
+
 def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_filename='BrematicProRooms.json'):
     devices_json_path = hass.config.path(devices_filename)
     rooms_json_path = hass.config.path(rooms_filename)
@@ -40,10 +42,10 @@ def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_fil
             return transformed_data
 
     except FileNotFoundError as e:
-        hass.logger.error(f"File not found: {e}")
+        _LOGGER.error(f"File not found: {e}")
     except json.JSONDecodeError:
-        hass.logger.error("Error decoding JSON.")
+        _LOGGER.error("Error decoding JSON.")
     except Exception as e:
-        hass.logger.error(f"An error occurred: {e}")
+        _LOGGER.error(f"An error occurred: {e}")
 
     return None
