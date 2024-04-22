@@ -4,7 +4,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers import area_registry as ar
+from homeassistant.helpers import area_registry  # Import area_registry helper
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
 
@@ -71,7 +71,7 @@ class BrematicSwitch(SwitchEntity):
     async def assign_area(self, hass, room_name):
         """Async function to assign area based on the room name."""
         if room_name:
-            area_registry = await ar.async_get_registry(hass)  # Correct way to get the area registry
+            area_registry = area_registry.async_get(hass)  # Correctly fetch the area registry
             for area in area_registry.areas.values():
                 if area.name.lower() == room_name.lower():
                     self.area_id = area.id
