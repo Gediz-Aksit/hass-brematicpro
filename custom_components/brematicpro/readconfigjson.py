@@ -38,4 +38,9 @@ def read_and_transform_json(hass, devices_filename, rooms_filename):
 def save_data_to_file(hass, data, filename):
     """Save transformed data to a JSON file."""
     file_path = hass.config.path(filename)
-    save_json(file_path, data)
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=2)
+        _LOGGER.info("Data successfully saved to %s", file_path)
+    except Exception as e:
+        _LOGGER.error("Failed to write data to file %s: %s", file_path, str(e))
