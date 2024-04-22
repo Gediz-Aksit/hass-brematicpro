@@ -1,8 +1,21 @@
 import json
 import logging
+from homeassistant.helpers import area_registry as ar
 
 _LOGGER = logging.getLogger(__name__)
 
+def find_area_id(hass, room_name):
+    """Find area ID by matching room name with area names."""
+    if room_name:
+        room_name = room_name.lower().strip()  # Normalize the room name
+        area_registry = ar.async_get(hass)
+        for area in area_registry.areas.values():
+            if area.name.lower().strip() == room_name:
+                _LOGGER.debug(f"Match found: {area.name}")
+                return area.id
+        _LOGGER.debug("No match found")
+    return None
+	
 def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_filename='BrematicProRooms.json'):
     devices_json_path = hass.config.path(devices_filename)
     rooms_json_path = hass.config.path(rooms_filename)
