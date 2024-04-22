@@ -37,7 +37,7 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-		errors = {}
+        errors = {}
         if user_input is not None and user_input.get('reload', False):
             await self.hass.async_add_executor_job(
                 read_and_transform_json, self.hass, self.config_entry
@@ -50,5 +50,5 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
                 vol.Optional('reload', default=False): vol.All(bool, vol.Coerce(bool)),
             }),
             description="reload": "Reload the configuration file: " + CONF_CONFIG_JSON + " in Home Assistant root directory.",
-			errors=errors
+            errors=errors
         )
