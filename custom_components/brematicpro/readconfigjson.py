@@ -1,9 +1,7 @@
 import json
 import logging
-from homeassistant.helpers.json import save_json
 
 _LOGGER = logging.getLogger(__name__)
-DOMAIN = "brematicpro"  # Ensure this constant is correctly defined here or imported if defined elsewhere.
 
 def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_filename='BrematicProRooms.json'):
     devices_json_path = hass.config.path(devices_filename)
@@ -51,6 +49,4 @@ def read_and_transform_json(hass, devices_filename='BrematicPro.json', rooms_fil
             "commands": commands
         })
 
-    # Store the data in Home Assistant's internal storage
-    hass.data[DOMAIN] = transformed_data
     return transformed_data
