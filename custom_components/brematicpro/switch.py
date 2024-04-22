@@ -9,12 +9,13 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro switches from a config entry."""
-    if entry.entry_id in hass.data[DOMAIN]:
+    if entry.entry_id in hass.data[DOMAIN] and hass.data[DOMAIN][entry.entry_id]:
         devices = hass.data[DOMAIN][entry.entry_id]
         entities = [BrematicSwitch(device, hass) for device in devices if device['type'] == 'switch']
         async_add_entities(entities, True)
     else:
         _LOGGER.error("No switch data available for BrematicPro.")
+
 
 class BrematicSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
