@@ -7,6 +7,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers import area_registry as ar
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
+from .readconfigjson import find_area_id
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -7,6 +7,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers import area_registry as ar
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
+from .readconfigjson import find_area_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,11 +76,3 @@ class BrematicSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
-    def find_area_id(self, hass, room_name, area_registry):
-        """Find area ID by matching room name with area names."""
-        if room_name:
-            room_name = room_name.lower()
-            for area in area_registry.areas.values():
-                if area.name.lower() == room_name:
-                    return area.id
-        return None
