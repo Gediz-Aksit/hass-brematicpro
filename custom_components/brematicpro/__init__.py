@@ -52,8 +52,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False  # Return False to indicate the setup failed
 
-    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    await hass.config_entries.async_forward_entry_setup(entry, 'light')
+    #await hass.config_entries.async_forward_entry_setup(entry, 'switch')
+    #await hass.config_entries.async_forward_entry_setup(entry, 'light')
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
