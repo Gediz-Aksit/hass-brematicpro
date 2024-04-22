@@ -30,7 +30,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up BrematicPro switches from a config entry."""
+    """Set up BrematicPro from a config entry."""
+
     if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
         devices = hass.data[DOMAIN][entry.entry_id]
         entities = [BrematicSwitch(device, hass) for device in devices if device['type'] == 'switch']
