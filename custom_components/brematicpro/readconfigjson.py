@@ -1,41 +1,49 @@
 import json
 import os
-import logging
-from homeassistant.core import HomeAssistant
-from .const import CONF_CONFIG_JSON, DOMAIN
 
-_LOGGER = logging.getLogger(__name__)
-
-def read_and_transform_json(hass: HomeAssistant, entry):
-    """Read and transform the JSON configuration file."""
-    path = hass.config.path(entry.data[CONF_CONFIG_JSON])
+def read_and_transform_json(hass, entry):
+    config_json_path = hass.config.path(entry.data.get('BrematicPro.json', 'BrematicPro.json'))
+    rooms_json_path = hass.config.path('BrematicProRooms.json')
 
     try:
-        with open(path, 'r') as file:
-            data = json.load(file)
+        with open(rooms_json_path, 'r') as file:
+            rooms = json.load(file)
+        with open(config_json_path, 'r') as file:
+            devices = json.load(file)
             transformed_data = []
 
-            for item in data.values():
+            for item in devices.values():
+                device_name = item['name']
+                room_name = 'Unknown'  # Default if no room is found
+
+                # Extract the room from the device name
+                for room in rooms:
+                    if room in device_name:
+                        room_name = room
+                        device_name = device_name.replace(room, '').strip()
+
+                # Assuming 'sys' field maps directly to frequency
                 freq = 868 if item['sys'] == 'B8' else 433 if item['sys'] == 'B4' else 0
+
+                # Augment commands with the local URL
                 commands = {cmd: item['local'] + item['commands'][cmd]['url'] for cmd in item['commands']}
+
                 transformed_data.append({
-                    "uniqueid": item['address'],
-                    "name": item['name'],
+                    "uniqueid": item.get('address', 'NoID'),  # Default 'NoID' if no address is provided
+                    "name": device_name,
+                    "room": room_name,
                     "freq": freq,
                     "type": item['type'],
                     "commands": commands
                 })
 
-            # Save the transformed data to BrematicProDevices.json
-            output_path = hass.config.path('BrematicProDevices.json')
-            with open(output_path, 'w') as outfile:
-                json.dump(transformed_data, outfile, indent=4)
-            _LOGGER.info("Transformed data saved to %s", output_path)
+            return transformed_data
 
-    except FileNotFoundError:
-        _LOGGER.error("File not found: %s", path)
+    except FileNotFoundError as e:
+        hass.logger.error(f"File not found: {e}")
     except json.JSONDecodeError:
-        _LOGGER.error("Error decoding JSON from file: %s", path)
+        hass.logger.error("Error decoding JSON.")
     except Exception as e:
-        _LOGGER.error("An error occurred: %s", e)
+        hass.logger.error(f"An error occurred: {e}")
 
+    return None
