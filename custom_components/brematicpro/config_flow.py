@@ -10,7 +10,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initiated by the user."""
-        return await self._common_flow_handler(self.hass, user_input)
+        return await self._common_flow_handler(user_input)
 
     async def _common_flow_handler(self, user_input):
         """Handle common logic for user and options flows."""
@@ -28,7 +28,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 )
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"
-                    
+
             if 'process_data' in user_input and user_input['process_data']:
                 await setup_entry_components(self.hass, entry)
 
@@ -46,6 +46,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
             errors=errors
         )
+
 
     @staticmethod
     def async_get_options_flow(config_entry):
