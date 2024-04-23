@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN, CONF_CONFIG_JSON, CONF_ROOMS_JSON
-from .readconfigjson import read_and_transform_json, setup_entry_components, unload_entry_components, BrematicProJsonDownloadView
+from .readconfigjson import read_and_transform_json, setup_entry_components, unload_entry_components
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,16 +23,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
 
     # Attempt to read and transform JSON data
-    #success = await hass.async_add_executor_job(
-    #    read_and_transform_json, hass, entry, devices_filename, rooms_filename
-    #)
+    success = await hass.async_add_executor_job(
+        read_and_transform_json, hass, entry, devices_filename, rooms_filename
+    )
 
     if not success:
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False
 
     # Setup entry components (switch and light)
-    #await setup_entry_components(hass, entry)
+    await setup_entry_components(hass, entry)
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
