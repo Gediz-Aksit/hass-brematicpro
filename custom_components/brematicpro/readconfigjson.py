@@ -44,22 +44,17 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
     transformed_data = []
     for item in devices.values():
         device_name = item['name']
-        room_name = 'Unknown'  # Default if no room is found
-
-        # Extract the room from the device name
+        room_name = 'Unknown'
         for room in rooms:
             if room in device_name:
                 room_name = room
                 device_name = device_name.replace(room, '').strip()
-
-        # Assuming 'sys' field maps directly to frequency
         freq = 868 if item['sys'] == 'B8' else 433 if item['sys'] == 'B4' else 0
-
-        # Augment commands with the local URL and system_code with correct parameter name
-        commands = {cmd: f"{item['local']}{item['commands'][cmd]['url']}&at={item.get('system_code', 'default_code')}" for cmd in item['commands']}
+        system_code = item.get('system_code', 'default_code')
+        commands = {cmd: f"{item['local']}{item['commands'][cmd]['url']}&at={system_code}" for cmd in item['commands']}
 
         transformed_data.append({
-            "uniqueid": item.get('address', 'NoID'),  # Default 'NoID' if no address is provided
+            "uniqueid": item.get('address', 'NoID'),
             "name": device_name,
             "room": room_name,
             "freq": freq,
@@ -67,8 +62,9 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
             "commands": commands
         })
 
-    # Update the entry's data with the transformed data
-    hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_JSON: json.dumps(transformed_data)})
+    json_data = json.dumps(transformed_data)
+    _LOGGER.debug(f"Generated JSON data: {json_data}")  # Log the JSON data
+    hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_JSON: json_data})
     return True
 
 async def setup_entry_components(hass: HomeAssistant, entry):
