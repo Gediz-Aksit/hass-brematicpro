@@ -1,7 +1,7 @@
 from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON, CONF_ROOMS_JSON
-from .readconfigjson import read_and_transform_json, process_data
+from .readconfigjson import read_and_transform_json, setup_entry_components
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
@@ -30,7 +30,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors['read_json'] = "Failed to read or transform JSON"
                     
             if 'process_data' in user_input and user_input['process_data']:
-                await self.hass.async_add_executor_job(process_data, self.hass, entry.data if entry else {})
+                await setup_entry_components(self.hass, entry)
 
             if not errors:
                 return self.async_create_entry(title="BrematicPro", data=user_input)
