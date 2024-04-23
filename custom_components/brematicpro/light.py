@@ -17,6 +17,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     if json_data:
         devices = json.loads(json_data)
         area_registry = ar.async_get(hass)
+        # Fetch existing entities or initialize an empty dictionary
         existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         new_entities = []
 
@@ -33,8 +34,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     new_entities.append(entity)
 
         async_add_entities(new_entities, True)
-        # Update the stored entities
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = existing_entities.values() + new_entities
+        # Convert dict_values to list before concatenation
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = list(existing_entities.values()) + new_entities
     else:
         _LOGGER.error("No configuration data found for BrematicPro lights.")
 
