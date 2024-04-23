@@ -68,9 +68,19 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
-    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    await hass.config_entries.async_forward_entry_setup(entry, 'light')
-    _LOGGER.info("Entry components 'switch' and 'light' set up successfully.")
+	
+    try:
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, 'switch')
+        )
+    except Exception as e:
+        _LOGGER.error("Error setting up BrematicPro switch entry: %s", e)
+    try:
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, 'light')
+        )
+    except Exception as e:
+        _LOGGER.error("Error setting up BrematicPro light entry: %s", e)
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for 'switch' and 'light'."""
@@ -82,17 +92,22 @@ async def unload_entry_components(hass: HomeAssistant, entry):
         _LOGGER.info("Entry components 'switch' and 'light' unloaded successfully.")
     return unload_ok
 
+from homeassistant.components.http import HomeAssistantView
+from aiohttp import web
+from .const import CONF_INTERNAL_JSON, DOMAIN
+
 class BrematicProJsonDownloadView(HomeAssistantView):
-    """View to download the CONF_INTERNAL_JSON data."""
     url = "/api/brematicpro/download_json"
     name = "api:brematicpro:download_json"
-
-    def __init__(self, json_data):
-        """Initialize the view with the JSON data."""
-        self.json_data = json_data
+    requires_auth = True
 
     async def get(self, request):
         """Return JSON data as file download."""
-        return web.Response(body=self.json_data, content_type='application/json', headers={
-            'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
-        })
+        hass = request.app['hass']
+        entry = next((e for e in hass.config_entries.async_entries(DOMAIN)), None)
+        if entry and CONF_INTERNAL_JSON in entry.data:
+            json_data = entry.data[CONF_INTERNAL_JSON]
+            return web.Response(body=json_data, content_type='application/json', headers={
+                'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
+            })
+        return web.Response(status=404, text="Configuration data not found.")
