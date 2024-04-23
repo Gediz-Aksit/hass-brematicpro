@@ -12,31 +12,32 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initiated by the user."""
         return await self._common_flow_handler(user_input)
 
-    async def _common_flow_handler(self, user_input):
+    @staticmethod
+    async def _common_flow_handler(hass, user_input):
         """Handle common logic for user and options flows."""
         errors = {}
 
         if user_input is not None:
-            entry = self.hass.config_entries.async_get_entry(self.context["entry_id"]) if self.context.get("entry_id") else None
+            entry = hass.config_entries.async_get_entry(hass.context["entry_id"]) if hass.context.get("entry_id") else None
             if 'read_json' in user_input and user_input['read_json']:
-                success = await self.hass.async_add_executor_job(
+                success = await hass.async_add_executor_job(
                     read_and_transform_json,
-                    self.hass,
+                    hass,
                     entry,
                     user_input[CONF_CONFIG_JSON],
                     user_input[CONF_ROOMS_JSON]
                 )
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"
-
+                    
             if 'process_data' in user_input and user_input['process_data']:
-                await setup_entry_components(self.hass, entry)
+                await setup_entry_components(hass, entry)
 
             if not errors:
-                return self.async_create_entry(title="BrematicPro", data=user_input)
+                return hass.config_entries.async_create_entry(title="BrematicPro", data=user_input)
 
-        return self.async_show_form(
-            step_id="user" if self.context.get("entry_id") else "init",
+        return hass.config_entries.async_show_form(
+            step_id="user" if hass.context.get("entry_id") else "init",
             data_schema=vol.Schema({
                 vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
                 vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
@@ -46,12 +47,6 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
             errors=errors
         )
-
-
-    @staticmethod
-    def async_get_options_flow(config_entry):
-        """Link the options flow for this integration."""
-        return BrematicProOptionsFlow(config_entry)
 
 class BrematicProOptionsFlow(config_entries.OptionsFlow):
     """Options flow for BrematicPro."""
