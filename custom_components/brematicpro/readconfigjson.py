@@ -2,7 +2,9 @@ import json
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
+from homeassistant.components.http import HomeAssistantView
 from .const import CONF_INTERNAL_JSON
+from aiohttp import web
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -79,3 +81,18 @@ async def unload_entry_components(hass: HomeAssistant, entry):
     if unload_ok:
         _LOGGER.info("Entry components 'switch' and 'light' unloaded successfully.")
     return unload_ok
+
+class BrematicProJsonDownloadView(HomeAssistantView):
+    """View to download the CONF_INTERNAL_JSON data."""
+    url = "/api/brematicpro/download_json"
+    name = "api:brematicpro:download_json"
+
+    def __init__(self, json_data):
+        """Initialize the view with the JSON data."""
+        self.json_data = json_data
+
+    async def get(self, request):
+        """Return JSON data as file download."""
+        return web.Response(body=self.json_data, content_type='application/json', headers={
+            'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
+        })

@@ -44,6 +44,9 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional('read_json', default=False): bool,
                 vol.Optional('process_data', default=False): bool,
             }),
+            description_placeholders={
+                'download_instructions': "To download the JSON file, use the 'download_json' service."
+            },
             errors=errors
         )
 
