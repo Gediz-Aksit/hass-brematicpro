@@ -69,8 +69,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
-    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    await hass.config_entries.async_forward_entry_setup(entry, 'light')
+    #await hass.config_entries.async_forward_entry_setup(entry, 'switch')
+    #await hass.config_entries.async_forward_entry_setup(entry, 'light')
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for 'switch' and 'light'."""
