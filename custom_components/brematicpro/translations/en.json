@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "title": "Configure BrematicPro",
-				"description": "To download the JSON file, please access the following URL after setup {download_url}",
+                "description": "Please enter your configuration details.",
                 "data": {
                     "brematic_system_code": "Please enter the system code for your BrematicPro device.",
                     "brematic_config_json": "Enter the configuration file name. Default is 'BrematicPro.json'."

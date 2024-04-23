@@ -2,17 +2,16 @@ import json
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
-from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
-
-from .const import DOMAIN, CONF_INTERNAL_JSON
+from .const import CONF_INTERNAL_JSON
+from aiohttp import web
 
 _LOGGER = logging.getLogger(__name__)
 
 def find_area_id(hass, room_name):
     """Find area ID by matching room name with area names."""
     if room_name:
-        room_name = room_name.lower().strip()  # Normalize the room name
+        room_name = room_name.lower().strip()
         area_registry = ar.async_get(hass)
         for area in area_registry.areas.values():
             if area.name.lower().strip() == room_name:
@@ -63,34 +62,37 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
         })
 
     json_data = json.dumps(transformed_data)
-    _LOGGER.debug(f"Generated JSON data: {json_data}")  # Log the JSON data
     hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_JSON: json_data})
+    _LOGGER.info("Configuration data updated successfully.")
     return True
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
     await hass.config_entries.async_forward_entry_setup(entry, 'switch')
     await hass.config_entries.async_forward_entry_setup(entry, 'light')
+    _LOGGER.info("Entry components 'switch' and 'light' set up successfully.")
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for 'switch' and 'light'."""
-    unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'light')
+    unload_ok = all([
+        await hass.config_entries.async_forward_entry_unload(entry, 'switch'),
+        await hass.config_entries.async_forward_entry_unload(entry, 'light')
+    ])
+    if unload_ok:
+        _LOGGER.info("Entry components 'switch' and 'light' unloaded successfully.")
     return unload_ok
 
 class BrematicProJsonDownloadView(HomeAssistantView):
     """View to download the CONF_INTERNAL_JSON data."""
     url = "/api/brematicpro/download_json"
     name = "api:brematicpro:download_json"
-    requires_auth = True
+
+    def __init__(self, json_data):
+        """Initialize the view with the JSON data."""
+        self.json_data = json_data
 
     async def get(self, request):
         """Return JSON data as file download."""
-        hass = request.app['hass']
-        entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_JSON in e.data), None)
-        if entry:
-            json_data = entry.data[CONF_INTERNAL_JSON]
-            return web.Response(body=json_data, content_type='application/json', headers={
-                'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
-            })
-        return web.Response(status=404, text="Configuration data not found.")
+        return web.Response(body=self.json_data, content_type='application/json', headers={
+            'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
+        })
