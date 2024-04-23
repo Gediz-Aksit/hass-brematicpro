@@ -32,8 +32,8 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if 'process_data' in user_input and user_input['process_data']:
                 await setup_entry_components(self.hass, entry)
 
-            #if not errors:
-            #    return self.async_create_entry(title="BrematicPro", data=user_input)
+            if not errors:
+                return self.async_create_entry(title="BrematicPro", data=user_input)
 
         return self.async_show_form(
             step_id="user" if self.context.get("entry_id") else "init",
@@ -46,6 +46,11 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
             errors=errors
         )
+
+    @staticmethod
+    def async_get_options_flow(config_entry):
+        """Link the options flow for this integration."""
+        return BrematicProOptionsFlow(config_entry)
 
 class BrematicProOptionsFlow(config_entries.OptionsFlow):
     """Options flow for BrematicPro."""
