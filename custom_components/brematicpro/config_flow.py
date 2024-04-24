@@ -63,4 +63,4 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-        return await BrematicProConfigFlow._common_flow_handler(self.hass, user_input)
+        return await BrematicProConfigFlow.common_flow_handler(self.hass, user_input)
