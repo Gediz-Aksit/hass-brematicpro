@@ -16,6 +16,10 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     hass.http.register_view(BrematicProJsonDownloadView())
     return True
 
+async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Update a given config entry."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
     _LOGGER.info("Setting up BrematicPro entry.")
@@ -34,10 +38,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Setup entry components (switch and light)
     await setup_entry_components(hass, entry)
     return True
-
-async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Update a given config entry."""
-    await hass.config_entries.async_reload(entry.entry_id)
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
