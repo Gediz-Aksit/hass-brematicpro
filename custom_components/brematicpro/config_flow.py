@@ -37,7 +37,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not errors:
                 return hass.config_entries.async_create_entry(title="BrematicPro", data=user_input)
 
-        return hass.async_show_form(
+        return self.async_show_form(
             step_id="user" if "entry_id" in context else "init",
             data_schema=vol.Schema({
                 vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
