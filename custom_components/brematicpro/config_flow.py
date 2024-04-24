@@ -37,7 +37,8 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(title="BrematicPro", data=user_input)
 
         return self.async_show_form(
-            step_id="user" if self.context.get("entry_id") else "init",
+            #step_id="user" if self.context.get("entry_id") else "init",
+            step_id="reconfigure" if self.context.get("entry_id") else "init",
             data_schema=vol.Schema({
                 vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
                 vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
