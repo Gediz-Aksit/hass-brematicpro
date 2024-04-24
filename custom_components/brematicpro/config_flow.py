@@ -7,7 +7,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
-
+	
     async def async_step_user(self, user_input=None):
         """Handle a flow initiated by the user."""
         return await self._common_flow_handler(self.hass, user_input)
@@ -63,4 +63,5 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-        return await BrematicProConfigFlow._common_flow_handler(self.hass, user_input)
+		context = self.context or {}
+        return await BrematicProConfigFlow._common_flow_handler(self.hass, context, user_input)
