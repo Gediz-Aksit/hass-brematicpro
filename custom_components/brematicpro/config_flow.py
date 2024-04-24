@@ -4,7 +4,7 @@ from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON, CONF_ROOMS_JSON
 from .readconfigjson import read_and_transform_json, setup_entry_components
 
 
-def _common_flow_handler(hass, context, user_input):
+async def _common_flow_handler(hass, context, user_input):
 	"""Handle common logic for user and options flows."""
 	errors = {}
 
