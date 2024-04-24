@@ -13,7 +13,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.common_flow_handler(user_input)
 
     async def async_step_init(self, user_input=None):
-        """Handle a re-initialization or modification of an existing config."""
+        """Handle the initial step."""
         return await self.common_flow_handler(user_input)
 
     async def common_flow_handler(self, user_input):
@@ -21,13 +21,11 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            entry_id = self.context.get("entry_id")
-            entry = self.hass.config_entries.async_get_entry(entry_id) if entry_id else None
             if 'read_json' in user_input and user_input['read_json']:
                 success = await self.hass.async_add_executor_job(
                     read_and_transform_json,
                     self.hass,
-                    entry,
+                    self.context["entry_id"],
                     user_input[CONF_CONFIG_JSON],
                     user_input[CONF_ROOMS_JSON]
                 )
@@ -35,7 +33,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors['read_json'] = "Failed to read or transform JSON"
 
             if 'process_data' in user_input and user_input['process_data']:
-                await setup_entry_components(self.hass, entry)
+                await setup_entry_components(self.hass, self.context["entry_id"])
 
             if not errors:
                 return self.async_create_entry(title="BrematicPro", data=user_input)
