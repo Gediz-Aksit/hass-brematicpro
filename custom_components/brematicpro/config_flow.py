@@ -7,7 +7,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
-	
+
     async def async_step_user(self, user_input=None):
         """Handle a flow initiated by the user."""
         return await self._common_flow_handler(self.hass, user_input)
@@ -35,10 +35,10 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await setup_entry_components(hass, entry)
 
             if not errors:
-                return self.async_create_entry(title="BrematicPro", data=user_input)
+                return hass.config_entries.async_create_entry(title="BrematicPro", data=user_input)
 
-        return hass.async_show_form(
-            step_id="user" if "entry_id" in context else "init",#step_id="reconfigure" if hass.context.get("entry_id") else "init",
+        return hass.config_entries.async_show_form(
+            step_id="user" if "entry_id" in context else "init",
             data_schema=vol.Schema({
                 vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
                 vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
@@ -48,7 +48,6 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }),
             errors=errors
         )
-
 
     @staticmethod
     def async_get_options_flow(config_entry):
