@@ -12,7 +12,6 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initiated by the user."""
         return await self._common_flow_handler(self.hass, user_input)
 
-    @staticmethod
     async def _common_flow_handler(hass, context, user_input):
         """Handle common logic for user and options flows."""
         errors = {}
@@ -35,7 +34,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await setup_entry_components(hass, entry)
 
             if not errors:
-                return async_create_entry(title="BrematicPro", data=user_input)
+                return self.async_create_entry(title="BrematicPro", data=user_input)
 
         return hass.async_show_form(
             step_id="user" if "entry_id" in context else "init",#step_id="reconfigure" if hass.context.get("entry_id") else "init",
