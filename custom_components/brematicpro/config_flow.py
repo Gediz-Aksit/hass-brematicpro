@@ -50,7 +50,6 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors
         )
 
-    @staticmethod
     def async_get_options_flow(config_entry):
         """Link the options flow for this integration."""
         return BrematicProOptionsFlow(config_entry)
