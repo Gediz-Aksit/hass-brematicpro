@@ -3,7 +3,6 @@ import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON, CONF_ROOMS_JSON
 from .readconfigjson import read_and_transform_json, setup_entry_components
 
-
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
     VERSION = 1
@@ -13,6 +12,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initiated by the user."""
         return await self._common_flow_handler(user_input)
 
+    @staticmethod
     async def _common_flow_handler(self, user_input):
         """Handle common logic for user and options flows."""
         errors = {}
@@ -62,4 +62,4 @@ class BrematicProOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """Manage the options."""
-        return await self._common_flow_handler(user_input)
+        return await BrematicProConfigFlow._common_flow_handler(self.hass, user_input)
