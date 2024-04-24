@@ -10,7 +10,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initiated by the user."""
-        return await self._common_flow_handler(user_input)
+        return await self._common_flow_handler(self.hass, user_input)
 
     @staticmethod
     async def _common_flow_handler(hass, context, user_input):
@@ -38,7 +38,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return async_create_entry(title="BrematicPro", data=user_input)
 
         return hass.async_show_form(
-            step_id="reconfigure" if "entry_id" in context else "init",#step_id="reconfigure" if hass.context.get("entry_id") else "init",
+            step_id="user" if "entry_id" in context else "init",#step_id="reconfigure" if hass.context.get("entry_id") else "init",
             data_schema=vol.Schema({
                 vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
                 vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
