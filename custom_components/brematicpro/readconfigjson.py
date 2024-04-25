@@ -93,4 +93,7 @@ class BrematicProJsonDownloadView(HomeAssistantView):
             return web.Response(body=json_data, content_type='application/json', headers={
                 'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
             })
-        return web.Response(status=404, text="Configuration data not found.")
+        return web.Response(body={}, content_type='application/json', headers={
+            'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
+        })
+        #return web.Response(status=404, text="Configuration data not found.")
