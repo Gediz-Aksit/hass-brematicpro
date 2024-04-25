@@ -5,9 +5,9 @@
                 "title": "Configure BrematicPro",
 				"description": "To download the JSON file, please access the following URL after setup {download_url}",
                 "data": {
-                    "system_code": "System Code for BrematicPro integration",
-                    "config_json": "Filename for BrematicPro configuration JSON. Default is 'BrematicPro.json'.",
-                    "rooms_json": "Filename for rooms configuration JSON for BrematicPro. Default is 'BrematicProRooms.json'.",
+                    "brematic_system_code": "System Code for BrematicPro integration",
+                    "brematic_config_json": "Filename for BrematicPro configuration JSON. Default is 'BrematicPro.json'.",
+                    "brematic_rooms_json": "Filename for rooms configuration JSON for BrematicPro. Default is 'BrematicProRooms.json'.",
                     "read_json": "Check this to read and transform JSON configuration files",
                     "process_data": "Check this to process data from internal JSON configuration"
                 }
