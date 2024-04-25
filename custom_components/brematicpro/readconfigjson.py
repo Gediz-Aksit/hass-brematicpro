@@ -4,7 +4,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
-
 from .const import DOMAIN, CONF_INTERNAL_JSON
 
 _LOGGER = logging.getLogger(__name__)
@@ -12,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 def find_area_id(hass, room_name):
     """Find area ID by matching room name with area names."""
     if room_name:
-        room_name = room_name.lower().strip()  # Normalize the room name
+        room_name = room_name.lower().strip()
         area_registry = ar.async_get(hass)
         for area in area_registry.areas.values():
             if area.name.lower().strip() == room_name:
@@ -63,7 +62,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
         })
 
     json_data = json.dumps(transformed_data)
-    _LOGGER.debug(f"Generated JSON data: {json_data}")  # Log the JSON data
+    _LOGGER.debug(f"Generated JSON data: {json_data}")
     hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_JSON: json_data})
     return True
 
@@ -91,11 +90,11 @@ class BrematicProJsonDownloadView(HomeAssistantView):
         entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_JSON in e.data), None)
         if entry:
             json_data = entry.data[CONF_INTERNAL_JSON]
-			_LOGGER.debug(f"BrematicProJsonDownloadView called Data")
+            _LOGGER.debug(f"BrematicProJsonDownloadView called Data")
             return web.Response(body=json_data, content_type='application/json', headers={
                 'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
             })
-		_LOGGER.debug(f"BrematicProJsonDownloadView called 404")
+        _LOGGER.debug(f"BrematicProJsonDownloadView called 404")
         return web.Response(body={}, content_type='application/json', headers={
             'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
         })
