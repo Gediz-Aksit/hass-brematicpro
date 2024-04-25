@@ -13,7 +13,8 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up the BrematicPro component."""
     # Register the HTTP endpoint for downloading JSON data
-    hass.http.register_view(BrematicProJsonDownloadView())
+    view = BrematicProJsonDownloadView()
+    hass.http.register_view(view)
     _LOGGER.debug(f"Registered view at {view.url}")
     return True
 
