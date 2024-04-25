@@ -45,7 +45,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
                 vol.Required(CONF_ROOMS_JSON, default='BrematicProRooms.json'): str,
                 vol.Optional('read_json', default=False): bool,
-                vol.Optional('process_data', default=False): bool,
+                vol.Optional('process_data', default=False): bool
             }),
             errors=errors
         )
