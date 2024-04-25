@@ -10,6 +10,13 @@
                     "brematic_rooms_json": "Filename for rooms configuration JSON for BrematicPro. Default is 'BrematicProRooms.json'.",
                     "read_json": "Check this to read and transform JSON configuration files",
                     "process_data": "Check this to process data from internal JSON configuration"
+                },
+                "data_description": {
+                    "brematic_system_code": "System Code for BrematicPro integration",
+                    "brematic_config_json": "Filename for BrematicPro configuration JSON. Default is 'BrematicPro.json'.",
+                    "brematic_rooms_json": "Filename for rooms configuration JSON for BrematicPro. Default is 'BrematicProRooms.json'.",
+                    "read_json": "Check this to read and transform JSON configuration files",
+                    "process_data": "Check this to process data from internal JSON configuration"
                 }
             },
             "init": {
