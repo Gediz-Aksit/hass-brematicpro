@@ -14,6 +14,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up the BrematicPro component."""
     # Register the HTTP endpoint for downloading JSON data
     hass.http.register_view(BrematicProJsonDownloadView())
+    _LOGGER.debug(f"Registered view at {view.url}")
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:

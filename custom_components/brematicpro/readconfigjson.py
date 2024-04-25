@@ -80,6 +80,7 @@ async def unload_entry_components(hass: HomeAssistant, entry):
 
 class BrematicProJsonDownloadView(HomeAssistantView):
     """View to download the CONF_INTERNAL_JSON data."""
+    _LOGGER.debug(f"BrematicProJsonDownloadView called Start")
     url = "/api/brematicpro/download_json"
     name = "api:brematicpro:download_json"
     requires_auth = True
@@ -90,9 +91,11 @@ class BrematicProJsonDownloadView(HomeAssistantView):
         entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_JSON in e.data), None)
         if entry:
             json_data = entry.data[CONF_INTERNAL_JSON]
+			_LOGGER.debug(f"BrematicProJsonDownloadView called Data")
             return web.Response(body=json_data, content_type='application/json', headers={
                 'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
             })
+		_LOGGER.debug(f"BrematicProJsonDownloadView called 404")
         return web.Response(body={}, content_type='application/json', headers={
             'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
         })
