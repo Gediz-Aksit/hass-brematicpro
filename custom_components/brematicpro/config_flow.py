@@ -47,6 +47,13 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional('read_json', default=False): bool,
                 vol.Optional('process_data', default=False): bool
             }),
+            description_placeholders={
+                "system_code": "Your system's unique code",
+                "config_json": "Path to the configuration JSON file",
+                "rooms_json": "Path to the rooms JSON file",
+                "read_json": "Read and validate JSON data from the files",
+                "process_data": "Process the internal JSON data for use"
+            },
             errors=errors
         )
 
