@@ -1,100 +1,54 @@
 import logging
-import json
 from homeassistant.components.light import LightEntity
-from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers import area_registry as ar
-
-from .const import DOMAIN, CONF_INTERNAL_JSON
-from .readconfigjson import find_area_id
+from .const import DOMAIN
+import aiohttp
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up BrematicPro lights from a config entry."""
-    json_data = entry.data.get(CONF_INTERNAL_JSON)
-    if json_data:
-        devices = json.loads(json_data)
-        area_registry = ar.async_get(hass)
-        # Fetch existing entities or initialize an empty dictionary
-        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
-        new_entities = []
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    """Set up the light platform."""
+    device = hass.data[DOMAIN][config_entry.entry_id]
+    async_add_entities([BrematicProLight(hass, device)])
 
-        for device in devices:
-            if device['type'] == 'light':
-                unique_id = device['uniqueid']
-                if unique_id in existing_entities:
-                    # Update existing entity
-                    entity = existing_entities[unique_id]
-                    entity.update_device(device)
-                else:
-                    # Create new entity
-                    entity = BrematicLight(device, hass, area_registry)
-                    new_entities.append(entity)
+class BrematicProLight(LightEntity):
+    """Representation of a BrematicPro light."""
 
-        async_add_entities(new_entities, True)
-        # Convert dict_values to list before concatenation
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = list(existing_entities.values()) + new_entities
-    else:
-        _LOGGER.error("No configuration data found for BrematicPro lights.")
-
-class BrematicLight(LightEntity):
-    """Representation of a BrematicPro Light."""
-
-    def __init__(self, device_info, hass, area_registry):
-        """Initialize the light."""
-        self._unique_id = device_info['uniqueid']
-        self._name = device_info['name']
+    def __init__(self, hass, device):
+        self.hass = hass
+        self._device = device
         self._is_on = False
-        self._commands = device_info['commands']
-        self._session = async_get_clientsession(hass)
-        self.area_id = self.find_area_id(area_registry, device_info.get('room'))
-
-    @property
-    def unique_id(self):
-        """Return the unique ID of the light."""
-        return self._unique_id
 
     @property
     def name(self):
-        """Return the name of the light."""
-        return self._name
+        """Return the display name of this light."""
+        return self._device['name']
 
     @property
     def is_on(self):
-        """Return if the light is on or off."""
+        """Return true if light is on."""
         return self._is_on
 
     async def async_turn_on(self, **kwargs):
-        _LOGGER.info("Attempting to turn on the light.")
-        url = self._commands['on']
-        response = await self._session.post(url)
-        _LOGGER.info(f"Sending 'ON' command to {url}, response status: {response.status}, response text: {await response.text()}")
-        if response.status == 200:
-            self._is_on = True
-            self.async_write_ha_state()
+        """Instruct the light to turn on."""
+        url = self._device['commands']['on']
+        _LOGGER.info(f"Turning on the light at {url}")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    self._is_on = True
+                _LOGGER.info(f"Light turned on with response {response.status}")
 
     async def async_turn_off(self, **kwargs):
-        _LOGGER.info("Attempting to turn off the light.")
-        url = self._commands['off']
-        response = await self._session.post(url)
-        _LOGGER.info(f"Sending 'OFF' command to {url}, response status: {response.status}, response text: {await response.text()}")
-        if response.status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
+        """Instruct the light to turn off."""
+        url = self._device['commands']['off']
+        _LOGGER.info(f"Turning off the light at {url}")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    self._is_on = False
+                _LOGGER.info(f"Light turned off with response {response.status}")
 
-    def update_device(self, device_info):
-        """Update the light device with new configuration."""
-        self._name = device_info['name']
-        self._commands = device_info['commands']
-        self.area_id = self.find_area_id(ar.async_get(self.hass), device_info.get('room'))
-        self.async_write_ha_state()
-
-    def find_area_id(self, area_registry, room_name):
-        """Find area ID by matching room name with area names."""
-        if room_name:
-            for area in area_registry.areas.values():
-                if area.name.lower() == room_name.lower():
-                    return area.id
-        return None
+    async def async_update(self):
+        """Fetch new state data for this light."""
+        # Here you could check the real-time state, if available from an API
+        pass
