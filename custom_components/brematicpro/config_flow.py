@@ -21,31 +21,38 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            if 'read_json' in user_input and user_input['read_json']:
+		
+            entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
+            if entry:
+                self.hass.config_entries.async_update_entry(entry, data=user_input)
+            else:
+                return self.async_create_entry(title="BrematicPro", data=user_input)
+		
+            if user_input.get('read_json'):
                 success = await self.hass.async_add_executor_job(
                     read_and_transform_json,
                     self.hass,
-                    self.context["entry_id"],
+                    entry,
                     user_input[CONF_CONFIG_JSON],
                     user_input[CONF_ROOMS_JSON]
                 )
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"
 
-            if 'process_data' in user_input and user_input['process_data']:
-                await setup_entry_components(self.hass, self.context["entry_id"])
-
-            if not errors:
-                return self.async_create_entry(title="BrematicPro", data=user_input)
+            if user_input.get('process_data'):
+                await setup_entry_components(self.hass, entry)
 
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
+                vol.Required(CONF_SYSTEM_CODE, default=''): str,
                 vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
-                vol.Required(CONF_ROOMS_JSON, default='BrematicProRooms.json'): str,
+                vol.Optional(CONF_ROOMS_JSON, default='BrematicProRooms.json'): str,
                 vol.Optional('read_json', default=False): bool,
                 vol.Optional('process_data', default=False): bool
             }),
-            errors=errors
+            errors=errors,
+            description_placeholders={
+                "download_url": "/api/brematicpro/download_json"
+            }
         )
