@@ -87,9 +87,16 @@ class BrematicProJsonDownloadView(HomeAssistantView):
     async def get(self, request):
         """Return JSON data as file download."""
         hass = request.app['hass']
-        user = request['hass_user']
+
+        # Access the user safely
+        user = request.get('hass_user')
+        if not user:
+            _LOGGER.error("No user information found in request.")
+            return web.Response(status=401, text="Unauthorized")
+
+        # Check if the user is authenticated
         if not user.is_authenticated:
-            _LOGGER.error("User is not authenticated")
+            _LOGGER.error("Access denied: unauthenticated access attempt.")
             return web.Response(status=401, text="Unauthorized")
 		
         entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_JSON in e.data), None)
