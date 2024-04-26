@@ -18,16 +18,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     _LOGGER.warning(f"Registered view at {view.url}")
     return True
 
-async def async_setup_user(hass, user_config):
-    """Custom setup function to handle user-specific configurations."""
-    # Store user configuration in hass.data for easy access across the platform
-    hass.data[DOMAIN]['config'] = user_config
-
-    # Perform any setup necessary for user-specific settings
-    await setup_user_config(hass, user_config)
-
-    return True
-
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update a given config entry."""
     await hass.config_entries.async_reload(entry.entry_id)
