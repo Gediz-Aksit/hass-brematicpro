@@ -4,7 +4,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
-from .const import DOMAIN, CONF_INTERNAL_JSON
+from .const import DOMAIN, CONF_INTERNAL_JSON, CONF_SYSTEM_CODE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +40,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
         _LOGGER.error(f"An unexpected error occurred: {e}")
         return False
 
-    transformed_data = []
+    system_code = entry.data.get(CONF_SYSTEM_CODE, 'default_code')
+	transformed_data = []
     for item in devices.values():
         device_name = item['name']
         room_name = 'Unknown'
