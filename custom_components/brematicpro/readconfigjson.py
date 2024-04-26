@@ -41,7 +41,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
         return False
 
     system_code = entry.data.get(CONF_SYSTEM_CODE, 'default_code')
-	transformed_data = []
+    transformed_data = []
     for item in devices.values():
         device_name = item['name']
         room_name = 'Unknown'
