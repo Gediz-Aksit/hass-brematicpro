@@ -1,5 +1,14 @@
 import requests
+import logging
 from homeassistant.components.light import LightEntity
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
+
+async def async_setup_entry(hass, entry, async_add_entities):
+    """Set up BrematicPro light based on a config entry."""
+    devices = hass.data[DOMAIN]["devices"]
+    async_add_entities(BrematicProLight(device) for device in devices)
 
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
@@ -36,8 +45,7 @@ class BrematicProLight(LightEntity):
 
     def update(self):
         """Fetch new state data for this light."""
-        # Here you would add your logic to check the current state of the light if possible
-        # This is an example placeholder for actual device state fetching
+        # Here be logic to check the current state of the light if possible
         pass
 
     def _send_command(self, url):
