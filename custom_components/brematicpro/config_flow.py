@@ -34,7 +34,8 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self.hass,
                     entry,
                     user_input[CONF_CONFIG_JSON],
-                    user_input[CONF_ROOMS_JSON]
+                    user_input[CONF_ROOMS_JSON],
+					user_input[CONF_SYSTEM_CODE]
                 )
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"

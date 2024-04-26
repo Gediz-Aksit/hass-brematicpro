@@ -20,7 +20,7 @@ def find_area_id(hass, room_name):
         _LOGGER.debug("No match found")
     return None
 
-def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json):
+def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json, system_code = ''):
     """Reads and transforms JSON data from specified files and updates entry data."""
     config_json_path = hass.config.path(config_json)
     rooms_json_path = hass.config.path(rooms_json)
@@ -39,8 +39,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
     except Exception as e:
         _LOGGER.error(f"An unexpected error occurred: {e}")
         return False
-
-    system_code = entry.data.get(CONF_SYSTEM_CODE, 'default_code')
+    if system_code == '':
+        system_code = entry.data.get(CONF_SYSTEM_CODE, 'Invalid_Code')
     transformed_data = []
     for item in devices.values():
         device_name = item['name']
@@ -50,7 +50,6 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json)
                 room_name = room
                 device_name = device_name.replace(room, '').strip()
         freq = 868 if item['sys'] == 'B8' else 433 if item['sys'] == 'B4' else 0
-        system_code = item.get('system_code', 'default_code')
         commands = {cmd: f"{item['local']}{item['commands'][cmd]['url']}&at={system_code}" for cmd in item['commands']}
 
         transformed_data.append({
