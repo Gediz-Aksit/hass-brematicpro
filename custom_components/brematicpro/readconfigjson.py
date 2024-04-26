@@ -83,7 +83,7 @@ class BrematicProJsonDownloadView(HomeAssistantView):
     _LOGGER.warning(f"BrematicProJsonDownloadView called Start")
     url = "/api/brematicpro/download_json"
     name = "api:brematicpro:download_json"
-    requires_auth = True
+    requires_auth = False
 
     async def get(self, request):
         """Return JSON data as file download."""
