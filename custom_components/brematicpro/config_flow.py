@@ -1,12 +1,7 @@
-import voluptuous as vol
 from homeassistant import config_entries
+import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON, CONF_ROOMS_JSON
 from .readconfigjson import read_and_transform_json, setup_entry_components
-
-async def setup_user_config(hass: core.HomeAssistant, config: dict):
-    """Setup configuration that might be adjusted by the user at runtime."""
-    # Here you could initialize or adjust services based on user configuration
-    hass.data[DOMAIN]['runtime_config'] = config
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
@@ -14,40 +9,43 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     async def async_step_user(self, user_input=None):
-        """Handle a user flow initiated by the user."""
+        """Handle a flow initiated by the user."""
+        return await self.common_flow_handler(user_input)
+
+    async def async_step_init(self, user_input=None):
+        """Handle the initial step."""
+        return await self.common_flow_handler(user_input)
+
+    async def common_flow_handler(self, user_input):
+        """Handle common logic for user and options flows."""
         errors = {}
+
         if user_input is not None:
-            # Process user input here
-            if user_input.get('read_json'):
-                entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
-                await self.hass.async_add_executor_job(
+            if 'read_json' in user_input and user_input['read_json']:
+                success = await self.hass.async_add_executor_job(
                     read_and_transform_json,
                     self.hass,
-                    entry,
+                    self.context["entry_id"],
                     user_input[CONF_CONFIG_JSON],
-                    user_input.get(CONF_ROOMS_JSON)
+                    user_input[CONF_ROOMS_JSON]
                 )
-            if user_input.get('process_data'):
-                entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
-                await setup_entry_components(self.hass, entry)
+                if not success:
+                    errors['read_json'] = "Failed to read or transform JSON"
 
-            # Save the entered data as configuration
-            await self.async_set_unique_id(DOMAIN)
-            self.hass.config_entries.async_update_entry(entry, data=user_input)
-            return self.async_create_entry(title="BrematicPro", data=user_input)
+            if 'process_data' in user_input and user_input['process_data']:
+                await setup_entry_components(self.hass, self.context["entry_id"])
 
-        data_schema = vol.Schema({
-            vol.Required(CONF_SYSTEM_CODE): str,
-            vol.Required(CONF_CONFIG_JSON, default="BrematicPro.json"): str,
-            vol.Optional(CONF_ROOMS_JSON, default="BrematicProRooms.json"): str,
-            vol.Optional('read_json', default=False): bool,
-            vol.Optional('process_data', default=False): bool,
-        })
+            if not errors:
+                return self.async_create_entry(title="BrematicPro", data=user_input)
 
         return self.async_show_form(
-            step_id="user", data_schema=data_schema, errors=errors,
-            description_placeholders={
-                "download_url": "/api/brematicpro/download_json"
-            }
+            step_id="user",
+            data_schema=vol.Schema({
+                vol.Required(CONF_SYSTEM_CODE, default='Enter your system code here'): str,
+                vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
+                vol.Required(CONF_ROOMS_JSON, default='BrematicProRooms.json'): str,
+                vol.Optional('read_json', default=False): bool,
+                vol.Optional('process_data', default=False): bool
+            }),
+            errors=errors
         )
-
