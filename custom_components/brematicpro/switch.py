@@ -22,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         entities = []
         for device in devices:
             if device['type'] == 'switch':
-                entity = BrematicSwitch(device, hass)
+                entity = BrematicProSwitch(device, hass)
                 entities.append(entity)
         async_add_entities(entities, True)
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
@@ -31,7 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         _LOGGER.error("No configuration data found for BrematicPro switches.")
         return False
 
-class BrematicSwitch(SwitchEntity):
+class BrematicProSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
 
     def __init__(self, device_info, hass):

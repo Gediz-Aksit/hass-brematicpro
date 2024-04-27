@@ -1,15 +1,19 @@
-import json
-import logging
 import requests
+import logging
+import json
 from homeassistant.components.light import LightEntity
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.area_registry import async_get as async_get_area_registry
+
 from .const import DOMAIN, CONF_INTERNAL_JSON
 from .readconfigjson import find_area_id
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro lights from a config entry."""
+	
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
@@ -60,22 +64,26 @@ class BrematicProLight(LightEntity):
         """Return true if the light is on."""
         return self._is_on
 
-    def turn_on(self, **kwargs):
+    async def async_turn_on(self, **kwargs):
         """Instruct the light to turn on."""
-        self._send_command(self._commands["on"])
-        self._is_on = True
-        self.schedule_update_ha_state()
+        response_status = self._send_command(self._commands["on"])
+        if response_status == 200:
+            self._is_on = True
+            self.schedule_update_ha_state()
 
-    def turn_off(self, **kwargs):
+    async def async_turn_off(self, **kwargs):
         """Instruct the light to turn off."""
-        self._send_command(self._commands["off"])
-        self._is_on = False
-        self.schedule_update_ha_state()
+        response_status = self._send_command(self._commands["off"])
+        if response_status == 200:
+            self._is_on = False
+            self.schedule_update_ha_state()
 
     def _send_command(self, url):
         """Send command to the Brematic device."""
         try:
             response = requests.get(url, timeout=5)
             response.raise_for_status()
+            return response.status
         except requests.RequestException as error:
             _LOGGER.error("Error sending command to %s: %s", url, error)
+            return 0
