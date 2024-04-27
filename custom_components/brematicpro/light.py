@@ -16,6 +16,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         entities = []
         new_entities = []
         _LOGGER.warning('Devices ' + json_data)
+        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
             if device['type'] == 'light':
                 _LOGGER.warning('Type ' + device['type'])
