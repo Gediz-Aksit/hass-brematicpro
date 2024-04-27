@@ -4,7 +4,7 @@ import requests
 from homeassistant.components.light import LightEntity
 from homeassistant.helpers.area_registry import async_get as async_get_area_registry
 from .const import DOMAIN, CONF_INTERNAL_JSON
-from .readconfigjson import find_area_id  # Ensure this function is defined in readconfigjson.py
+from .readconfigjson import find_area_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
                     entity = existing_entities[unique_id]
                     entity.update_device(device)
                 else:
-                    # Pass area_registry to each light entity
                     entity = BrematicProLight(device, area_registry)
                     new_entities.append(entity)
 
@@ -37,12 +36,14 @@ class BrematicProLight(LightEntity):
 
     def __init__(self, device, area_registry):
         """Initialize the light with the area_registry."""
-        self._device = device
+        _LOGGER.warning('Adding ' + device["name"])
+		self._device = device
         self._area_registry = area_registry  # Use area_registry if needed for further implementations
         self._is_on = False
         self._name = device["name"]
         self._on_command = device["commands"]["on"]
         self._off_command = device["commands"]["off"]
+		_LOGGER.warning('Added ' + device["name"])
 
     @property
     def name(self):
