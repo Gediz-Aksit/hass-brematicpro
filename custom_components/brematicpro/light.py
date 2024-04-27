@@ -1,6 +1,6 @@
 import logging
 import json
-from homeassistant.components.light import LightEntity
+from homeassistant.components.light import LightEntity, COLOR_MODE_ONOFF
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
