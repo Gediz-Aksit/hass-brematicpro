@@ -56,3 +56,7 @@ class BrematicProLight(LightEntity):
             response.raise_for_status()
         except requests.RequestException as error:
             _LOGGER.error("Error sending command to %s: %s", url, error)
+
+    async def async_update(self):
+        """Fetch new state data for this light."""
+        self._available = True
