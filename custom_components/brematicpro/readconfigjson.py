@@ -113,7 +113,6 @@ async def send_command(url):
 
 class BrematicProJsonDownloadView(HomeAssistantView):
     """View to download the CONF_INTERNAL_JSON data."""
-    _LOGGER.warning(f"BrematicProJsonDownloadView called Start")
     url = "/api/brematicpro/download_json"
     name = "api:brematicpro:download_json"
     requires_auth = False
