@@ -28,7 +28,6 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_type,
                 else:
                     entity = entity_class(device, hass)
                     entity_registry.async_update_entity(entity_id, new_area_id=area_id)
-                    self._area_id = 
                     entities.append(entity)
         async_add_entities(entities, True)
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
