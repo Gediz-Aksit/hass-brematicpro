@@ -46,7 +46,7 @@ class BrematicProLight(LightEntity):
         self._unique_id = device['uniqueid']
         self._name = device["name"]
         self._is_on = False
-		self._commands = device['commands']
+        self._commands = device['commands']
         _LOGGER.warning('Added ' + device["name"])
 
     @property
