@@ -37,13 +37,13 @@ class BrematicProLight(LightEntity):
     def __init__(self, device, area_registry):
         """Initialize the light with the area_registry."""
         _LOGGER.warning('Adding ' + device["name"])
-		self._device = device
+	    self._device = device
         self._area_registry = area_registry  # Use area_registry if needed for further implementations
         self._is_on = False
         self._name = device["name"]
         self._on_command = device["commands"]["on"]
         self._off_command = device["commands"]["off"]
-		_LOGGER.warning('Added ' + device["name"])
+	    _LOGGER.warning('Added ' + device["name"])
 
     @property
     def name(self):
