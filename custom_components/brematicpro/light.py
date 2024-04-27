@@ -35,44 +35,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         return True
     return False
 
-class BrematicProLight(LightEntity):
+class BrematicProLight(BrematicProSwitch, LightEntity):
     """Representation of a Brematic Light."""
 
     def __init__(self, device, hass):
         """Initialize the light."""
-        #self._device = device
-        self._unique_id = device['uniqueid']
-        self._name = device["name"]
-        self._is_on = False
-        self._commands = device['commands']
-        self._session = async_get_clientsession(hass)
+        super().__init__(device, hass)
         self._color_mode = COLOR_MODE_ONOFF
-
-    @property
-    def unique_id(self):
-        """Return the unique ID of the switch."""
-        return self._unique_id
-
-    @property
-    def name(self):
-        """Return the name of the light."""
-        return self._name
-
-    @property
-    def is_on(self):
-        """Return true if the light is on."""
-        return self._is_on
-
-    async def async_turn_on(self, **kwargs):
-        """Instruct the light to turn on."""
-        response_status = await send_command(self._commands["on"])
-        if response_status == 200:
-            self._is_on = True
-            self.async_write_ha_state()
-
-    async def async_turn_off(self, **kwargs):
-        """Instruct the light to turn off."""
-        response_status = await send_command(self._commands["off"])
-        if response_status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
