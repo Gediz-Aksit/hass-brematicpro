@@ -46,7 +46,7 @@ class BrematicProLight(LightEntity):
         self._is_on = False
         self._commands = device['commands']
         self._session = async_get_clientsession(hass)
-		self._color_mode = COLOR_MODE_ONOFF
+        self._color_mode = COLOR_MODE_ONOFF
 
     @property
     def unique_id(self):
