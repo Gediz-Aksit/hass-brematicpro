@@ -78,10 +78,10 @@ async def unload_entry_components(hass: HomeAssistant, entry):
                 await hass.config_entries.async_forward_entry_unload(entry, 'light')
     return unload_ok
 
-def send_command(url):
+async def send_command(url):
     """Send command to the Brematic device."""
     try:
-        response = requests.get(url, timeout=5)
+        response = await requests.get(url, timeout=5)
         response.raise_for_status()
         return response.status
     except requests.RequestException as error:
