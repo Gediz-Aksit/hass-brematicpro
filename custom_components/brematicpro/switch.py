@@ -6,33 +6,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
-from .readconfigjson import find_area_id, send_command
+from .readconfigjson import async_common_setup_entry, send_command
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro switches from a config entry."""
-	
-    json_data = entry.data.get(CONF_INTERNAL_JSON)
-    if json_data:
-        devices = json.loads(json_data)
-        entities = []
-        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
-        for device in devices:
-            if device['type'] == 'switch':
-                unique_id = device['uniqueid']
-                #area_id = find_area_id(hass, device.get('room'))
-                if unique_id in existing_entities:
-                    entity = existing_entities[unique_id]
-                    entity.update_device(device)
-                else:
-                    entity = BrematicProSwitch(device, hass)
-                    entities.append(entity)
-        async_add_entities(entities, True)
-        #hass.data[DOMAIN][entry.entry_id] = list(existing_entities.values()) + entities
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
-        return True
-    return False
+    return await async_common_setup_entry(hass, entry, async_add_entities, 'switch', BrematicProSwitch)
 
 class BrematicProSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""

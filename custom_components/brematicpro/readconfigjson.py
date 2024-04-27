@@ -10,6 +10,27 @@ from .const import DOMAIN, CONF_INTERNAL_JSON, CONF_SYSTEM_CODE
 
 _LOGGER = logging.getLogger(__name__)
 
+async def async_common_setup_entry(hass, entry, async_add_entities, device_type, entity_class):
+    """Common setup for BrematicPro devices."""
+    json_data = entry.data.get(CONF_INTERNAL_JSON)
+    if json_data:
+        devices = json.loads(json_data)
+        entities = []
+        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        for device in devices:
+            if device['type'] == device_type:
+                unique_id = device['uniqueid']
+                if unique_id in existing_entities:
+                    entity = existing_entities[unique_id]
+                    entity.update_device(device)
+                else:
+                    entity = entity_class(device, hass)
+                    entities.append(entity)
+        async_add_entities(entities, True)
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
+        return True
+    return False
+
 def find_area_id(hass, room_name):
     """Find area ID by matching room name with area names."""
     if room_name:
