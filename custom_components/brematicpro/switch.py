@@ -25,7 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 entity = BrematicSwitch(device, hass)
                 entities.append(entity)
         async_add_entities(entities, True)
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities  # Store references to entities
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
         return True
     else:
         _LOGGER.error("No configuration data found for BrematicPro switches.")
@@ -41,7 +41,7 @@ class BrematicSwitch(SwitchEntity):
         self._is_on = False
         self._commands = device_info['commands']
         self._session = async_get_clientsession(hass)
-        self.area_id = find_area_id(hass, device_info.get('room'))  # Corrected call
+        self.area_id = find_area_id(hass, device_info.get('room'))
 
     @property
     def unique_id(self):

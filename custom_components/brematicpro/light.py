@@ -44,6 +44,7 @@ class BrematicProLight(LightEntity):
         _LOGGER.warning('Adding ' + device["name"])
         self._device = device
         self._is_on = False
+        self._unique_id = device['uniqueid']
         self._name = device["name"]
         self._on_command = device["commands"]["on"]
         self._off_command = device["commands"]["off"]
@@ -71,11 +72,6 @@ class BrematicProLight(LightEntity):
         self._is_on = False
         self.schedule_update_ha_state()
 
-    def update(self):
-        """Fetch new state data for this light."""
-        # This function can be modified to check the actual state of the light if such an API exists
-        pass
-
     def _send_command(self, url):
         """Send command to the Brematic device."""
         try:
@@ -83,7 +79,3 @@ class BrematicProLight(LightEntity):
             response.raise_for_status()
         except requests.RequestException as error:
             _LOGGER.error("Error sending command to %s: %s", url, error)
-
-    async def async_update(self):
-        """Fetch new state data for this light."""
-        self._available = True
