@@ -16,7 +16,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         area_registry = async_get_area_registry(hass)
         existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         new_entities = []
-        _LOGGER.warning('Devices ' + devices)
+        _LOGGER.warning('Devices ' + json_data)
 
         for device in devices:
             if device['type'] == 'light':
