@@ -77,6 +77,16 @@ async def unload_entry_components(hass: HomeAssistant, entry):
                 await hass.config_entries.async_forward_entry_unload(entry, 'light')
     return unload_ok
 
+def send_command(self, url):
+    """Send command to the Brematic device."""
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        return response.status
+    except requests.RequestException as error:
+        _LOGGER.error("Error sending command to %s: %s", url, error)
+        return 0
+
 class BrematicProJsonDownloadView(HomeAssistantView):
     """View to download the CONF_INTERNAL_JSON data."""
     _LOGGER.warning(f"BrematicProJsonDownloadView called Start")
@@ -98,7 +108,7 @@ class BrematicProJsonDownloadView(HomeAssistantView):
         if not user.is_authenticated:
             _LOGGER.error("Access denied: unauthenticated access attempt.")
             return web.Response(status=401, text="Unauthorized")
-		
+        
         entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_JSON in e.data), None)
         if entry:
             json_data = entry.data[CONF_INTERNAL_JSON]

@@ -8,7 +8,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.area_registry import async_get as async_get_area_registry
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
-from .readconfigjson import find_area_id
+from .readconfigjson import find_area_id, send_command
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -68,24 +68,15 @@ class BrematicProLight(LightEntity):
 
     async def async_turn_on(self, **kwargs):
         """Instruct the light to turn on."""
-        response_status = self._send_command(self._commands["on"])
+        response_status = send_command(self._commands["on"])
         if response_status == 200:
             self._is_on = True
             self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         """Instruct the light to turn off."""
-        response_status = self._send_command(self._commands["off"])
+        response_status = send_command(self._commands["off"])
         if response_status == 200:
             self._is_on = False
             self.async_write_ha_state()
 
-    def _send_command(self, url):
-        """Send command to the Brematic device."""
-        try:
-            response = requests.get(url, timeout=5)
-            response.raise_for_status()
-            return response.status
-        except requests.RequestException as error:
-            _LOGGER.error("Error sending command to %s: %s", url, error)
-            return 0
