@@ -42,12 +42,11 @@ class BrematicProLight(LightEntity):
     def __init__(self, device):
         """Initialize the light."""
         _LOGGER.warning('Adding ' + device["name"])
-        self._device = device
-        self._is_on = False
+        #self._device = device
         self._unique_id = device['uniqueid']
         self._name = device["name"]
-        self._on_command = device["commands"]["on"]
-        self._off_command = device["commands"]["off"]
+        self._is_on = False
+		self._commands = device['commands']
         _LOGGER.warning('Added ' + device["name"])
 
     @property
@@ -62,13 +61,13 @@ class BrematicProLight(LightEntity):
 
     def turn_on(self, **kwargs):
         """Instruct the light to turn on."""
-        self._send_command(self._on_command)
+        self._send_command(self._commands["on"])
         self._is_on = True
         self.schedule_update_ha_state()
 
     def turn_off(self, **kwargs):
         """Instruct the light to turn off."""
-        self._send_command(self._off_command)
+        self._send_command(self._commands["off"])
         self._is_on = False
         self.schedule_update_ha_state()
 
