@@ -13,17 +13,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
-        area_registry = async_get_area_registry(hass)
-        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        entities = []
         new_entities = []
         _LOGGER.warning('Devices ' + json_data)
-
         for device in devices:
             if device['type'] == 'light':
                 _LOGGER.warning('Type ' + device['type'])
                 unique_id = device['uniqueid']
                 _LOGGER.warning('Unique ID ' + unique_id)
-                area_id = find_area_id(hass, device.get('room'))
+                #area_id = find_area_id(hass, device.get('room'))
                 if unique_id in existing_entities:
                     _LOGGER.warning('Existing')
                     entity = existing_entities[unique_id]
@@ -31,10 +29,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 else:
                     _LOGGER.warning('New')
                     entity = BrematicProLight(device)
-                    new_entities.append(entity)
+                    entities.append(entity)
         _LOGGER.warning('End of loop')
-        async_add_entities(new_entities, True)
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = list(existing_entities.values()) + new_entities
+        async_add_entities(entities, True)
+		hass.data.setdefault(DOMAIN, {})[entry.entry_id] = list(existing_entities.values()) + entities
+        return True
+    return False
 
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
