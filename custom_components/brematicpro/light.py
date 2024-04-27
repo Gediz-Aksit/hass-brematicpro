@@ -20,12 +20,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
         for device in devices:
             if device['type'] == 'light':
                 unique_id = device['uniqueid']
+				_LOGGER.warning('Unique ID ' + unique_id)
                 area_id = find_area_id(hass, device.get('room'))  # Get area ID using room name
                 if unique_id in existing_entities:
                     entity = existing_entities[unique_id]
                     entity.update_device(device)
                 else:
-                    entity = BrematicProLight(device, area_registry)
+                    entity = BrematicProLight(device)
                     new_entities.append(entity)
 
         async_add_entities(new_entities, True)  # True to update state upon addition
@@ -34,11 +35,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
 
-    def __init__(self, device, area_registry):
-        """Initialize the light with the area_registry."""
+    def __init__(self, device):
+        """Initialize the light."""
         _LOGGER.warning('Adding ' + device["name"])
         self._device = device
-        self._area_registry = area_registry  # Use area_registry if needed for further implementations
         self._is_on = False
         self._name = device["name"]
         self._on_command = device["commands"]["on"]
