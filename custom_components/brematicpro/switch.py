@@ -19,11 +19,11 @@ class BrematicProSwitch(SwitchEntity):
 
     def __init__(self, device, hass):
         """Initialize the switch."""
-        #self._device = device
         self._unique_id = device['uniqueid']
         self._name = device["name"]
-        self._is_on = False
+        self._frequency =  device.get('freq', None)
         self._commands = device['commands']
+        self._is_on = False
         self._session = async_get_clientsession(hass)
 
     @property
