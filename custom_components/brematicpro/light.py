@@ -34,7 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     entity.update_device(device)
                 else:
                     _LOGGER.warning('New')
-                    entity = BrematicProLight(device)
+                    entity = BrematicProLight(device, hass)
                     entities.append(entity)
         _LOGGER.warning('End of loop')
         async_add_entities(entities, True)
@@ -45,7 +45,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
 
-    def __init__(self, device):
+    def __init__(self, device, hass):
         """Initialize the light."""
         _LOGGER.warning('Adding ' + device["name"])
         #self._device = device
