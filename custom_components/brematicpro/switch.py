@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
-from .readconfigjson import async_common_setup_entry, send_command
+from .readconfigjson import async_common_setup_entry, find_area_id, send_command
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,6 +23,7 @@ class BrematicProSwitch(SwitchEntity):
         self._name = device["name"]
         self._frequency =  device.get('freq', None)
         self._commands = device['commands']
+        self._area_id = find_area_id(hass, device.get('room'))
         self._is_on = False
         self._session = async_get_clientsession(hass)
 
