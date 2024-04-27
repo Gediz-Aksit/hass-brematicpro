@@ -19,7 +19,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        new_entities = []
         _LOGGER.warning('Devices ' + json_data)
         existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
@@ -38,7 +37,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                     entities.append(entity)
         _LOGGER.warning('End of loop')
         async_add_entities(entities, True)
-        hass.data[DOMAIN][entry.entry_id] = list(existing_entities.values()) + entities
+        #hass.data[DOMAIN][entry.entry_id] = list(existing_entities.values()) + entities
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
         return True
     return False
 
@@ -55,6 +55,11 @@ class BrematicProLight(LightEntity):
         self._commands = device['commands']
         self._session = async_get_clientsession(hass)
         _LOGGER.warning('Added ' + device["name"])
+
+    @property
+    def unique_id(self):
+        """Return the unique ID of the switch."""
+        return self._unique_id
 
     @property
     def name(self):
@@ -79,4 +84,3 @@ class BrematicProLight(LightEntity):
         if response_status == 200:
             self._is_on = False
             self.async_write_ha_state()
-
