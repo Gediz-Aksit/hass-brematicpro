@@ -7,8 +7,9 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up BrematicPro light based on a config entry."""
-    devices = hass.data[DOMAIN]["devices"]
-    async_add_entities(BrematicProLight(device) for device in devices)
+    devices = hass.data[DOMAIN].get("devices", [])
+    if devices:
+        async_add_entities(BrematicProLight(device) for device in devices)
 
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
