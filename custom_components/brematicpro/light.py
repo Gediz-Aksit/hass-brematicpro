@@ -33,7 +33,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
                     entities.append(entity)
         _LOGGER.warning('End of loop')
         async_add_entities(entities, True)
-		hass.data[DOMAIN][entry.entry_id] = list(existing_entities.values()) + entities
+        hass.data[DOMAIN][entry.entry_id] = list(existing_entities.values()) + entities
         return True
     return False
 
