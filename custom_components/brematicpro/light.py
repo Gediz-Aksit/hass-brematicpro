@@ -4,6 +4,7 @@ import requests
 from homeassistant.components.light import LightEntity
 from homeassistant.helpers.area_registry import async_get as async_get_area_registry
 from .const import DOMAIN, CONF_INTERNAL_JSON
+from .readconfigjson import find_area_id  # Ensure this function is defined in readconfigjson.py
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,32 +14,31 @@ async def async_setup_entry(hass, entry, async_add_entities):
     if json_data:
         devices = json.loads(json_data)
         area_registry = async_get_area_registry(hass)
-        # Fetch existing entities or initialize an empty list
         existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         new_entities = []
 
         for device in devices:
             if device['type'] == 'light':
                 unique_id = device['uniqueid']
+                area_id = find_area_id(hass, device.get('room'))  # Get area ID using room name
                 if unique_id in existing_entities:
-                    # Update existing entity if necessary
                     entity = existing_entities[unique_id]
                     entity.update_device(device)
                 else:
-                    # Create a new entity if it doesn't exist
+                    # Pass area_registry to each light entity
                     entity = BrematicProLight(device, area_registry)
                     new_entities.append(entity)
 
         async_add_entities(new_entities, True)  # True to update state upon addition
-        # Update the global data store for this entry
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = list(existing_entities.values()) + new_entities
 
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
 
-    def __init__(self, device):
-        """Initialize the light."""
+    def __init__(self, device, area_registry):
+        """Initialize the light with the area_registry."""
         self._device = device
+        self._area_registry = area_registry  # Use area_registry if needed for further implementations
         self._is_on = False
         self._name = device["name"]
         self._on_command = device["commands"]["on"]
@@ -51,7 +51,7 @@ class BrematicProLight(LightEntity):
 
     @property
     def is_on(self):
-        """Return true if light is on."""
+        """Return true if the light is on."""
         return self._is_on
 
     def turn_on(self, **kwargs):
@@ -68,7 +68,7 @@ class BrematicProLight(LightEntity):
 
     def update(self):
         """Fetch new state data for this light."""
-        # Here be logic to check the current state of the light if possible
+        # This function can be modified to check the actual state of the light if such an API exists
         pass
 
     def _send_command(self, url):
