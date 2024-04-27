@@ -69,21 +69,26 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         system_code = entry.data.get(CONF_SYSTEM_CODE, 'Invalid_Code')
     transformed_data = []
     for item in devices.values():
-        device_name = item['name']
+        device_name = item.get('name','')
+		item_type = item.get('type', None)
         room_name = 'Unknown'
         for room in rooms:
             if room in device_name:
                 room_name = room
                 device_name = device_name.replace(room, '').strip()
-        freq = 868 if item['sys'] == 'B8' else 433 if item['sys'] == 'B4' else 0
-        commands = {cmd: f"{item['local']}{item['commands'][cmd]['url']}&at={system_code}" for cmd in item['commands']}
+		item_sys = item.get('sys')
+        freq = 868 if item_sys == 'B8' else 433 if item_sys == 'B4' else 0
+		item_local = item.get('local', '')
+		item_commands = item.get('commands', [])
+		
+        commands = {cmd: f"{item_local}{item_commands[cmd]['url']}&at={system_code}" for cmd in item_commands}
 
         transformed_data.append({
             "uniqueid": item.get('address', 'NoID'),
             "name": device_name,
             "room": room_name,
             "freq": freq,
-            "type": item['type'],
+            "type": item_type,
             "commands": commands
         })
 
