@@ -1,5 +1,6 @@
 import requests
 import logging
+import json
 from homeassistant.components.light import LightEntity
 from .const import DOMAIN, CONF_INTERNAL_JSON
 
