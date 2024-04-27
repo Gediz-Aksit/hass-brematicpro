@@ -41,7 +41,7 @@ class BrematicProLight(LightEntity):
         self._area_registry = area_registry  # Use area_registry if needed for further implementations
         self._is_on = False
         self._name = device["name"]
-        self._on_command = de4vice["commands"]["on"]
+        self._on_command = device["commands"]["on"]
         self._off_command = device["commands"]["off"]
         _LOGGER.warning('Added ' + device["name"])
 
