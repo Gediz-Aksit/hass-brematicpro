@@ -20,14 +20,14 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_type,
         for device in devices:
             if device['type'] == device_type:
                 unique_id = device['uniqueid']
-                area_id = find_area_id(hass, device.get('room'))
+                #area_id = find_area_id(hass, device.get('room'))
                 if unique_id in existing_entities:
                     entity = existing_entities[unique_id]
-                    entity_registry.async_update_entity(entity_id, new_area_id=area_id)
+                    #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
                     entity.update_device(device)
                 else:
                     entity = entity_class(device, hass)
-                    entity_registry.async_update_entity(entity_id, new_area_id=area_id)
+                    #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
                     entities.append(entity)
         async_add_entities(entities, True)
         hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
