@@ -8,6 +8,7 @@ from homeassistant.helpers.area_registry import async_get as async_get_area_regi
 
 from .const import DOMAIN, CONF_INTERNAL_JSON
 from .readconfigjson import find_area_id, send_command
+from .switch import BrematicProSwitch
 
 _LOGGER = logging.getLogger(__name__)
 
