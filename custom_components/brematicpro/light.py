@@ -2,6 +2,7 @@ import json
 import logging
 import requests
 from homeassistant.components.light import LightEntity
+from homeassistant.helpers.area_registry import async_get as async_get_area_registry
 from .const import DOMAIN, CONF_INTERNAL_JSON
 
 _LOGGER = logging.getLogger(__name__)
@@ -11,7 +12,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
         devices = json.loads(json_data)
-        area_registry = ar.async_get(hass)
+        area_registry = async_get_area_registry(hass)
         # Fetch existing entities or initialize an empty list
         existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         new_entities = []
