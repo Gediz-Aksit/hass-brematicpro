@@ -26,7 +26,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
                     entity.update_device(device)
                 else:
                     # Create a new entity if it doesn't exist
-                    entity = BrematicLight(device, area_registry)
+                    entity = BrematicProLight(device, area_registry)
                     new_entities.append(entity)
 
         async_add_entities(new_entities, True)  # True to update state upon addition
