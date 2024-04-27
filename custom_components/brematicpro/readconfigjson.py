@@ -1,6 +1,7 @@
 import requests
 import json
 import logging
+import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
 from aiohttp import web
@@ -80,13 +81,14 @@ async def unload_entry_components(hass: HomeAssistant, entry):
 
 async def send_command(url):
     """Send command to the Brematic device."""
-    try:
-        response = await requests.get(url, timeout=5)
-        response.raise_for_status()
-        return response.status
-    except requests.RequestException as error:
-        _LOGGER.error("Error sending command to %s: %s", url, error)
-        return 0
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(url, timeout=5) as response:
+                response.raise_for_status()  # This will raise an error for bad HTTP status
+                return response.status
+        except aiohttp.ClientError as error:
+            _LOGGER.error("Error sending command to %s: %s", url, error)
+            return 0
 
 class BrematicProJsonDownloadView(HomeAssistantView):
     """View to download the CONF_INTERNAL_JSON data."""
