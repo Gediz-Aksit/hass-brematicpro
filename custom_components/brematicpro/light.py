@@ -20,7 +20,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         for device in devices:
             if device['type'] == 'light':
                 unique_id = device['uniqueid']
-				_LOGGER.warning('Unique ID ' + unique_id)
+                _LOGGER.warning('Unique ID ' + unique_id)
                 area_id = find_area_id(hass, device.get('room'))  # Get area ID using room name
                 if unique_id in existing_entities:
                     entity = existing_entities[unique_id]
