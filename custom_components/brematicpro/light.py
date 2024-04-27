@@ -1,15 +1,35 @@
 import requests
 import logging
 from homeassistant.components.light import LightEntity
-from .const import DOMAIN
+from .const import DOMAIN, CONF_INTERNAL_JSON
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Set up BrematicPro light based on a config entry."""
-    devices = hass.data[DOMAIN].get("devices", [])
-    if devices:
-        async_add_entities(BrematicProLight(device) for device in devices)
+    """Set up BrematicPro lights from a config entry."""
+    json_data = entry.data.get(CONF_INTERNAL_JSON)
+    if json_data:
+        devices = json.loads(json_data)
+        area_registry = ar.async_get(hass)
+        # Fetch existing entities or initialize an empty list
+        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        new_entities = []
+
+        for device in devices:
+            if device['type'] == 'light':
+                unique_id = device['uniqueid']
+                if unique_id in existing_entities:
+                    # Update existing entity if necessary
+                    entity = existing_entities[unique_id]
+                    entity.update_device(device)
+                else:
+                    # Create a new entity if it doesn't exist
+                    entity = BrematicLight(device, area_registry)
+                    new_entities.append(entity)
+
+        async_add_entities(new_entities, True)  # True to update state upon addition
+        # Update the global data store for this entry
+        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = list(existing_entities.values()) + new_entities
 
 class BrematicProLight(LightEntity):
     """Representation of a Brematic Light."""
