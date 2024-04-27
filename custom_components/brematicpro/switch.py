@@ -22,8 +22,8 @@ class BrematicProSwitch(SwitchEntity):
         self._unique_id = device['uniqueid']
         self._name = device["name"]
         self._frequency =  device.get('freq', None)
-        self._commands = device['commands']
-        self._area_id = find_area_id(hass, device.get('room'))
+        self._commands = device.get('commands', []]
+        self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(hass)
 
