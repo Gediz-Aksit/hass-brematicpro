@@ -1,6 +1,7 @@
 """BrematicPro integration for Home Assistant"""
 import logging
 from datetime import timedelta
+import functools
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
@@ -17,7 +18,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     # Register the HTTP endpoint for downloading JSON data
     view = BrematicProJsonDownloadView()
     hass.http.register_view(view)
-    async_track_time_interval(hass, fetch_sensor_states, timedelta(minutes=1))
+	async_track_time_interval(hass, functools.partial(fetch_sensor_states, hass), timedelta(minutes=1))
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
