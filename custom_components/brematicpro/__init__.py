@@ -1,5 +1,6 @@
 """BrematicPro integration for Home Assistant"""
 import logging
+from datetime import timedelta
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
