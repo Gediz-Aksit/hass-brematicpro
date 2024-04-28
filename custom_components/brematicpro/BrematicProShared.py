@@ -6,11 +6,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
-from .const import DOMAIN, CONF_INTERNAL_JSON, CONF_SYSTEM_CODE
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from datetime import timedelta
+
+
+from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_JSON, CONF_INTERNAL_GATEWAYS
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_common_setup_entry(hass, entry, async_add_entities, device_type, entity_class):
+async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_JSON)
     if json_data:
@@ -18,7 +23,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_type,
         entities = []
         existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
-            if device['type'] == device_type:
+            device_type = device.get('type', None)
+            if device_type in device_types:
                 unique_id = device['uniqueid']
                 #area_id = find_area_id(hass, device.get('room'))
                 if unique_id in existing_entities:
@@ -68,6 +74,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     if system_code == '':
         system_code = entry.data.get(CONF_SYSTEM_CODE, 'Invalid_Code')
     transformed_data = []
+    gateways = set()  # Using a set to prevent duplicates
     for item in devices.values():
         device_name = item.get('name','')
         item_type = item.get('type', None)
@@ -80,7 +87,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         freq = 868 if item_sys == 'B8' else 433 if item_sys == 'B4' else 0
         item_local = item.get('local', '')
         item_commands = item.get('commands', [])
-        
+        if item_local:
+            gateways.add(item_local)
         commands = {cmd: f"{item_local}{item_commands[cmd]['url']}&at={system_code}" for cmd in item_commands}
 
         transformed_data.append({
@@ -94,8 +102,34 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
     json_data = json.dumps(transformed_data)
     _LOGGER.debug(f"Generated JSON data: {json_data}")
-    hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_JSON: json_data})
+    hass.config_entries.async_update_entry(
+        entry, 
+        data={**entry.data, CONF_INTERNAL_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}
+    )
     return True
+
+async def fetch_sensor_states(hass: HomeAssistant):
+    """Fetch states from all configured gateways."""
+    system_code = hass.data[CONF_SYSTEM_CODE]
+    gateways = hass.data[CONF_INTERNAL_GATEWAYS]
+
+    if not gateways:
+        _LOGGER.error("No gateway IPs are configured.")
+        return
+    
+    async with aiohttp.ClientSession() as session:
+        for ip in gateways:
+            url = f"http://{ip}/cmd?XC_FNC=getStates&at={system_code}"
+            try:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+						_LOGGER.info(data)#Posting statuses
+                        _LOGGER.info(f"Received data from {ip}: {data}")
+                    else:
+                        _LOGGER.error(f"Failed to fetch data from {ip}: HTTP {response.status}")
+            except aiohttp.ClientError as e:
+                _LOGGER.error(f"Error contacting {ip}: {str(e)}")
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
@@ -152,3 +186,26 @@ class BrematicProJsonDownloadView(HomeAssistantView):
             'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
         })
         #return web.Response(status=404, text="Configuration data not found.")
+
+SCAN_INTERVAL = timedelta(minutes=1)  # How often to poll the device
+
+class BrematicDataCoordinator(DataUpdateCoordinator):
+    """Class to manage fetching data from the BrematicGateway."""
+
+    def __init__(self, hass, gateway_ip, system_code):
+        """Initialize."""
+        self.hass = hass
+        self.system_code = system_code
+        self.api_url = f"http://{gateway_ip}/cmd?XC_FNC=SendSC&type=B4&at={self.system_code}&data=getStates"
+        super().__init__(hass, _LOGGER, name="BrematicDataCoordinator", update_interval=SCAN_INTERVAL)
+
+    async def _async_update_data(self):
+        """Fetch data from BrematicGateway."""
+        try:
+            async with async_get_clientsession(self.hass).get(self.api_url) as response:
+                if response.status != 200:
+                    raise UpdateFailed(f"Error fetching data: {response.status}")
+                json_data = await response.json()
+                return json_data
+        except Exception as e:
+            raise UpdateFailed(f"Error communicating with API: {str(e)}")

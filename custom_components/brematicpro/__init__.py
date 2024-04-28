@@ -4,9 +4,10 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, CONF_CONFIG_JSON, CONF_ROOMS_JSON
-from .readconfigjson import read_and_transform_json, setup_entry_components, unload_entry_components, BrematicProJsonDownloadView
+from .BrematicProShared import read_and_transform_json, setup_entry_components, unload_entry_components, fetch_sensor_states, BrematicProJsonDownloadView
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,6 +16,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     # Register the HTTP endpoint for downloading JSON data
     view = BrematicProJsonDownloadView()
     hass.http.register_view(view)
+	async_track_time_interval(hass, fetch_gateway_states, timedelta(minutes=1))
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:

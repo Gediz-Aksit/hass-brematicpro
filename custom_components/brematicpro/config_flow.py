@@ -1,7 +1,7 @@
 from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON, CONF_ROOMS_JSON
-from .readconfigjson import read_and_transform_json, setup_entry_components
+from .BrematicProShared import read_and_transform_json, setup_entry_components
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
