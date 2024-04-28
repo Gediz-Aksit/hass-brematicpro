@@ -124,7 +124,7 @@ async def fetch_sensor_states(hass: HomeAssistant):
                 async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
-                        _LOGGER.info(data)#Posting statuses
+                        _LOGGER.info(json.dumps(data, indent=2))#Posting statuses
                         _LOGGER.info(f"Received data from {ip}: {data}")
                     else:
                         _LOGGER.error(f"Failed to fetch data from {ip}: HTTP {response.status}")
