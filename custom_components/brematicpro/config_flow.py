@@ -21,13 +21,13 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-		
+        
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=user_input)
             else:
                 return self.async_create_entry(title="BrematicPro", data=user_input)
-		
+        
             if user_input.get('read_json'):
                 success = await self.hass.async_add_executor_job(
                     read_and_transform_json,
@@ -35,7 +35,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     entry,
                     user_input[CONF_CONFIG_JSON],
                     user_input[CONF_ROOMS_JSON],
-					user_input[CONF_SYSTEM_CODE]
+                    user_input[CONF_SYSTEM_CODE]
                 )
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"

@@ -21,7 +21,7 @@ class BrematicProSwitch(SwitchEntity):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
         self._name = device["name"]
-		self._type = device.get('type', None)
+        self._type = device.get('type', None)
         self._frequency =  device.get('freq', None)
         self._commands = device.get('commands', [])
         self._suggested_area = device.get('room', None)
