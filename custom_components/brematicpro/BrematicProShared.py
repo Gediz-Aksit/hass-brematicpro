@@ -110,8 +110,11 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
 async def fetch_sensor_states(hass: HomeAssistant, time):
     """Fetch states from all configured gateways."""
-    system_code = hass.data[CONF_SYSTEM_CODE]
-    gateways = hass.data[CONF_INTERNAL_GATEWAYS]
+    try:
+        system_code = hass.data[CONF_SYSTEM_CODE]
+        gateways = hass.data[CONF_INTERNAL_GATEWAYS]
+    except KeyError as e:
+        return
 
     if not gateways:
         _LOGGER.error("No gateway IPs are configured.")
