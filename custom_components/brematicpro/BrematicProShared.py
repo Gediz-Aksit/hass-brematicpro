@@ -44,6 +44,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                 try:
                     async with session.get(url) as response:
                         _LOGGER.debug("_async_update_data START")
+                        _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
                         if response.status == 200:
                             data[domain_or_ip] = await response.json()
                             _LOGGER.debug("_async_update_data MID")
