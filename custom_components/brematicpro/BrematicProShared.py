@@ -20,6 +20,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass, system_code, gateways):
         """Initialize."""
+        _LOGGER.debug("INIT BrematicProCoordinator")
         self.system_code = system_code
         self.gateways = gateways
         super().__init__(
@@ -31,6 +32,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Fetch data from API."""
+        _LOGGER.debug("_async_update_data BrematicProCoordinator")
         if not self.gateways:
             raise UpdateFailed("No gateway IPs are configured")
 
