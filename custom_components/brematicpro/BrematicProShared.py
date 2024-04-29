@@ -43,11 +43,14 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"URL {url}")
                 try:
                     async with session.get(url) as response:
+                        _LOGGER.debug("_async_update_data START")
                         if response.status == 200:
                             data[domain_or_ip] = await response.json()
+                            _LOGGER.debug("_async_update_data MID")
                             _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
                         else:
                             raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
+                        _LOGGER.debug("_async_update_data END")
                 except aiohttp.ClientError as e:
                     raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
