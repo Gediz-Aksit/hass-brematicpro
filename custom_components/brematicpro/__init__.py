@@ -8,17 +8,15 @@ from homeassistant.config_entries import ConfigEntry, ENTRY_STATE_LOADED
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_CONFIG_JSON, CONF_ROOMS_JSON
+from .const import DOMAIN, CONF_CONFIG_FILE, CONF_ROOMS_FILE
 from .BrematicProShared import read_and_transform_json, setup_entry_components, unload_entry_components, fetch_sensor_states, BrematicProJsonDownloadView
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up the BrematicPro component."""
-    _LOGGER.info("This is an info log message")
-    _LOGGER.debug("This is a debug log message")
-    #_LOGGER.error("This is an error log message")
-    # Register the HTTP endpoint for downloading JSON data
+    if DOMAIN not in hass.data:
+        hass.data[DOMAIN] = {}
     view = BrematicProJsonDownloadView()
     hass.http.register_view(view)
     async_track_time_interval(hass, functools.partial(fetch_sensor_states, hass), timedelta(minutes=1))
@@ -30,8 +28,8 @@ async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
-    devices_filename = entry.data.get(CONF_CONFIG_JSON, 'BrematicPro.json')
-    rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
+    devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
+    rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
 
     # Attempt to read and transform JSON data
     success = await hass.async_add_executor_job(
@@ -41,9 +39,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not success:
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False
-    hass.data.setdefault(DOMAIN, {})
-    update_internal_data(hass, entry)
-    entry.async_on_unload(entry.add_update_listener(async_entry_updated))    
     # Setup entry components (switch and light)
     await setup_entry_components(hass, entry)
     return True

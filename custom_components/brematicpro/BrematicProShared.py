@@ -106,6 +106,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         entry, 
         data={**entry.data, CONF_INTERNAL_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}
     )
+    hass.data[DOMAIN][CONF_INTERNAL_JSON] = json_data
+    hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = list(gateways)
     return True
 
 async def fetch_sensor_states(hass: HomeAssistant, time = None):

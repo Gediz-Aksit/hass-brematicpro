@@ -1,6 +1,6 @@
 from homeassistant import config_entries
 import voluptuous as vol
-from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_JSON, CONF_ROOMS_JSON
+from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE
 from .BrematicProShared import read_and_transform_json, setup_entry_components
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -23,6 +23,9 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
         
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
+            self.hass.data[DOMAIN][CONF_CONFIG_FILE] = user_input[CONF_CONFIG_FILE]
+            self.hass.data[DOMAIN][CONF_ROOMS_FILE] = user_input[CONF_ROOMS_FILE]
+            self.hass.data[DOMAIN][CONF_SYSTEM_CODE] = user_input[CONF_SYSTEM_CODE]
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=user_input)
             else:
@@ -33,8 +36,8 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     read_and_transform_json,
                     self.hass,
                     entry,
-                    user_input[CONF_CONFIG_JSON],
-                    user_input[CONF_ROOMS_JSON],
+                    user_input[CONF_CONFIG_FILE],
+                    user_input[CONF_ROOMS_FILE],
                     user_input[CONF_SYSTEM_CODE]
                 )
                 if not success:
@@ -47,8 +50,8 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema({
                 vol.Required(CONF_SYSTEM_CODE, default=''): str,
-                vol.Required(CONF_CONFIG_JSON, default='BrematicPro.json'): str,
-                vol.Optional(CONF_ROOMS_JSON, default='BrematicProRooms.json'): str,
+                vol.Required(CONF_CONFIG_FILE, default='BrematicPro.json'): str,
+                vol.Optional(CONF_ROOMS_FILE, default='BrematicProRooms.json'): str,
                 vol.Optional('read_json', default=False): bool,
                 vol.Optional('process_data', default=False): bool
             }),
