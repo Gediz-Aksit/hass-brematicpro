@@ -8,7 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_CONFIG_FILE, CONF_ROOMS_FILE
+from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE, CONF_INTERNAL_GATEWAYS
 from .BrematicProShared import read_and_transform_json, setup_entry_components, unload_entry_components, BrematicProJsonDownloadView
 
 _LOGGER = logging.getLogger(__name__)
