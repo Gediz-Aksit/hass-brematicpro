@@ -42,35 +42,13 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                     async with session.get(url) as response:
                         if response.status == 200:
                             data[domain_or_ip] = await response.json()
-                            _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
+                            _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
                         else:
                             raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                 except aiohttp.ClientError as e:
                     raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
         
-    async def fetch_sensor_states(hass: HomeAssistant, system_code: str = "", gateways: list = []):
-        """Fetch states from all configured gateways."""
-        _LOGGER.debug("Method fetch_sensor_states ran...")
-        if not gateways:
-            _LOGGER.warning("No gateway IPs are configured.")
-            return
-        
-        async with aiohttp.ClientSession() as session:
-            for domain_or_ip in gateways:
-                url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
-                try:
-                    _LOGGER.debug(f"Try actual call to {url}")
-                    async with session.get(url) as response:
-                        if response.status == 200:
-                            data = await response.json()
-                            _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
-                            _LOGGER.debug(f"Received data from {domain_or_ip}: {data}")
-                        else:
-                            _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
-                except aiohttp.ClientError as e:
-                    _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
-
 async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
@@ -157,7 +135,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         })
 
     json_data = json.dumps(transformed_data)
-    _LOGGER.debug(f"Generated JSON data: {json_data}")
+    #_LOGGER.debug(f"Generated JSON data: {json_data}")
     hass.config_entries.async_update_entry(
         entry, 
         data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}

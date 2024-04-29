@@ -28,33 +28,35 @@ async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     #hass.data[DOMAIN][CONF_INTERNAL_CONFIG_JSON] = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
     #hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
     #hass.data[DOMAIN][CONF_INTERNAL_SENSOR_JSON] = entry.data.get(CONF_INTERNAL_SENSOR_JSON)
-    await hass.config_entries.async_reload(entry.entry_id)
+    devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
+    rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
+    
+    success = await hass.async_add_executor_job(
+        read_and_transform_json, hass, entry, devices_filename, rooms_filename
+    )
+    
+    if success:
+        _LOGGER.info("Configuration successfully updated for BrematicPro.")
+        return True
+    else:
+        _LOGGER.error("Failed to load or transform data for BrematicPro")
+        return False
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
     system_code = entry.data[CONF_SYSTEM_CODE]
     gateways = entry.data[CONF_INTERNAL_GATEWAYS]
-    devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
-    rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
 
-    # Attempt to read and transform JSON data
-    success = await hass.async_add_executor_job(
-        read_and_transform_json, hass, entry, devices_filename, rooms_filename
-    )
-
-    if not success:
-        _LOGGER.error("Failed to load or transform data for BrematicPro")
-        return False
-    # Setup entry components (switch and light)
-    
+    #Read Gateway sensors
     coordinator = BrematicProCoordinator(hass, system_code, gateways)
     await coordinator.async_config_entry_first_refresh()
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
-
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     
-    await setup_entry_components(hass, entry)
+    await setup_entry_components(hass, entry)#Setup components
+    await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
+
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
