@@ -22,16 +22,18 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update a given config entry."""
-    hass.data[DOMAIN][CONF_SYSTEM_CODE] = entry.data.get(CONF_SYSTEM_CODE, "")
-    hass.data[DOMAIN][CONF_CONFIG_FILE] = entry.data.get(CONF_CONFIG_FILE, "BrematicPro.json")
-    hass.data[DOMAIN][CONF_ROOMS_FILE] = entry.data.get(CONF_ROOMS_FILE, "BrematicProRooms.json")
-    hass.data[DOMAIN][CONF_INTERNAL_CONFIG_JSON] = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
-    hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
-    hass.data[DOMAIN][CONF_INTERNAL_SENSOR_JSON] = entry.data.get(CONF_INTERNAL_SENSOR_JSON)
+    #hass.data[DOMAIN][CONF_SYSTEM_CODE] = entry.data.get(CONF_SYSTEM_CODE, "")
+    #hass.data[DOMAIN][CONF_CONFIG_FILE] = entry.data.get(CONF_CONFIG_FILE, "BrematicPro.json")
+    #hass.data[DOMAIN][CONF_ROOMS_FILE] = entry.data.get(CONF_ROOMS_FILE, "BrematicProRooms.json")
+    #hass.data[DOMAIN][CONF_INTERNAL_CONFIG_JSON] = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
+    #hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
+    #hass.data[DOMAIN][CONF_INTERNAL_SENSOR_JSON] = entry.data.get(CONF_INTERNAL_SENSOR_JSON)
     await hass.config_entries.async_reload(entry.entry_id)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
+    system_code = entry.data[CONF_SYSTEM_CODE]
+    gateways = entry.data[CONF_INTERNAL_GATEWAYS]
     devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
     rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
 
@@ -44,6 +46,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False
     # Setup entry components (switch and light)
+    
+    coordinator = BrematicProCoordinator(hass, system_code, gateways)
+    await coordinator.async_config_entry_first_refresh()
+    if not coordinator.last_update_success:
+        raise ConfigEntryNotReady
+
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
+    
     await setup_entry_components(hass, entry)
     return True
 

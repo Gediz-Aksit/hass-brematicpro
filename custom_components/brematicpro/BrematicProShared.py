@@ -15,6 +15,63 @@ from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_CONFIG_JSON, CONF_INT
 
 _LOGGER = logging.getLogger(__name__)
 
+
+class BrematicProCoordinator(DataUpdateCoordinator):
+    """Class to manage fetching BrematicPro data."""
+
+    def __init__(self, hass, system_code, gateways):
+        """Initialize."""
+        self.system_code = system_code
+        self.gateways = gateways
+        super().__init__(
+            hass,
+            logger=logging.getLogger(__name__),
+            name="BrematicPro",
+            update_interval=timedelta(minutes=1),
+        )
+
+    async def _async_update_data(self):
+        """Fetch data from API."""
+        if not self.gateways:
+            raise UpdateFailed("No gateway IPs are configured")
+
+        data = {}
+        async with aiohttp.ClientSession() as session:
+            for domain_or_ip in self.gateways:
+                url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
+                try:
+                    async with session.get(url) as response:
+                        if response.status == 200:
+                            data[domain_or_ip] = await response.json()
+                            _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
+                        else:
+                            raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
+                except aiohttp.ClientError as e:
+                    raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
+        return data
+        
+    async def fetch_sensor_states(hass: HomeAssistant, system_code: str = "", gateways: list = []):
+        """Fetch states from all configured gateways."""
+        _LOGGER.debug("Method fetch_sensor_states ran...")
+        if not gateways:
+            _LOGGER.warning("No gateway IPs are configured.")
+            return
+        
+        async with aiohttp.ClientSession() as session:
+            for domain_or_ip in gateways:
+                url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
+                try:
+                    _LOGGER.debug(f"Try actual call to {url}")
+                    async with session.get(url) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
+                            _LOGGER.debug(f"Received data from {domain_or_ip}: {data}")
+                        else:
+                            _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
+                except aiohttp.ClientError as e:
+                    _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
+
 async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
@@ -107,38 +164,6 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}
     )
     return True
-
-async def fetch_sensor_states(hass: HomeAssistant, time = None):
-    """Fetch states from all configured gateways."""
-    _LOGGER.debug("Method fetch_sensor_states ran...")
-    try:
-        system_code = hass.data[DOMAIN][CONF_SYSTEM_CODE]
-        gateways = hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS]
-    except KeyError as e:
-        _LOGGER.warning("Invalid system code or gateway value.")
-        _LOGGER.debug(f"KeyError - missing {e.args[0]} in hass.data")
-        _LOGGER.debug(f"System code {system_code}.")
-        _LOGGER.debug(f"Gateways {gateways}.")
-        return
-
-    if not gateways:
-        _LOGGER.warning("No gateway IPs are configured.")
-        return
-    
-    async with aiohttp.ClientSession() as session:
-        for domain_or_ip in gateways:
-            url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
-            try:
-                _LOGGER.debug(f"Try actual call to {url}")
-                async with session.get(url) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
-                        _LOGGER.debug(f"Received data from {domain_or_ip}: {data}")
-                    else:
-                        _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
-            except aiohttp.ClientError as e:
-                _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
