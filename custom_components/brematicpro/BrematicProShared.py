@@ -110,14 +110,17 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = list(gateways)
     return True
 
-
 async def fetch_sensor_states(hass: HomeAssistant, time = None):
     """Fetch states from all configured gateways."""
+    _LOGGER.debug("Method fetch_sensor_states ran...")
     try:
         system_code = hass.data[DOMAIN][CONF_SYSTEM_CODE]
         gateways = hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS]
     except KeyError as e:
         _LOGGER.warning("Invalid system code or gateway value.")
+        _LOGGER.debug(f"KeyError - missing {e.args[0]} in hass.data")
+        _LOGGER.debug(f"System code {system_code}.")
+        _LOGGER.debug(f"Gateways {gateways}.")
         return
 
     if not gateways:
@@ -128,6 +131,7 @@ async def fetch_sensor_states(hass: HomeAssistant, time = None):
         for domain_or_ip in gateways:
             url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
             try:
+                _LOGGER.debug(f"Try actual call to {url}")
                 async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
