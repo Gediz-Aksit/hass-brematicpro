@@ -110,30 +110,32 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
 async def fetch_sensor_states(hass: HomeAssistant, time = None):
     """Fetch states from all configured gateways."""
-    _LOGGER.info("Method fetch_sensor_states ran...")
+    _LOGGER.debug("Method fetch_sensor_states ran...")
     try:
         system_code = hass.data[CONF_SYSTEM_CODE]
         gateways = hass.data[CONF_INTERNAL_GATEWAYS]
     except KeyError as e:
+        _LOGGER.warning("Invalid system code or gateway value.")
         return
 
     if not gateways:
-        _LOGGER.error("No gateway IPs are configured.")
+        _LOGGER.warning("No gateway IPs are configured.")
         return
     
     async with aiohttp.ClientSession() as session:
         for ip in gateways:
             url = f"http://{ip}/cmd?XC_FNC=getStates&at={system_code}"
             try:
+				_LOGGER.debug(f"Try actual call to {url}")
                 async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
-                        _LOGGER.info(json.dumps(data, indent=2))#Posting statuses
-                        _LOGGER.info(f"Received data from {ip}: {data}")
+                        _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
+                        _LOGGER.debug(f"Received data from {ip}: {data}")
                     else:
-                        _LOGGER.error(f"Failed to fetch data from {ip}: HTTP {response.status}")
+                        _LOGGER.warning(f"Failed to fetch data from {ip}: HTTP {response.status}")
             except aiohttp.ClientError as e:
-                _LOGGER.error(f"Error contacting {ip}: {str(e)}")
+                _LOGGER.warning(f"Error contacting {ip}: {str(e)}")
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
