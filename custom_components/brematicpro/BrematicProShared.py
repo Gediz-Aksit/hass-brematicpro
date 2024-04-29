@@ -112,8 +112,8 @@ async def fetch_sensor_states(hass: HomeAssistant, time = None):
     """Fetch states from all configured gateways."""
     _LOGGER.debug("Method fetch_sensor_states ran...")
     try:
-        system_code = hass.data[CONF_SYSTEM_CODE]
-        gateways = hass.data[CONF_INTERNAL_GATEWAYS]
+        system_code = hass.data[DOMAIN][CONF_SYSTEM_CODE]
+        gateways = hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS]
     except KeyError as e:
         _LOGGER.warning("Invalid system code or gateway value.")
         return
