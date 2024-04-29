@@ -23,9 +23,6 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
         
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
-            self.hass.data[DOMAIN][CONF_CONFIG_FILE] = user_input[CONF_CONFIG_FILE]
-            self.hass.data[DOMAIN][CONF_ROOMS_FILE] = user_input[CONF_ROOMS_FILE]
-            self.hass.data[DOMAIN][CONF_SYSTEM_CODE] = user_input[CONF_SYSTEM_CODE]
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=user_input)
             else:
