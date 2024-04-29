@@ -46,9 +46,18 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         _LOGGER.debug("_async_update_data START")
                         _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
                         if response.status == 200:
-                            data[domain_or_ip] = await response.json()
-                            _LOGGER.debug("_async_update_data MID")
-                            _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
+                            response_text = await response.text()
+                            _LOGGER.debug(f"Response Text: {response_text}")
+                            try:
+                                _LOGGER.debug("_async_update_data MID1")
+                                data[domain_or_ip] = json.loads(response_text)
+                                _LOGGER.debug("_async_update_data MID2")
+                                _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
+                                _LOGGER.debug(f"Data for {domain_or_ip}: {data[domain_or_ip]}")
+                            except json.JSONDecodeError as e:
+                                _LOGGER.error(f"JSON decoding failed for {domain_or_ip}: {str(e)}")
+                                _LOGGER.error(f"Failed data: {response_text}")
+                                raise UpdateFailed(f"JSON decode error for {domain_or_ip}")
                         else:
                             raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                         _LOGGER.debug("_async_update_data END")
