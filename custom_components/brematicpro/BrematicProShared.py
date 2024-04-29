@@ -108,7 +108,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     )
     return True
 
-async def fetch_sensor_states(hass: HomeAssistant, time):
+async def fetch_sensor_states(hass: HomeAssistant, time = None):
     """Fetch states from all configured gateways."""
     _LOGGER.info("Method fetch_sensor_states ran...")
     try:
