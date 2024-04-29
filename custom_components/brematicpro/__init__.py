@@ -17,7 +17,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up the BrematicPro component."""
     view = BrematicProJsonDownloadView()
     hass.http.register_view(view)
-    async_track_time_interval(hass, functools.partial(fetch_sensor_states, hass), timedelta(minutes=1))
+    #async_track_time_interval(hass, functools.partial(fetch_sensor_states, hass), timedelta(minutes=1))
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
