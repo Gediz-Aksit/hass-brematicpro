@@ -112,15 +112,11 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
 async def fetch_sensor_states(hass: HomeAssistant, time = None):
     """Fetch states from all configured gateways."""
-    _LOGGER.debug("Method fetch_sensor_states ran...")
     try:
         system_code = hass.data[DOMAIN][CONF_SYSTEM_CODE]
         gateways = hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS]
     except KeyError as e:
         _LOGGER.warning("Invalid system code or gateway value.")
-        _LOGGER.debug(f"KeyError - missing {e.args[0]} in hass.data")
-        _LOGGER.debug(f"System code {system_code}.")
-        _LOGGER.debug(f"Gateways {gateways}.")
         return
 
     if not gateways:
@@ -128,19 +124,18 @@ async def fetch_sensor_states(hass: HomeAssistant, time = None):
         return
     
     async with aiohttp.ClientSession() as session:
-        for ip in gateways:
-            url = f"http://{ip}/cmd?XC_FNC=getStates&at={system_code}"
+        for domain_or_ip in gateways:
+            url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
             try:
-                _LOGGER.debug(f"Try actual call to {url}")
                 async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
                         _LOGGER.debug(json.dumps(data, indent=2))#Posting statuses
-                        _LOGGER.debug(f"Received data from {ip}: {data}")
+                        _LOGGER.debug(f"Received data from {domain_or_ip}: {data}")
                     else:
-                        _LOGGER.warning(f"Failed to fetch data from {ip}: HTTP {response.status}")
+                        _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
             except aiohttp.ClientError as e:
-                _LOGGER.warning(f"Error contacting {ip}: {str(e)}")
+                _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for 'switch' and 'light'."""
