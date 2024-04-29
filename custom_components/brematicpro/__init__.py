@@ -55,7 +55,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     
     await setup_entry_components(hass, entry)#Setup components
-    await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
+    #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
     return True
 

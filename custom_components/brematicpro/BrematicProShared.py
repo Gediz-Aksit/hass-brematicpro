@@ -40,6 +40,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         async with aiohttp.ClientSession() as session:
             for domain_or_ip in self.gateways:
                 url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
+                _LOGGER.debug(f"URL {url}")
                 try:
                     async with session.get(url) as response:
                         if response.status == 200:
