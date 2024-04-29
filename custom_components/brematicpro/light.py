@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.area_registry import async_get as async_get_area_registry
 
-from .const import DOMAIN, CONF_INTERNAL_JSON
+from .const import DOMAIN, CONF_INTERNAL_CONFIG_JSON
 from .BrematicProShared import async_common_setup_entry
 from .switch import BrematicProSwitch
 

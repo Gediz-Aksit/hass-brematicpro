@@ -11,13 +11,13 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from datetime import timedelta
 
 
-from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_JSON, CONF_INTERNAL_GATEWAYS
+from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_CONFIG_JSON, CONF_INTERNAL_GATEWAYS
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
     """Common setup for BrematicPro devices."""
-    json_data = entry.data.get(CONF_INTERNAL_JSON)
+    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
     if json_data:
         devices = json.loads(json_data)
         entities = []
@@ -104,9 +104,9 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     _LOGGER.debug(f"Generated JSON data: {json_data}")
     hass.config_entries.async_update_entry(
         entry, 
-        data={**entry.data, CONF_INTERNAL_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}
+        data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}
     )
-    hass.data[DOMAIN][CONF_INTERNAL_JSON] = json_data
+    hass.data[DOMAIN][CONF_INTERNAL_CONFIG_JSON] = json_data
     hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = list(gateways)
     return True
 
@@ -165,7 +165,7 @@ async def send_command(url):
             return 0
 
 class BrematicProJsonDownloadView(HomeAssistantView):
-    """View to download the CONF_INTERNAL_JSON data."""
+    """View to download the CONF_INTERNAL_CONFIG_JSON data."""
     url = "/api/brematicpro/download_json"
     name = "api:brematicpro:download_json"
     requires_auth = False
@@ -185,9 +185,9 @@ class BrematicProJsonDownloadView(HomeAssistantView):
             _LOGGER.error("Access denied: unauthenticated access attempt.")
             return web.Response(status=401, text="Unauthorized")
         
-        entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_JSON in e.data), None)
+        entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_CONFIG_JSON in e.data), None)
         if entry:
-            json_data = entry.data[CONF_INTERNAL_JSON]
+            json_data = entry.data[CONF_INTERNAL_CONFIG_JSON]
             _LOGGER.warning(f"BrematicProJsonDownloadView called Data")
             return web.Response(body=json_data, content_type='application/json', headers={
                 'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
