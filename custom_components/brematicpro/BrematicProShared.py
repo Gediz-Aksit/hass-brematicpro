@@ -110,7 +110,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
 async def fetch_sensor_states(hass: HomeAssistant, time):
     """Fetch states from all configured gateways."""
-	_LOGGER.info("Method fetch_sensor_states ran...")
+    _LOGGER.info("Method fetch_sensor_states ran...")
     try:
         system_code = hass.data[CONF_SYSTEM_CODE]
         gateways = hass.data[CONF_INTERNAL_GATEWAYS]
