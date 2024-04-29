@@ -41,7 +41,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not success:
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False
-
+    hass.data.setdefault(DOMAIN, {})
+    update_internal_data(hass, entry)
+    entry.async_on_unload(entry.add_update_listener(async_entry_updated))    
     # Setup entry components (switch and light)
     await setup_entry_components(hass, entry)
     return True
