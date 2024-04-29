@@ -44,6 +44,9 @@ async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Setup from a config entry."""
+    if DOMAIN not in hass.data:
+        hass.data[DOMAIN] = {}
+        
     system_code = entry.data[CONF_SYSTEM_CODE]
     gateways = entry.data[CONF_INTERNAL_GATEWAYS]
 
@@ -52,7 +55,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await coordinator.async_config_entry_first_refresh()
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
+    hass.data[DOMAIN][entry.entry_id] = coordinator
     
     await setup_entry_components(hass, entry)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
