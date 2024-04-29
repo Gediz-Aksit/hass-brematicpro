@@ -126,7 +126,7 @@ async def fetch_sensor_states(hass: HomeAssistant, time = None):
         for ip in gateways:
             url = f"http://{ip}/cmd?XC_FNC=getStates&at={system_code}"
             try:
-				_LOGGER.debug(f"Try actual call to {url}")
+                _LOGGER.debug(f"Try actual call to {url}")
                 async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
