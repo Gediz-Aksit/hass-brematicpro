@@ -20,6 +20,29 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     #async_track_time_interval(hass, functools.partial(fetch_sensor_states, hass), timedelta(minutes=1))
     return True
 
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Setup from a config entry."""
+    if DOMAIN not in hass.data:
+        hass.data[DOMAIN] = {}
+        
+    system_code = entry.data[CONF_SYSTEM_CODE]
+    gateways = entry.data[CONF_INTERNAL_GATEWAYS]
+
+    #Read Gateway sensors
+    coordinator = BrematicProCoordinator(hass, system_code, gateways)
+    await coordinator.async_config_entry_first_refresh()
+    if not coordinator.last_update_success:
+        raise ConfigEntryNotReady
+    if entry.entry_id not in hass.data[DOMAIN]:
+        hass.data[DOMAIN][entry.entry_id] = {}
+    if "coordinator" not in hass.data[DOMAIN][entry.entry_id]:
+        hass.data[DOMAIN][entry.entry_id] = {"coordinator": coordinator}
+    
+    await setup_entry_components(hass, entry)#Setup components
+    #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
+
+    return True
+
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update a given config entry."""
     #hass.data[DOMAIN][CONF_SYSTEM_CODE] = entry.data.get(CONF_SYSTEM_CODE, "")
@@ -41,26 +64,6 @@ async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     else:
         _LOGGER.error("Failed to load or transform data for BrematicPro")
         return False
-
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Setup from a config entry."""
-    if DOMAIN not in hass.data:
-        hass.data[DOMAIN] = {}
-        
-    system_code = entry.data[CONF_SYSTEM_CODE]
-    gateways = entry.data[CONF_INTERNAL_GATEWAYS]
-
-    #Read Gateway sensors
-    coordinator = BrematicProCoordinator(hass, system_code, gateways)
-    await coordinator.async_config_entry_first_refresh()
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-    hass.data[DOMAIN][entry.entry_id] = coordinator
-    
-    await setup_entry_components(hass, entry)#Setup components
-    #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
-
-    return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""

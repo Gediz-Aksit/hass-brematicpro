@@ -14,7 +14,6 @@ from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_CONFIG_JSON, CONF_INT
 
 _LOGGER = logging.getLogger(__name__)
 
-
 class BrematicProCoordinator(DataUpdateCoordinator):
     """Class to manage fetching BrematicPro data."""
 
