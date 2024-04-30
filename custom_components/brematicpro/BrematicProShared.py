@@ -72,7 +72,11 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_types
                     #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
                     entities.append(entity)
         async_add_entities(entities, True)
-        hass.data.setdefault(DOMAIN, {})[entry.entry_id] = entities
+        if DOMAIN not in hass.data:
+            hass.data[DOMAIN] = {}
+        if entry.entry_id not in hass.data[DOMAIN]:
+            hass.data[DOMAIN][entry.entry_id] = {}
+        hass.data[DOMAIN][entry.entry_id]["entities"] = entities
         return True
     return False
 
@@ -199,26 +203,3 @@ class BrematicProJsonDownloadView(HomeAssistantView):
             'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
         })
         #return web.Response(status=404, text="Configuration data not found.")
-
-SCAN_INTERVAL = timedelta(minutes=1)  # How often to poll the device
-
-class BrematicDataCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the BrematicGateway."""
-
-    def __init__(self, hass, gateway_ip, system_code):
-        """Initialize."""
-        self.hass = hass
-        self.system_code = system_code
-        self.api_url = f"http://{gateway_ip}/cmd?XC_FNC=SendSC&type=B4&at={self.system_code}&data=getStates"
-        super().__init__(hass, _LOGGER, name="BrematicDataCoordinator", update_interval=SCAN_INTERVAL)
-
-    async def _async_update_data(self):
-        """Fetch data from BrematicGateway."""
-        try:
-            async with async_get_clientsession(self.hass).get(self.api_url) as response:
-                if response.status != 200:
-                    raise UpdateFailed(f"Error fetching data: {response.status}")
-                json_data = await response.json()
-                return json_data
-        except Exception as e:
-            raise UpdateFailed(f"Error communicating with API: {str(e)}")
