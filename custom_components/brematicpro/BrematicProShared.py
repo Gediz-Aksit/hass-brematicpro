@@ -54,29 +54,33 @@ class BrematicProCoordinator(DataUpdateCoordinator):
 async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
+    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
             device_type = device.get('type', None)
-            if device_type in device_types:
+            if device['type'] in device_types:
                 unique_id = device['uniqueid']
+                existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
                 #area_id = find_area_id(hass, device.get('room'))
-                if unique_id in existing_entities:
-                    entity = existing_entities[unique_id]
-                    #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-                    entity.update_device(device)
+                
+                if existing_entity:
+                    existing_entity.update_device(device)
                 else:
                     entity = entity_class(device, hass)
-                    #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-                    entities.append(entity)
+                    entities.append(entity)                
+                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
-        if DOMAIN not in hass.data:
-            hass.data[DOMAIN] = {}
-        if entry.entry_id not in hass.data[DOMAIN]:
-            hass.data[DOMAIN][entry.entry_id] = {}
-        hass.data[DOMAIN][entry.entry_id]["entities"] = entities
+		
+        #if DOMAIN not in hass.data:
+        #    hass.data[DOMAIN] = {}
+        #if entry.entry_id not in hass.data[DOMAIN]:
+        #    hass.data[DOMAIN][entry.entry_id] = {}
+        #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
         return True
     return False
 

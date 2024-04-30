@@ -25,19 +25,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {}
     if entry.entry_id not in hass.data[DOMAIN]:
-        hass.data[DOMAIN][entry.entry_id] = {}
+        hass.data[DOMAIN][entry.entry_id] = {"coordinator": None, "entities": []}
         
     system_code = entry.data[CONF_SYSTEM_CODE]
     gateways = entry.data[CONF_INTERNAL_GATEWAYS]
 
     #Read Gateway sensors
-    coordinator = BrematicProCoordinator(hass, system_code, gateways)
-    await coordinator.async_config_entry_first_refresh()
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-    if "coordinator" not in hass.data[DOMAIN][entry.entry_id]:
+    if not hass.data[DOMAIN][entry.entry_id]["coordinator"]:
+        coordinator = BrematicProCoordinator(hass, system_code, gateways)
+        await coordinator.async_config_entry_first_refresh()
+        if not coordinator.last_update_success:
+            raise ConfigEntryNotReady
         hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
-    
+
     await setup_entry_components(hass, entry)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
