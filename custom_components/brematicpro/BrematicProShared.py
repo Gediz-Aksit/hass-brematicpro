@@ -31,25 +31,26 @@ class BrematicProCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from API."""
         _LOGGER.debug("Fetch data from API.")
-        if not self.gateways:
-            raise UpdateFailed("No gateway IPs are configured")
+        #if not self.gateways:
+        #    raise UpdateFailed("No gateway IPs are configured")
         data = {}
-        async with aiohttp.ClientSession() as session:
-            for domain_or_ip in self.gateways:
-                url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
-                _LOGGER.debug(f"URL {url}")
-                try:
-                    async with session.get(url) as response:
-                        _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
-                        if response.status == 200:
-                            response_text = await response.text()
-                            data[domain_or_ip] = json.loads(await response.text())
-                            _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
-                            _LOGGER.debug(f"Data for {domain_or_ip}: {data[domain_or_ip]}")
-                        else:
-                            raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
-                except aiohttp.ClientError as e:
-                    raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
+        if self.gateways:
+            async with aiohttp.ClientSession() as session:
+                for domain_or_ip in self.gateways:
+                    url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
+                    _LOGGER.debug(f"URL {url}")
+                    try:
+                        async with session.get(url) as response:
+                            _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
+                            if response.status == 200:
+                                response_text = await response.text()
+                                data[domain_or_ip] = json.loads(await response.text())
+                                _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
+                                _LOGGER.debug(f"Data for {domain_or_ip}: {data[domain_or_ip]}")
+                            else:
+                                raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
+                    except aiohttp.ClientError as e:
+                        raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
         
 async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
