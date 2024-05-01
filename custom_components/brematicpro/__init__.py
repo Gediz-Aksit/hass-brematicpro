@@ -27,7 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if entry.entry_id not in hass.data[DOMAIN]:
         hass.data[DOMAIN][entry.entry_id] = {"coordinator": None, "entities": []}
         
-    system_code = entry.data.get(CONF_SYSTEM_CODE, "")
+    system_code = entry.data.get(CONF_SYSTEM_CODE, None)
     gateways = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
 
     #Read Gateway sensors
