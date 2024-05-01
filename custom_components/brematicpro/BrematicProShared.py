@@ -103,6 +103,7 @@ def find_area_id(hass, room_name):
 
 def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json, system_code = ''):
     """Reads and transforms JSON data from specified files and updates entry data."""
+    _LOGGER.debug("read_and_transform_json")
     config_json_path = hass.config.path(config_json)
     rooms_json_path = hass.config.path(rooms_json)
 
