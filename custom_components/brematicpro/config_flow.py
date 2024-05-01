@@ -26,6 +26,14 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             _LOGGER.debug("common_flow_handler A")
+            try:
+                entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
+                _LOGGER.debug(f"Entry retrieved: {entry}")
+                
+                if entry:
+                    self.hass.config_entries.async_update_entry(entry, data=user_input)
+                    _LOGGER.debug(f"Entry updated with user input: {user_input}")
+            _LOGGER.debug("common_flow_handler A")
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=user_input)
@@ -54,8 +62,8 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_SYSTEM_CODE, default=''): str,
                 vol.Required(CONF_CONFIG_FILE, default='BrematicPro.json'): str,
                 vol.Optional(CONF_ROOMS_FILE, default='BrematicProRooms.json'): str,
-                vol.Optional('read_json', default=False): bool,
-                vol.Optional('process_data', default=False): bool
+                vol.Optional('read_json', default=True): bool,
+                vol.Optional('process_data', default=True): bool
             }),
             errors=errors,
             description_placeholders={
