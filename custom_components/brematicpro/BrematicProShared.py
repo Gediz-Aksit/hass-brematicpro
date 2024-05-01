@@ -30,6 +30,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Fetch data from API."""
+        _LOGGER.debug("Fetch data from API.")
         if not self.gateways:
             raise UpdateFailed("No gateway IPs are configured")
         data = {}
@@ -75,7 +76,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_types
                 #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
                 #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
-		
+        
         #if DOMAIN not in hass.data:
         #    hass.data[DOMAIN] = {}
         #if entry.entry_id not in hass.data[DOMAIN]:
