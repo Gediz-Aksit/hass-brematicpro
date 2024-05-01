@@ -45,6 +45,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update a given config entry."""
+    _LOGGER.debug("async_update_entry")
     #hass.data[DOMAIN][CONF_SYSTEM_CODE] = entry.data.get(CONF_SYSTEM_CODE, "")
     #hass.data[DOMAIN][CONF_CONFIG_FILE] = entry.data.get(CONF_CONFIG_FILE, "BrematicPro.json")
     #hass.data[DOMAIN][CONF_ROOMS_FILE] = entry.data.get(CONF_ROOMS_FILE, "BrematicProRooms.json")

@@ -18,6 +18,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def common_flow_handler(self, user_input):
         """Handle common logic for user and options flows."""
+        _LOGGER.debug("common_flow_handler")
         errors = {}
 
         if user_input is not None:
