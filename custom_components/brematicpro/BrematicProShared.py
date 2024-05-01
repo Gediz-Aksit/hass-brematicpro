@@ -54,16 +54,19 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         
 async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
     """Common setup for BrematicPro devices."""
-    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
+    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    
+    _LOGGER.debug("async_common_setup_entry")
     if json_data:
         devices = json.loads(json_data)
         entities = []
+        _LOGGER.debug("async_common_setup_entry A")
         #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
             device_type = device.get('type', None)
+            _LOGGER.debug("async_common_setup_entry B")
             if device['type'] in device_types:
+                _LOGGER.debug("async_common_setup_entry C")
                 unique_id = device['uniqueid']
                 existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
                 #area_id = find_area_id(hass, device.get('room'))
@@ -76,7 +79,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_types
                 #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
                 #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
-        
+        _LOGGER.debug("async_common_setup_entry End")
         #if DOMAIN not in hass.data:
         #    hass.data[DOMAIN] = {}
         #if entry.entry_id not in hass.data[DOMAIN]:
@@ -117,7 +120,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         _LOGGER.error(f"An unexpected error occurred: {e}")
         return False
     if system_code == '':
-        system_code = entry.data.get(CONF_SYSTEM_CODE, 'Invalid_Code')
+        system_code = entry.data.get(CONF_SYSTEM_CODE, "")
     transformed_data = []
     gateways = set()  # Using a set to prevent duplicates
     for item in devices.values():
@@ -147,10 +150,9 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
     json_data = json.dumps(transformed_data)
     #_LOGGER.debug(f"Generated JSON data: {json_data}")
-    hass.config_entries.async_update_entry(
-        entry, 
-        data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)}
-    )
+    #hass.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json.dumps(transformed_data)})
+    hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
+    ha#ss.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
 async def setup_entry_components(hass: HomeAssistant, entry):
