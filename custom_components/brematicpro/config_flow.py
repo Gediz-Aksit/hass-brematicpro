@@ -25,7 +25,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-        
+            _LOGGER.debug("common_flow_handler A")
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=user_input)
@@ -33,6 +33,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(title="BrematicPro", data=user_input)
         
             if user_input.get('read_json'):
+                _LOGGER.debug("common_flow_handler B")
                 success = await self.hass.async_add_executor_job(
                     read_and_transform_json,
                     self.hass,
