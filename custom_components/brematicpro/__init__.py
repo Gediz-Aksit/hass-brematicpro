@@ -31,12 +31,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     gateways = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
 
     #Read Gateway sensors
-    #if not hass.data[DOMAIN][entry.entry_id]["coordinator"]:
-    #    coordinator = BrematicProCoordinator(hass, system_code, gateways)
-    #    await coordinator.async_config_entry_first_refresh()
-    #    if not coordinator.last_update_success:
-    #        raise ConfigEntryNotReady
-    #    hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
+    if not hass.data[DOMAIN][entry.entry_id]["coordinator"]:
+        coordinator = BrematicProCoordinator(hass, system_code, gateways)
+        await coordinator.async_config_entry_first_refresh()
+        if not coordinator.last_update_success:
+            raise ConfigEntryNotReady
+        hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
 
     await setup_entry_components(hass, entry)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
