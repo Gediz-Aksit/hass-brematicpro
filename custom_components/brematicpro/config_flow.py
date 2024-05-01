@@ -1,7 +1,10 @@
+import logging
 from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE
 from .BrematicProShared import read_and_transform_json, setup_entry_components
+
+_LOGGER = logging.getLogger(__name__)
 
 class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for BrematicPro."""
