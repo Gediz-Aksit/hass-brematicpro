@@ -28,8 +28,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data[DOMAIN][entry.entry_id] = {"coordinator": None, "entities": []}
         
     system_code = entry.data.get(CONF_SYSTEM_CODE, None)
-    devices_filename = entry.data.get(CONF_CONFIG_JSON, 'BrematicPro.json')
-    rooms_filename = entry.data.get(CONF_ROOMS_JSON, 'BrematicProRooms.json')
+    devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
+    rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
     gateways = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
 
     #Read Gateway sensors
