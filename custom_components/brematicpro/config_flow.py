@@ -23,19 +23,9 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle common logic for user and options flows."""
         _LOGGER.debug("common_flow_handler")
         errors = {}
+        _LOGGER.debug(f"Entry updated with user input: {user_input}")
 
         if user_input is not None:
-            _LOGGER.debug("common_flow_handler A")
-            try:
-                entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
-                _LOGGER.debug(f"Entry retrieved: {entry}")
-                
-                if entry:
-                    self.hass.config_entries.async_update_entry(entry, data=user_input)
-                    _LOGGER.debug(f"Entry updated with user input: {user_input}")
-            except Exception as e:
-                _LOGGER.error(f"Error in common_flow_handler: {e}")
-                errors['internal_error'] = str(e)
             _LOGGER.debug("common_flow_handler A")
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
             if entry:
