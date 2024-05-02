@@ -28,6 +28,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             _LOGGER.debug("common_flow_handler A")
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
+            _LOGGER.debug(f"Entry retrieved: {entry}")
             if entry:
                 self.hass.config_entries.async_update_entry(entry, data=user_input)
             else:
