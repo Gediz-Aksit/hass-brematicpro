@@ -161,12 +161,12 @@ async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
     from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
     from .sensor import BrematicProDoor, BrematicProWindow
-    
-    await async_common_setup_entry(hass, entry, 'switch', BrematicProSwitch)
-    await async_common_setup_entry(hass, entry, 'smartswitch', BrematicProMeteredSwitch)
-    await async_common_setup_entry(hass, entry, 'light', BrematicProLight)
-    await async_common_setup_entry(hass, entry, 'door', BrematicProDoor)
-    await async_common_setup_entry(hass, entry, 'window', BrematicProWindow)
+
+    await async_common_setup_entry(hass, entry, async_add_entities, 'switch', BrematicProSwitch)
+    await async_common_setup_entry(hass, entry, async_add_entities, 'smartswitch', BrematicProMeteredSwitch)
+    await async_common_setup_entry(hass, entry, async_add_entities, 'light', BrematicProLight)
+    await async_common_setup_entry(hass, entry, async_add_entities, 'door', BrematicProDoor)
+    await async_common_setup_entry(hass, entry, async_add_entities, 'window', BrematicProWindow)
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""
