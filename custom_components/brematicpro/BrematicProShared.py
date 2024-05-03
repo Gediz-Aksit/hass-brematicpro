@@ -156,7 +156,7 @@ async def async_common_setup_entry(hass, entry, entity_class):
         #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
     return entities
 
-async def setup_entry_components(hass: HomeAssistant, entry):
+async def setup_entry_components(hass: HomeAssistant, entry, async_add_entities):
     """Setup entry components for BrematicPro devices."""
     from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
     from .sensor import BrematicProDoor, BrematicProWindow
@@ -168,10 +168,11 @@ async def setup_entry_components(hass: HomeAssistant, entry):
     entities += await async_common_setup_entry(hass, entry, BrematicProDoor)
     entities += await async_common_setup_entry(hass, entry, BrematicProWindow)
 
-    if entities:
-        async_add_entities = hass.data[DOMAIN][entry.entry_id].get('async_add_entities_callback')
-        if async_add_entities:
-            async_add_entities(entities, True)
+    if async_add_entities and entities:
+        async_add_entities(entities, True)
+        #async_add_entities = hass.data[DOMAIN][entry.entry_id].get('async_add_entities_callback')
+        #if async_add_entities:
+        #    async_add_entities(entities, True)
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""

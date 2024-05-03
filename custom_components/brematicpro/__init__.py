@@ -43,8 +43,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     success = await hass.async_add_executor_job(
         read_and_transform_json, hass, entry, devices_filename, rooms_filename
     )
-
-    await setup_entry_components(hass, entry)#Setup components
+    async_add_entities = get_async_add_entities_somehow() 
+    await setup_entry_components(hass, entry, async_add_entities)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
     return True
