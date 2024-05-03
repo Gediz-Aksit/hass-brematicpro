@@ -20,7 +20,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     #async_track_time_interval(hass, functools.partial(fetch_sensor_states, hass), timedelta(minutes=1))
     return True
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, setup_entry_components):
     """Setup from a config entry."""
     if DOMAIN not in hass.data:
         hass.data[DOMAIN] = {}
@@ -44,7 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         read_and_transform_json, hass, entry, devices_filename, rooms_filename
     )
 
-    await setup_entry_components(hass, entry)#Setup components
+    await setup_entry_components(hass, entry, setup_entry_components)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
     return True
