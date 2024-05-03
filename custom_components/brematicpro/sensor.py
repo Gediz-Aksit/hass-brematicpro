@@ -3,7 +3,7 @@ from homeassistant.components.sensor import SensorEntity
 class BrematicProDoor(SensorEntity):
     """Representation of a Brematic Pro Door Sensor."""
     
-   def __init__(self, device, hass):
+    def __init__(self, device, hass):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
         self._name = device['name']
