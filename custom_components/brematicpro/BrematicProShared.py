@@ -159,9 +159,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_types
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
-	from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
-	from .sensor import BrematicProDoor, BrematicProWindow
-	
+    from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
+    from .sensor import BrematicProDoor, BrematicProWindow
+    
     await async_common_setup_entry(hass, entry, 'switch', BrematicProSwitch)
     await async_common_setup_entry(hass, entry, 'smartswitch', BrematicProMeteredSwitch)
     await async_common_setup_entry(hass, entry, 'light', BrematicProLight)
