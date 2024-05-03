@@ -175,11 +175,17 @@ async def setup_entry_components(hass: HomeAssistant, entry):
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""
-    unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'door') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'window')
+    unload_ok = True
+    if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'switch')
+    if 'smartswitch_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch')
+    if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'light')
+    if 'smartswitch_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'door')
+    if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'window')
     return unload_ok
 
 async def send_command(url):
