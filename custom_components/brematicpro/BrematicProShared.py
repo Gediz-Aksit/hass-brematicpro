@@ -11,8 +11,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from datetime import timedelta
 
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_CONFIG_JSON, CONF_INTERNAL_GATEWAYS, CONF_INTERNAL_SENSOR_JSON
-from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
-from .sensor import BrematicProDoor, BrematicProWindow
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -161,7 +159,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_types
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
-
+	from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
+	from .sensor import BrematicProDoor, BrematicProWindow
+	
     await async_common_setup_entry(hass, entry, 'switch', BrematicProSwitch)
     await async_common_setup_entry(hass, entry, 'smartswitch', BrematicProMeteredSwitch)
     await async_common_setup_entry(hass, entry, 'light', BrematicProLight)
