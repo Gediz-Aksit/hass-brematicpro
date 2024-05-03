@@ -1,4 +1,5 @@
 from homeassistant.components.sensor import SensorEntity
+from .BrematicProShared import find_area_id
 
 class BrematicProDoor(SensorEntity):
     """Representation of a Brematic Pro Door Sensor."""
@@ -7,7 +8,7 @@ class BrematicProDoor(SensorEntity):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
         self._name = device['name']
-        self._type = device.get('type', None)
+        self._type = 'door'
         self._frequency =  device.get('freq', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
@@ -39,7 +40,10 @@ class BrematicProDoor(SensorEntity):
 
 class BrematicProWindow(BrematicProDoor):
     """Representation of a Brematic Pro Window Sensor, inheriting from Door Sensor."""
-
+    def __init__(self, device, hass):
+        """Initialize the light."""
+        super().__init__(device, hass)
+        self._type = 'window'
     @property
     def name(self):
         """Return the name of the window sensor."""
@@ -48,14 +52,3 @@ class BrematicProWindow(BrematicProDoor):
     async def async_update(self):
         """Update the sensor state specifically for windows."""
         self._state = await self.get_window_state()  # Custom method for window state
-
-# Setup functions to be called from __init__.py
-async def async_setup_entry(hass, config_entry, async_add_devices):
-    """Set up Brematic Pro Door and Window Sensors dynamically."""
-    # Device type could be part of the configuration or discovered
-    devices = []  # This should be populated based on actual config or discovery
-    for device in devices:
-        if device['type'] == 'door':
-            async_add_devices([BrematicProDoorSensor(device['name'], device['id'], device['initial_state'])])
-        elif device['type'] == 'window':
-            async_add_devices([BrematicProWindowSensor(device['name'], device['id'], device['initial_state'])])

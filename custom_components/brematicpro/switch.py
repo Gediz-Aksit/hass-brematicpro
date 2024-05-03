@@ -18,7 +18,7 @@ class BrematicProSwitch(SwitchEntity):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
         self._name = device['name']
-        self._type = device.get('type', None)
+        self._type = 'switch'
         self._frequency =  device.get('freq', None)
         self._commands = device.get('commands', [])
         self._suggested_area = device.get('room', None)
@@ -60,6 +60,7 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
     def __init__(self, device, hass):
         """Initialize the smart/metered switch."""
         super().__init__(device, hass)
+        self._type = 'smartswitch'
     
 class BrematicProLight(BrematicProSwitch, LightEntity):
     """Representation of a Brematic Light."""
@@ -67,4 +68,5 @@ class BrematicProLight(BrematicProSwitch, LightEntity):
     def __init__(self, device, hass):
         """Initialize the light."""
         super().__init__(device, hass)
+        self._type = 'light'
         self._color_mode = COLOR_MODE_ONOFF
