@@ -13,11 +13,7 @@ class BrematicProDoor(SensorEntity):
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(hass)
-
-    def __init__(self, name, device_id, state):
-        self._name = name
-        self._device_id = device_id
-        self._state = state
+        #self._state = state
 
     @property
     def name(self):
