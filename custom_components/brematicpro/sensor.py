@@ -1,66 +1,62 @@
-import asyncio
-import logging
-from datetime import timedelta
-import aiohttp
-import json
-
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from .BrematicProShared import async_setup_entry_from_shared
 
-_LOGGER = logging.getLogger(__name__)
+class BrematicProDoor(SensorEntity):
+    """Representation of a Brematic Pro Door Sensor."""
+    
+   def __init__(self, device, hass):
+        """Initialize the switch."""
+        self._unique_id = device['uniqueid']
+        self._name = device['name']
+        self._type = device.get('type', None)
+        self._frequency =  device.get('freq', None)
+        self._suggested_area = device.get('room', None)
+        self._is_on = False
+        self._session = async_get_clientsession(hass)
 
-SCAN_INTERVAL = timedelta(minutes=1)  # How often to poll the device, set to once a minute
-
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the sensor platform."""
-    coordinator = BrematicDataCoordinator(hass)
-    await coordinator.async_config_entry_first_refresh()
-    async_add_entities([BrematicSensor(coordinator)], True)
-
-class BrematicDataCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the device."""
-
-    def __init__(self, hass):
-        """Initialize."""
-        self.hass = hass
-        self.api_url = "http://192.168.0.26/cmd?XC_FNC=SendSC&type=B4&at=YOUR_SYSTEM_CODE&data=getStates"
-        super().__init__(hass, _LOGGER, name="BrematicSensor", update_interval=SCAN_INTERVAL)
-
-    async def _async_update_data(self):
-        """Fetch data from BrematicGateway."""
-        try:
-            async with async_get_clientsession(self.hass).get(self.api_url) as response:
-                if response.status != 200:
-                    raise UpdateFailed(f"Error fetching data: {response.status}")
-                json_data = await response.json()
-                return json_data
-        except Exception as e:
-            raise UpdateFailed(f"Error communicating with API: {str(e)}")
-
-class BrematicSensor(SensorEntity):
-    """Representation of a Sensor."""
-
-    def __init__(self, coordinator):
-        """Initialize the sensor."""
-        self.coordinator = coordinator
-        self._state = None
+    def __init__(self, name, device_id, state):
+        self._name = name
+        self._device_id = device_id
+        self._state = state
 
     @property
     def name(self):
-        """Return the name of the sensor."""
-        return "Brematic State"
+        """Return the name of the door sensor."""
+        return self._name
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self.coordinator.data
+    def is_on(self):
+        """Return true if the door is open."""
+        return self._state == 'open'
 
     @property
-    def available(self):
-        """Return if sensor is available."""
-        return self.coordinator.last_update_success
+    def unique_id(self):
+        """Return a unique ID."""
+        return self._device_id
 
     async def async_update(self):
-        """Update Brematic sensor."""
-        await self.coordinator.async_request_refresh()
+        """Update the sensor state."""
+        self._state = await self.get_state()  # Assume this method gets the current state
+
+class BrematicProWindow(BrematicProDoor):
+    """Representation of a Brematic Pro Window Sensor, inheriting from Door Sensor."""
+
+    @property
+    def name(self):
+        """Return the name of the window sensor."""
+        return f"{self._name} Window"
+
+    async def async_update(self):
+        """Update the sensor state specifically for windows."""
+        self._state = await self.get_window_state()  # Custom method for window state
+
+# Setup functions to be called from __init__.py
+async def async_setup_entry(hass, config_entry, async_add_devices):
+    """Set up Brematic Pro Door and Window Sensors dynamically."""
+    # Device type could be part of the configuration or discovered
+    devices = []  # This should be populated based on actual config or discovery
+    for device in devices:
+        if device['type'] == 'door':
+            async_add_devices([BrematicProDoorSensor(device['name'], device['id'], device['initial_state'])])
+        elif device['type'] == 'window':
+            async_add_devices([BrematicProWindowSensor(device['name'], device['id'], device['initial_state'])])

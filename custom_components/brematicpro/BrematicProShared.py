@@ -11,6 +11,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from datetime import timedelta
 
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_CONFIG_JSON, CONF_INTERNAL_GATEWAYS, CONF_INTERNAL_SENSOR_JSON
+from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
+from .sensor import BrematicProDoor, BrematicProWindow
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,42 +54,6 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                     except aiohttp.ClientError as e:
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
-        
-async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
-    """Common setup for BrematicPro devices."""
-    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    _LOGGER.debug("async_common_setup_entry")
-    if json_data:
-        devices = json.loads(json_data)
-        entities = []
-        _LOGGER.debug("async_common_setup_entry A")
-        #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
-        for device in devices:
-            device_type = device.get('type', None)
-            _LOGGER.debug("async_common_setup_entry B")
-            if device['type'] in device_types:
-                _LOGGER.debug("async_common_setup_entry C")
-                unique_id = device['uniqueid']
-                existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
-                #area_id = find_area_id(hass, device.get('room'))
-                
-                if existing_entity:
-                    existing_entity.update_device(device)
-                else:
-                    entity = entity_class(device, hass)
-                    entities.append(entity)                
-                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-        async_add_entities(entities, True)
-        _LOGGER.debug("async_common_setup_entry End")
-        #if DOMAIN not in hass.data:
-        #    hass.data[DOMAIN] = {}
-        #if entry.entry_id not in hass.data[DOMAIN]:
-        #    hass.data[DOMAIN][entry.entry_id] = {}
-        #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
-        return True
-    return False
 
 def find_area_id(hass, room_name):
     """Find area ID by matching room name with area names."""
@@ -157,15 +123,58 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     #hass.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
+async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
+    """Common setup for BrematicPro devices."""
+    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
+    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    _LOGGER.debug("async_common_setup_entry")
+    if json_data:
+        devices = json.loads(json_data)
+        entities = []
+        _LOGGER.debug("async_common_setup_entry A")
+        #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        for device in devices:
+            device_type = device.get('type', None)
+            _LOGGER.debug("async_common_setup_entry B")
+            if device['type'] in device_types:
+                _LOGGER.debug("async_common_setup_entry C")
+                unique_id = device['uniqueid']
+                existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
+                #area_id = find_area_id(hass, device.get('room'))
+                
+                if existing_entity:
+                    existing_entity.update_device(device)
+                else:
+                    entity = entity_class(device, hass)
+                    entities.append(entity)                
+                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+        async_add_entities(entities, True)
+        _LOGGER.debug("async_common_setup_entry End")
+        #if DOMAIN not in hass.data:
+        #    hass.data[DOMAIN] = {}
+        #if entry.entry_id not in hass.data[DOMAIN]:
+        #    hass.data[DOMAIN][entry.entry_id] = {}
+        #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
+        return True
+    return False
+
 async def setup_entry_components(hass: HomeAssistant, entry):
-    """Setup entry components for 'switch' and 'light'."""
-    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    await hass.config_entries.async_forward_entry_setup(entry, 'light')
+    """Setup entry components for BrematicPro devices."""
+
+    await async_common_setup_entry(hass, entry, 'switch', BrematicProSwitch)
+    await async_common_setup_entry(hass, entry, 'smartswitch', BrematicProMeteredSwitch)
+    await async_common_setup_entry(hass, entry, 'light', BrematicProLight)
+    await async_common_setup_entry(hass, entry, 'door', BrematicProDoor)
+    await async_common_setup_entry(hass, entry, 'window', BrematicProWindow)
 
 async def unload_entry_components(hass: HomeAssistant, entry):
-    """Unload entry components for 'switch' and 'light'."""
+    """Unload entry components for BrematicPro devices."""
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch')
                 await hass.config_entries.async_forward_entry_unload(entry, 'light')
+                await hass.config_entries.async_forward_entry_unload(entry, 'door')
+                await hass.config_entries.async_forward_entry_unload(entry, 'window')
     return unload_ok
 
 async def send_command(url):
