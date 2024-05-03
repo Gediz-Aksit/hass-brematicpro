@@ -171,9 +171,9 @@ async def setup_entry_components(hass: HomeAssistant, entry):
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch')
-                await hass.config_entries.async_forward_entry_unload(entry, 'light')
-                await hass.config_entries.async_forward_entry_unload(entry, 'door')
+                await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'door') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'window')
     return unload_ok
 
