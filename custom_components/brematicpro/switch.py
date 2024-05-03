@@ -7,7 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, CONF_INTERNAL_CONFIG_JSON
-from .BrematicProShared import async_common_setup_entry, find_area_id, send_command
+from .BrematicProShared import find_area_id, send_command
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -1,5 +1,4 @@
 from homeassistant.components.sensor import SensorEntity
-from .BrematicProShared import async_setup_entry_from_shared
 
 class BrematicProDoor(SensorEntity):
     """Representation of a Brematic Pro Door Sensor."""
