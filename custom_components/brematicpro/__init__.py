@@ -44,7 +44,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     success = await hass.async_add_executor_job(
         read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
     )
-    #async_add_entities = switch_platform[0].async_register_entity_service
     await setup_entry_components(hass, entry)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
@@ -53,12 +52,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update a given config entry."""
     _LOGGER.debug("async_update_entry")
-    #hass.data[DOMAIN][CONF_SYSTEM_CODE] = entry.data.get(CONF_SYSTEM_CODE, "")
-    #hass.data[DOMAIN][CONF_CONFIG_FILE] = entry.data.get(CONF_CONFIG_FILE, "BrematicPro.json")
-    #hass.data[DOMAIN][CONF_ROOMS_FILE] = entry.data.get(CONF_ROOMS_FILE, "BrematicProRooms.json")
-    #hass.data[DOMAIN][CONF_INTERNAL_CONFIG_JSON] = entry.data.get(CONF_INTERNAL_CONFIG_JSON)
-    #hass.data[DOMAIN][CONF_INTERNAL_GATEWAYS] = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
-    #hass.data[DOMAIN][CONF_INTERNAL_SENSOR_JSON] = entry.data.get(CONF_INTERNAL_SENSOR_JSON)
     devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
     rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
     

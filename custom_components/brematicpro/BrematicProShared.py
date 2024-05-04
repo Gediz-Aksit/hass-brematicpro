@@ -76,9 +76,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                 else:
                     entity = entity_class(device, hass)
                     entities.append(entity)
-            else:
-                _LOGGER.debug(f"async_common_setup_entry B {device.get('name', 'empty name')}")
-                _LOGGER.debug(f"async_common_setup_entry {device.get('type', 'Empty')} {entity_class._type}")
+            #else:
+            #    _LOGGER.debug(f"async_common_setup_entry B {device.get('name', 'empty name')}")
+            #    _LOGGER.debug(f"async_common_setup_entry {device.get('type', 'Empty')} {entity_class._type}")
             #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
             #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
@@ -160,7 +160,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     return True
 
 async def setup_entry_components(hass: HomeAssistant, entry):
-    """Setup entry components for 'switch' and 'light'."""
+    """Setup entry components for BrematicPro devices."""
     await hass.config_entries.async_forward_entry_setup(entry, 'switch')
     await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
     await hass.config_entries.async_forward_entry_setup(entry, 'light')
@@ -168,7 +168,7 @@ async def setup_entry_components(hass: HomeAssistant, entry):
     await hass.config_entries.async_forward_entry_setup(entry, 'window')
 
 async def unload_entry_components(hass: HomeAssistant, entry):
-    """Unload entry components for 'switch' and 'light'."""
+    """Unload entry components for BrematicPro devices."""
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
