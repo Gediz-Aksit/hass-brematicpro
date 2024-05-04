@@ -2,7 +2,8 @@ import logging
 from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE
-from .BrematicProShared import read_and_transform_json, setup_entry_components
+from .__init__ import setup_entry_components
+from .BrematicProShared import read_and_transform_json
 
 _LOGGER = logging.getLogger(__name__)
 
