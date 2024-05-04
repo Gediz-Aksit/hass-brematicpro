@@ -6,8 +6,6 @@
   "documentation": "https://github.com/Gediz-Aksit/hass-brematicpro",
   "requirements": ["aiohttp>=3.6.2"],
   "dependencies": [],
-  "codeowners": [
-    "@Gediz-Aksit"
-  ],
-  "platforms": ["switch", "smartswitch", "light", "smartswitch", "door", "window"]
+  "codeowners": ["@Gediz-Aksit"],
+  "platforms": ["switch", "smartswitch", "light", "door", "window"]
 }
