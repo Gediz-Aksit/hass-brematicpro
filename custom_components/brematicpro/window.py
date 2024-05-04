@@ -1,8 +1,11 @@
+import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
 from .door import BrematicProDoor
 from .BrematicProShared import async_common_setup_entry
+
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
@@ -16,7 +19,7 @@ class BrematicProWindow(BrematicProDoor):
     def __init__(self, device, hass):
         """Initialize the light."""
         super().__init__(device, hass)
-        self._type = 'window'
+
     @property
     def name(self):
         """Return the name of the window sensor."""

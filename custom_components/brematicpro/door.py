@@ -1,3 +1,4 @@
+import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import SensorEntity
@@ -19,7 +20,6 @@ class BrematicProDoor(SensorEntity):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
         self._name = device['name']
-        self._type = 'door'
         self._frequency =  device.get('freq', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
