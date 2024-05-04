@@ -227,8 +227,8 @@ class BrematicProJsonDownloadView(HomeAssistantView):
         if not user.is_authenticated:
             _LOGGER.error("Access denied: unauthenticated access attempt.")
             return web.Response(status=401, text="Unauthorized")
-        
-        entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_CONFIG_JSON in e.data), None)
+        entry = []
+        #entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_CONFIG_JSON in e.data), None)
         if entry:
             json_data = entry.data[CONF_INTERNAL_CONFIG_JSON]
             _LOGGER.warning(f"BrematicProJsonDownloadView called Data")
