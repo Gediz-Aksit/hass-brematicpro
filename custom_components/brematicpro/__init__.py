@@ -44,11 +44,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     success = await hass.async_add_executor_job(
         read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
     )
+    _LOGGER.debug("async_setup_entry calls setup_entry_components")
     await setup_entry_components(hass, entry)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
-    _LOGGER.debug("smartswitch Start")
-    await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
-    _LOGGER.debug("smartswitch End")
+    #_LOGGER.debug("smartswitch Start")
+    #await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
+    #_LOGGER.debug("smartswitch End")
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:

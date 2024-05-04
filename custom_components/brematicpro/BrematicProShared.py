@@ -57,12 +57,11 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    _LOGGER.debug("async_common_setup_entry")
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        _LOGGER.debug("async_common_setup_entry A")
         #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}")
         for device in devices:
             #device_type = device.get('type', None)
             if device.get('type', '') == 'smartswitch':
@@ -70,7 +69,6 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
             if entity_class._type == 'smartswitch':
                 _LOGGER.debug("Class smartswitch")
             if device.get('type', '') == entity_class._type:
-                _LOGGER.debug("async_common_setup_entry C")
                 unique_id = device['uniqueid']
                 existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
                 #area_id = find_area_id(hass, device.get('room'))
@@ -86,7 +84,6 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
             #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
             #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
-        _LOGGER.debug("async_common_setup_entry End")
         #if DOMAIN not in hass.data:
         #    hass.data[DOMAIN] = {}
         #if entry.entry_id not in hass.data[DOMAIN]:

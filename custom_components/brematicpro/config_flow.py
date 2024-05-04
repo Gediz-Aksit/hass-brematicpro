@@ -48,7 +48,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors['read_json'] = "Failed to read or transform JSON"
 
             if user_input.get('process_data'):
-                _LOGGER.debug("Reconfiguration.")
+                _LOGGER.debug("Configuration. common_flow_handler calls setup_entry_components")
                 await setup_entry_components(self.hass, entry)
 
         return self.async_show_form(
