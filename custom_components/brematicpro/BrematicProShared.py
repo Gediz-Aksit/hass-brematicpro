@@ -154,7 +154,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         #if entry.entry_id not in hass.data[DOMAIN]:
         #    hass.data[DOMAIN][entry.entry_id] = {}
         #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
-    return entities
+        return True
+    return False
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
@@ -227,8 +228,8 @@ class BrematicProJsonDownloadView(HomeAssistantView):
         if not user.is_authenticated:
             _LOGGER.error("Access denied: unauthenticated access attempt.")
             return web.Response(status=401, text="Unauthorized")
-        entry = []
-        #entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_CONFIG_JSON in e.data), None)
+        
+        entry = next((e for e in hass.config_entries.async_entries(DOMAIN) if CONF_INTERNAL_CONFIG_JSON in e.data), None)
         if entry:
             json_data = entry.data[CONF_INTERNAL_CONFIG_JSON]
             _LOGGER.warning(f"BrematicProJsonDownloadView called Data")
