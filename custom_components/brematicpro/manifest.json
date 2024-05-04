@@ -8,5 +8,6 @@
   "dependencies": [],
   "codeowners": [
     "@Gediz-Aksit"
-  ]
+  ],
+  "platforms": ["switch", "smartswitch", "light", "smartswitch", "door", "window"]
 }
