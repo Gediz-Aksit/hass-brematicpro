@@ -65,6 +65,10 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
             #device_type = device.get('type', None)
+            if device.get('type', '') == 'smartswitch':
+                _LOGGER.debug("Device smartswitch")
+            if entity_class._type == 'smartswitch':
+                _LOGGER.debug("Class smartswitch")
             if device.get('type', '') == entity_class._type:
                 _LOGGER.debug("async_common_setup_entry C")
                 unique_id = device['uniqueid']
