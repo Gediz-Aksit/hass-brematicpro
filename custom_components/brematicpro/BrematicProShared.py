@@ -53,7 +53,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
         
-async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
+async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
@@ -66,19 +66,19 @@ async def async_common_setup_entry(hass, entry, async_add_entities, device_types
         for device in devices:
             device_type = device.get('type', None)
             _LOGGER.debug("async_common_setup_entry B")
-            if device['type'] in device_types:
-                _LOGGER.debug("async_common_setup_entry C")
-                unique_id = device['uniqueid']
-                existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
-                #area_id = find_area_id(hass, device.get('room'))
-                
-                if existing_entity:
-                    existing_entity.update_device(device)
-                else:
-                    entity = entity_class(device, hass)
-                    entities.append(entity)                
-                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+            #if device['type'] in device_types:
+            _LOGGER.debug("async_common_setup_entry C")
+            unique_id = device['uniqueid']
+            existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
+            #area_id = find_area_id(hass, device.get('room'))
+            
+            if existing_entity:
+                existing_entity.update_device(device)
+            else:
+                entity = entity_class(device, hass)
+                entities.append(entity)                
+            #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+            #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
         _LOGGER.debug("async_common_setup_entry End")
         #if DOMAIN not in hass.data:
