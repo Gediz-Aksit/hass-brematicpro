@@ -13,6 +13,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class BrematicProDoor(SensorEntity):
     """Representation of a Brematic Pro Door Sensor."""
+    _type = 'door'
     
     def __init__(self, device, hass):
         """Initialize the switch."""

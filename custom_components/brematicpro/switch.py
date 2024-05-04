@@ -16,6 +16,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class BrematicProSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
+    _type = 'switch'
+
     def __init__(self, device, hass):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
@@ -57,5 +59,3 @@ class BrematicProSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
-
-    

@@ -10,6 +10,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class BrematicProWindow(BrematicProDoor):
     """Representation of a Brematic Pro Window Sensor, inheriting from Door Sensor."""
+    
+    _type = 'window'
+    
     def __init__(self, device, hass):
         """Initialize the light."""
         super().__init__(device, hass)

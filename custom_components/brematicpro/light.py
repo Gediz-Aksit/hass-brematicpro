@@ -11,6 +11,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 class BrematicProLight(BrematicProSwitch, LightEntity):
     """Representation of a Brematic Light."""
+    _type = 'light'
 
     def __init__(self, device, hass):
         """Initialize the light."""

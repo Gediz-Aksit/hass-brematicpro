@@ -9,6 +9,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
 
 class BrematicProMeteredSwitch(BrematicProSwitch):
+    _type = 'smartswitch'
+    
     """Representation of a Brematic Metered Switch."""
     def __init__(self, device, hass):
         """Initialize the smart/metered switch."""
