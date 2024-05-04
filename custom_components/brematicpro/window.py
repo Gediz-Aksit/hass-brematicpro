@@ -1,7 +1,8 @@
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from .BrematicProShared import async_common_setup_entry
+
 from .door import BrematicProDoor
+from .BrematicProShared import async_common_setup_entry
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
