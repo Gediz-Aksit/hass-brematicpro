@@ -2,8 +2,7 @@ import logging
 from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE
-from .__init__ import setup_entry_components
-from .BrematicProShared import read_and_transform_json
+from .BrematicProShared import read_and_transform_json, setup_entry_components
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,6 +48,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors['read_json'] = "Failed to read or transform JSON"
 
             if user_input.get('process_data'):
+                _LOGGER.debug("Reconfiguration.")
                 await setup_entry_components(self.hass, entry)
 
         return self.async_show_form(
