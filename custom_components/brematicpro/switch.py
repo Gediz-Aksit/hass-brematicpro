@@ -1,19 +1,21 @@
 import logging
 import json
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.components.light import LightEntity, COLOR_MODE_ONOFF
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, CONF_INTERNAL_CONFIG_JSON
-from .BrematicProShared import find_area_id, send_command
+from .BrematicProShared import async_common_setup_entry, find_area_id, send_command
 
 _LOGGER = logging.getLogger(__name__)
 
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
+    """Set up BrematicPro device from a config entry."""
+    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch)
+
 class BrematicProSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
-
     def __init__(self, device, hass):
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
@@ -55,18 +57,5 @@ class BrematicProSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
-class BrematicProMeteredSwitch(BrematicProSwitch):
-    """Representation of a Brematic Metered Switch."""
-    def __init__(self, device, hass):
-        """Initialize the smart/metered switch."""
-        super().__init__(device, hass)
-        self._type = 'smartswitch'
-    
-class BrematicProLight(BrematicProSwitch, LightEntity):
-    """Representation of a Brematic Light."""
 
-    def __init__(self, device, hass):
-        """Initialize the light."""
-        super().__init__(device, hass)
-        self._type = 'light'
-        self._color_mode = COLOR_MODE_ONOFF
+    

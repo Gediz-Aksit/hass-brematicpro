@@ -121,7 +121,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     #hass.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
-async def async_common_setup_entry(hass, entry, entity_class):
+async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
@@ -147,7 +147,7 @@ async def async_common_setup_entry(hass, entry, entity_class):
                 entities.append(entity)                
                 #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
                 #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-        #async_add_entities(entities, True)
+        async_add_entities(entities, True)
         _LOGGER.debug("async_common_setup_entry End")
         #if DOMAIN not in hass.data:
         #    hass.data[DOMAIN] = {}
@@ -178,17 +178,18 @@ async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""
     unload_ok = True
     if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'switch')
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
     if 'smartswitch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch')
-    if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'light')
-    if 'smartswitch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'door')
-    if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry, 'window')
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
+    if 'light_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
+    if 'door_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
+    if 'window_loaded' in hass.data[DOMAIN][entry.entry_id]:
+        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
     return unload_ok
-
+    
+    
 async def send_command(url):
     """Send command to the Brematic device."""
     async with aiohttp.ClientSession() as session:
