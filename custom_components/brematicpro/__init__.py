@@ -46,7 +46,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
     #async_add_entities = switch_platform[0].async_register_entity_service
     #await setup_entry_components(hass, entry, async_add_entities)#Setup components
-    await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
+    #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
     return True
 
