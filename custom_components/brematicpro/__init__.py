@@ -42,7 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
 
     success = await hass.async_add_executor_job(
-        read_and_transform_json, hass, entry, devices_filename, rooms_filename
+        read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
     )
     #async_add_entities = switch_platform[0].async_register_entity_service
     await setup_entry_components(hass, entry)#Setup components

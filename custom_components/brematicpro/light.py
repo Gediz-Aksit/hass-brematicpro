@@ -1,3 +1,4 @@
+from homeassistant.core import HomeAssistant
 from homeassistant.components.light import LightEntity, COLOR_MODE_ONOFF
 
 from .BrematicProShared import async_common_setup_entry
