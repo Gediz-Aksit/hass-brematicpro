@@ -52,6 +52,42 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                     except aiohttp.ClientError as e:
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
+        
+async def async_common_setup_entry(hass, entry, async_add_entities, device_types, entity_class):
+    """Common setup for BrematicPro devices."""
+    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
+    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    _LOGGER.debug("async_common_setup_entry")
+    if json_data:
+        devices = json.loads(json_data)
+        entities = []
+        _LOGGER.debug("async_common_setup_entry A")
+        #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
+        for device in devices:
+            device_type = device.get('type', None)
+            _LOGGER.debug("async_common_setup_entry B")
+            if device['type'] in device_types:
+                _LOGGER.debug("async_common_setup_entry C")
+                unique_id = device['uniqueid']
+                existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
+                #area_id = find_area_id(hass, device.get('room'))
+                
+                if existing_entity:
+                    existing_entity.update_device(device)
+                else:
+                    entity = entity_class(device, hass)
+                    entities.append(entity)                
+                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
+        async_add_entities(entities, True)
+        _LOGGER.debug("async_common_setup_entry End")
+        #if DOMAIN not in hass.data:
+        #    hass.data[DOMAIN] = {}
+        #if entry.entry_id not in hass.data[DOMAIN]:
+        #    hass.data[DOMAIN][entry.entry_id] = {}
+        #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
+        return True
+    return False
 
 def find_area_id(hass, room_name):
     """Find area ID by matching room name with area names."""
@@ -121,82 +157,23 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     #hass.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
-async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
-    """Common setup for BrematicPro devices."""
-    json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    entities = []
-    _LOGGER.debug("async_common_setup_entry")
-    if json_data:
-        devices = json.loads(json_data)
-        _LOGGER.debug("async_common_setup_entry A")
-        #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
-        for device in devices:
-            device_type = device.get('type', None)
-            _LOGGER.debug("async_common_setup_entry B")
-            #if device['type'] in device_types:
-            _LOGGER.debug("async_common_setup_entry C")
-            unique_id = device['uniqueid']
-            existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
-            #area_id = find_area_id(hass, device.get('room'))
-            
-            if existing_entity:
-                existing_entity.update_device(device)
-            else:
-                entity = entity_class(device, hass)
-                entities.append(entity)                
-                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-                #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-        async_add_entities(entities, True)
-        _LOGGER.debug("async_common_setup_entry End")
-        #if DOMAIN not in hass.data:
-        #    hass.data[DOMAIN] = {}
-        #if entry.entry_id not in hass.data[DOMAIN]:
-        #    hass.data[DOMAIN][entry.entry_id] = {}
-        #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
-        return True
-    return False
-
 async def setup_entry_components(hass: HomeAssistant, entry):
-    """Setup entry components for BrematicPro devices."""
+    """Setup entry components for 'switch' and 'light'."""
     await hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
+	await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
     await hass.config_entries.async_forward_entry_setup(entry, 'light')
-    await hass.config_entries.async_forward_entry_setup(entry, 'door')
-    await hass.config_entries.async_forward_entry_setup(entry, 'window')
-
-    #from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
-    #from .sensor import BrematicProDoor, BrematicProWindow
-
-    #entities = []
-    #entities += await async_common_setup_entry(hass, entry, BrematicProSwitch)
-    #entities += await async_common_setup_entry(hass, entry, BrematicProMeteredSwitch)
-    #entities += await async_common_setup_entry(hass, entry, BrematicProLight)
-    #entities += await async_common_setup_entry(hass, entry, BrematicProDoor)
-    #entities += await async_common_setup_entry(hass, entry, BrematicProWindow)
-
-    #if async_add_entities and entities:
-    #    async_add_entities(entities, True)
-        #async_add_entities = hass.data[DOMAIN][entry.entry_id].get('async_add_entities_callback')
-        #if async_add_entities:
-        #    async_add_entities(entities, True)
+	await hass.config_entries.async_forward_entry_setup(entry, 'door')
+	await hass.config_entries.async_forward_entry_setup(entry, 'window')
 
 async def unload_entry_components(hass: HomeAssistant, entry):
-    """Unload entry components for BrematicPro devices."""
-    unload_ok = True
-    if 'switch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
-    if 'smartswitch_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
-    if 'light_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
-    if 'door_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
-    if 'window_loaded' in hass.data[DOMAIN][entry.entry_id]:
-        unload_ok &= await hass.config_entries.async_forward_entry_unload(entry)
+    """Unload entry components for 'switch' and 'light'."""
+    unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'smartswitch') and \
+				await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
+				await hass.config_entries.async_forward_entry_unload(entry, 'door') and \
+				await hass.config_entries.async_forward_entry_unload(entry, 'window')
     return unload_ok
-    
-    
+
 async def send_command(url):
     """Send command to the Brematic device."""
     async with aiohttp.ClientSession() as session:
