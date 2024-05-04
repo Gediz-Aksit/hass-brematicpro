@@ -156,20 +156,26 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
     return entities
 
-async def setup_entry_components(hass: HomeAssistant, entry, async_add_entities):
+async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
-    from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
-    from .sensor import BrematicProDoor, BrematicProWindow
+    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
+	await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
+    await hass.config_entries.async_forward_entry_setup(entry, 'light')
+	await hass.config_entries.async_forward_entry_setup(entry, 'door')
+	await hass.config_entries.async_forward_entry_setup(entry, 'window')
 
-    entities = []
-    entities += await async_common_setup_entry(hass, entry, BrematicProSwitch)
-    entities += await async_common_setup_entry(hass, entry, BrematicProMeteredSwitch)
-    entities += await async_common_setup_entry(hass, entry, BrematicProLight)
-    entities += await async_common_setup_entry(hass, entry, BrematicProDoor)
-    entities += await async_common_setup_entry(hass, entry, BrematicProWindow)
+    #from .switch import BrematicProSwitch, BrematicProMeteredSwitch, BrematicProLight
+    #from .sensor import BrematicProDoor, BrematicProWindow
 
-    if async_add_entities and entities:
-        async_add_entities(entities, True)
+    #entities = []
+    #entities += await async_common_setup_entry(hass, entry, BrematicProSwitch)
+    #entities += await async_common_setup_entry(hass, entry, BrematicProMeteredSwitch)
+    #entities += await async_common_setup_entry(hass, entry, BrematicProLight)
+    #entities += await async_common_setup_entry(hass, entry, BrematicProDoor)
+    #entities += await async_common_setup_entry(hass, entry, BrematicProWindow)
+
+    #if async_add_entities and entities:
+    #    async_add_entities(entities, True)
         #async_add_entities = hass.data[DOMAIN][entry.entry_id].get('async_add_entities_callback')
         #if async_add_entities:
         #    async_add_entities(entities, True)
