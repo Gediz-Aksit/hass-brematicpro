@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.helpers.entity_platform import async_get_platforms
 
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE, CONF_INTERNAL_GATEWAYS
 from .BrematicProShared import read_and_transform_json, setup_entry_components, unload_entry_components, BrematicProJsonDownloadView, BrematicProCoordinator
@@ -43,7 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     success = await hass.async_add_executor_job(
         read_and_transform_json, hass, entry, devices_filename, rooms_filename
     )
-    
+    async_add_entities = switch_platform[0].async_register_entity_service
     await setup_entry_components(hass, entry, async_add_entities)#Setup components
     #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
 
