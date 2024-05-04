@@ -65,7 +65,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         for device in devices:
             #device_type = device.get('type', None)
-            _LOGGER.debug("async_common_setup_entry B")
+            _LOGGER.debug(f"async_common_setup_entry B {device.get('name', 'empty name')}")
+			_LOGGER.debug(f"async_common_setup_entry {device.get('type', 'Empty')} {entity_class._type}")
             if device.get('type', '') == entity_class._type:
                 _LOGGER.debug("async_common_setup_entry C")
                 unique_id = device['uniqueid']
