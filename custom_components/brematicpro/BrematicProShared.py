@@ -152,6 +152,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
             "type": item_type,
             "commands": commands
         })
+        if item_type == 'smartswitch':
+            _LOGGER.debug(f"1 {item.get('address', 'NoID')} 2 {device_name} 3 {room_name} 4 {freq} 5 {item_type}")
 
     json_data = json.dumps(transformed_data)
     #_LOGGER.debug(f"Generated JSON data: {json_data}")
