@@ -8,7 +8,7 @@ from .BrematicProShared import async_common_setup_entry, find_area_id
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities, device_type=''):
     """Set up BrematicPro device from a config entry."""
     device_type = entry.options.get('device_type', '')
     _LOGGER.debug(f"sensor {device_type}")
