@@ -54,8 +54,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         return data
 
 class BrematicProDevice():
-   """Representation of a BrematicPro device."""
-    _type = 'switch'
+    """Representation of a BrematicPro device."""
+    _type = 'unknown_device'
 
     def __init__(self, device, hass):
         """Initialize the switch."""
