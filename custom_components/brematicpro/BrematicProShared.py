@@ -164,17 +164,17 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
-    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
-    await hass.config_entries.async_forward_entry_setup(entry, 'light')
-    await hass.config_entries.async_forward_entry_setup(entry, 'sensor')
+    await hass.config_entries.async_forward_entry_setup(entry, 'switch', device_type='switch')
+    await hass.config_entries.async_forward_entry_setup(entry, 'switch', device_type='smartswitch')
+    await hass.config_entries.async_forward_entry_setup(entry, 'light', device_type='light')
+    await hass.config_entries.async_forward_entry_setup(entry, 'sensor', device_type='door')
+    await hass.config_entries.async_forward_entry_setup(entry, 'sensor', device_type='window')
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""
-    unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch', device_type='switch') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'switch', device_type='smartswitch') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'light', device_type='light') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'sensor', device_type='door') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'sensor', device_type='window')
+    unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'sensor')
     return unload_ok
 
 async def send_command(url):
