@@ -52,7 +52,21 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                     except aiohttp.ClientError as e:
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
-        
+
+class BrematicProDevice()
+   """Representation of a BrematicPro device."""
+    _type = 'switch'
+
+    def __init__(self, device, hass):
+        """Initialize the switch."""
+        self._unique_id = device['uniqueid']
+        self._name = device['name']
+        self._type = 'switch'
+        self._frequency =  device.get('freq', None)
+        self._suggested_area = device.get('room', None)
+        self._is_on = False
+        self._session = async_get_clientsession(hass)
+
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})

@@ -28,6 +28,11 @@ class BrematicProDoor(SensorEntity):
         #self._state = state
 
     @property
+    def unique_id(self):
+        """Return a unique ID."""
+        return self._unique_id
+
+    @property
     def name(self):
         """Return the name of the door sensor."""
         return self._name
@@ -36,11 +41,6 @@ class BrematicProDoor(SensorEntity):
     def is_on(self):
         """Return true if the door is open."""
         return self._state == 'open'
-
-    @property
-    def unique_id(self):
-        """Return a unique ID."""
-        return self._device_id
 
     async def async_update(self):
         """Update the sensor state."""

@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, CONF_INTERNAL_CONFIG_JSON
-from .BrematicProShared import async_common_setup_entry, find_area_id, send_command
+from .BrematicProShared import async_common_setup_entry, find_area_id, send_command, BrematicProDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,21 +15,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
 
-class BrematicProSwitch(SwitchEntity):
+class BrematicProSwitch(SwitchEntity, BrematicProDevice):
     """Representation of a BrematicPro Switch."""
     _type = 'switch'
 
     def __init__(self, device, hass):
         """Initialize the switch."""
-        self._unique_id = device['uniqueid']
-        self._name = device['name']
-        self._type = 'switch'
-        self._frequency =  device.get('freq', None)
+        super().__init__(device, hass)
         self._commands = device.get('commands', [])
-        self._suggested_area = device.get('room', None)
-        #self._area_id = find_area_id(hass, device.get('room'))
-        self._is_on = False
-        self._session = async_get_clientsession(hass)
 
     @property
     def unique_id(self):
