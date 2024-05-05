@@ -165,6 +165,8 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
 async def setup_entry_components(hass: HomeAssistant, entry):
     """Setup entry components for BrematicPro devices."""
     await hass.config_entries.async_forward_entry_setup(entry, 'switch')
+    entry.data['device_type'] = 'smartswitch'
+    await hass.config_entries.async_forward_entry_setup(entry, 'switch')
     await hass.config_entries.async_forward_entry_setup(entry, 'light')
     await hass.config_entries.async_forward_entry_setup(entry, 'sensor')
 
