@@ -7,10 +7,11 @@ from .switch import BrematicProSwitch
 from .BrematicProShared import async_common_setup_entry
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.debug("Top-level debug statement in smartswitch.py")
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
-    _LOGGER.debug("Class smartswitch async_setup_entry")
+    _LOGGER.debug("async_setup_entry called in smartswitch.py")
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
 
 class BrematicProMeteredSwitch(BrematicProSwitch):
