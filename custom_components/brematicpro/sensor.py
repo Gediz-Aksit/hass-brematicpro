@@ -10,7 +10,13 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor)
+    device_type = entry.options.get('device_type', '')
+    if device_type == 'door':
+        return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor)
+    elif device_type == 'window':
+        return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow)
+    else:
+        raise ValueError("Unsupported device type: {}".format(device_type))
 
 class BrematicProDoor(SensorEntity):
     """Representation of a Brematic Pro Door Sensor."""
@@ -44,3 +50,21 @@ class BrematicProDoor(SensorEntity):
     async def async_update(self):
         """Update the sensor state."""
         self._state = await self.get_state()  # Assume this method gets the current state
+
+class BrematicProWindow(BrematicProDoor):
+    """Representation of a Brematic Pro Window Sensor, inheriting from Door Sensor."""
+    
+    _type = 'window'
+    
+    def __init__(self, device, hass):
+        """Initialize the light."""
+        super().__init__(device, hass)
+
+    @property
+    def name(self):
+        """Return the name of the window sensor."""
+        return f"{self._name} Window"
+
+    async def async_update(self):
+        """Update the sensor state specifically for windows."""
+        self._state = await self.get_window_state()  # Custom method for window state

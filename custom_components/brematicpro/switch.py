@@ -12,7 +12,13 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch)
+    device_type = entry.options.get('device_type', '')
+    if device_type == 'switch':
+        return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch)
+    elif device_type == 'smartswitch':
+        return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
+    else:
+        raise ValueError("Unsupported device type: {}".format(device_type))
 
 class BrematicProSwitch(SwitchEntity):
     """Representation of a BrematicPro Switch."""
@@ -59,3 +65,15 @@ class BrematicProSwitch(SwitchEntity):
             self._is_on = False
             self.async_write_ha_state()
 
+class BrematicProMeteredSwitch(BrematicProSwitch):
+    """Representation of a Brematic Metered Switch."""
+    _type = 'smartswitch'
+    
+    def __init__(self, device, hass):
+        """Initialize the smart/metered switch."""
+        _LOGGER.debug("Class smartswitch __init__")
+        super().__init__(device, hass)
+        self._watt = 0.0
+        self._voltage = 0.0
+        self._kWh = 0.0
+        self._Wh = 0.0
