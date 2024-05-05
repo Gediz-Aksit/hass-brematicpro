@@ -25,16 +25,6 @@ class BrematicProSwitch(SwitchEntity, BrematicProDevice):
         self._commands = device.get('commands', [])
 
     @property
-    def unique_id(self):
-        """Return the unique ID of the switch."""
-        return self._unique_id
-
-    @property
-    def name(self):
-        """Return the name of the switch."""
-        return self._name
-
-    @property
     def is_on(self):
         """Return the on/off state of the switch."""
         return self._is_on

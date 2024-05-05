@@ -53,7 +53,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
 
-class BrematicProDevice()
+class BrematicProDevice():
    """Representation of a BrematicPro device."""
     _type = 'switch'
 
@@ -66,6 +66,16 @@ class BrematicProDevice()
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(hass)
+
+    @property
+    def unique_id(self):
+        """Return the unique ID of the switch."""
+        return self._unique_id
+
+    @property
+    def name(self):
+        """Return the name of the switch."""
+        return self._name
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""
