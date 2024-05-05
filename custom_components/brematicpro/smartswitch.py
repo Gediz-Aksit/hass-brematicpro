@@ -1,9 +1,9 @@
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.components.switch import SwitchEntity
 
-
-from .switch import BrematicProSwitch
+#from .switch import BrematicProSwitch
 from .BrematicProShared import async_common_setup_entry
 
 _LOGGER = logging.getLogger(__name__)
@@ -12,9 +12,9 @@ _LOGGER.debug("Top-level debug statement in smartswitch.py")
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
     _LOGGER.debug("async_setup_entry called in smartswitch.py")
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
+    return await async_common_setup_entry(hass, entry, async_add_entities, SwitchEntity)
 
-class BrematicProMeteredSwitch(BrematicProSwitch):
+class BrematicProMeteredSwitch(SwitchEntity):
     """Representation of a Brematic Metered Switch."""
     _type = 'smartswitch'
     
