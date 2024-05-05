@@ -10,16 +10,8 @@ from .BrematicProShared import async_common_setup_entry, find_area_id, send_comm
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities, device_type=''):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
-    device_type = entry.options.get('device_type', '')
-    _LOGGER.debug(f"sensor {device_type}")
-    if device_type == 'switch':
-        return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch)
-    elif device_type == 'smartswitch':
-        return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
-    else:
-        raise ValueError("Unsupported device type: {}".format(device_type))
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch)
 
 class BrematicProBasicSwitch(SwitchEntity):
