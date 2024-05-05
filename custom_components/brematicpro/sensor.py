@@ -10,7 +10,8 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor)
+    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor) and \
+                 async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow)
 
 class BrematicProDoor(SensorEntity):
     """Representation of a Brematic Pro Door Sensor."""
