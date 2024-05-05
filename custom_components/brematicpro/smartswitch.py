@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
     _LOGGER.debug("Class smartswitch async_setup_entry")
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch)
+    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
 
 class BrematicProMeteredSwitch(BrematicProSwitch):
     """Representation of a Brematic Metered Switch."""
