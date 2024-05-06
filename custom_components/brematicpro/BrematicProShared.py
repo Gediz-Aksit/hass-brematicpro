@@ -53,7 +53,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
 
-class BrematicProDevice():
+class BrematicProDevice(Entity):
     """Representation of a BrematicPro device."""
     _type = 'unknown_device'
 
@@ -61,7 +61,6 @@ class BrematicProDevice():
         """Initialize the switch."""
         self._unique_id = device['uniqueid']
         self._name = device['name']
-        self._type = 'switch'
         self._frequency =  device.get('freq', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
