@@ -68,9 +68,10 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                     else:
                                         _LOGGER.debug("device_states list is empty")
                                     matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
-                                    [entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
+                                    #[entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
                                     for entity, device_state in matching_pairs:
-                                        _LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Device State: {device_state}")
+                                        entity.update_state(device_state)
+                                        _LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Name: {entity.name}, Device State: {device_state}")
                                     #_LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                                 else:
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
