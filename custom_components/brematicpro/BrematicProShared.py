@@ -33,7 +33,6 @@ class BrematicProCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from API."""
         _LOGGER.debug("Fetch data from API.")
-        data = {}
         if self.gateways:
             async with aiohttp.ClientSession() as session:
                 for domain_or_ip in self.gateways:
@@ -44,14 +43,15 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                             _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
                             if response.status == 200:
                                 response_text = await response.text()
-                                data[domain_or_ip] = json.loads(await response.text())
-                                _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
-                                
+                                devices = json.loads(response_text).get('XC_SUC', [])
+                                relevant_entities = list(filter(lambda ent: ent.frequency == 868, self.entities))# Filter entities to include only those with a frequency of 868
+                                matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, devices)))# Find the entities that matches the 'adr' key
+                                [entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
+                                _LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                             else:
                                 raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                     except aiohttp.ClientError as e:
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
-        return data
 
 class BatteryState(Enum):
     GOOD = 'good'
@@ -82,11 +82,25 @@ class BrematicProDevice(Entity):
     def name(self):
         """Return the name of the device."""
         return self._name
-        
+
+    @property
+    def device_type(self):
+        """Return the device type."""
+        return self._type
+
+    @property
+    def frequency(self):
+        """Return the device frequency."""
+        return self._frequency
+
     @property
     def battery_state(self):
         """Return the battery state of the device."""
         return self._battery_state.value
+        
+    def update_state(self, device_state):
+        """Updates device state if applicable."""
+        _LOGGER.debug('BrematicProDevice got ' + json.dumps(device_state, indent=2))#Posting update
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""
