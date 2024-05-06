@@ -35,6 +35,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Fetch data from API.")
         if self.gateways:
             async with aiohttp.ClientSession() as session:
+                BrematicPro_entities = hass.data[DOMAIN][self.entry_id]["entities"]
                 for domain_or_ip in self.gateways:
                     url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
                     _LOGGER.debug(f"URL {url}")
@@ -43,9 +44,9 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                             _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
                             if response.status == 200:
                                 response_text = await response.text()
-                                devices = json.loads(response_text).get('XC_SUC', [])
-                                relevant_entities = list(filter(lambda ent: ent.frequency == 868, self.entities))# Filter entities to include only those with a frequency of 868
-                                matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, devices)))# Find the entities that matches the 'adr' key
+                                device_states = json.loads(response_text).get('XC_SUC', [])
+                                relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
+                                matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
                                 [entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
                                 _LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                             else:
@@ -121,6 +122,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     entity = entity_class(device, hass)
                     entities.append(entity)
         async_add_entities(entities, True)
+        if "entities" not in hass.data[DOMAIN][entry.entry_id]:
+            hass.data[DOMAIN][entry.entry_id]["entities"] = []
+        hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
         return True
     return False
 
@@ -184,9 +188,6 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
             "type": item_type,
             "commands": commands
         })
-        if item_type == 'smartswitch':
-            _LOGGER.debug(f"1 {item.get('address', 'NoID')} 2 {device_name} 3 {room_name} 4 {freq} 5 {item_type}")
-
     json_data = json.dumps(transformed_data)
     hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
