@@ -38,6 +38,11 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         if self.gateways:
             async with aiohttp.ClientSession() as session:
                 BrematicPro_entities = self.hass.data[DOMAIN][self.entry.entry_id].get("entities", [])
+                _LOGGER.debug(f"Entity 1 UID {BrematicPro_entities[0].unique_id}")
+                _LOGGER.debug(f"Entity 2 UID {BrematicPro_entities[2].unique_id}")
+                _LOGGER.debug(f"Entity 3 UID {BrematicPro_entities[3].unique_id}")
+                _LOGGER.debug(f"Entity 4 UID {BrematicPro_entities[4].unique_id}")
+                _LOGGER.debug(f"Entity 5 UID {BrematicPro_entities[5].unique_id}")
                 for domain_or_ip in self.gateways:
                     url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
                     _LOGGER.debug(f"URL {url}")
