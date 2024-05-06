@@ -33,8 +33,6 @@ class BrematicProCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from API."""
         _LOGGER.debug("Fetch data from API.")
-        #if not self.gateways:
-        #    raise UpdateFailed("No gateway IPs are configured")
         data = {}
         if self.gateways:
             async with aiohttp.ClientSession() as session:
@@ -48,7 +46,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                 response_text = await response.text()
                                 data[domain_or_ip] = json.loads(await response.text())
                                 _LOGGER.debug('_async_update_data ' + json.dumps(data, indent=2))#Posting statuses
-                                _LOGGER.debug(f"Data for {domain_or_ip}: {data[domain_or_ip]}")
+                                
                             else:
                                 raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                     except aiohttp.ClientError as e:
@@ -97,35 +95,18 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        #existing_entities = {entity.unique_id: entity for entity in hass.data.get(DOMAIN, {}).get(entry.entry_id, [])}
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}")
         for device in devices:
-            #device_type = device.get('type', None)
-            if device.get('type', '') == 'smartswitch':
-                _LOGGER.debug("Device smartswitch")
-            if entity_class._type == 'smartswitch':
-                _LOGGER.debug("Class smartswitch")
-            if device.get('type', '') == entity_class._type:
+            if device.get('type', 'Invalid') == entity_class._type:
                 unique_id = device['uniqueid']
                 existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
                 #area_id = find_area_id(hass, device.get('room'))
-                
                 if existing_entity:
                     existing_entity.update_device(device)
                 else:
                     entity = entity_class(device, hass)
                     entities.append(entity)
-            #else:
-            #    _LOGGER.debug(f"async_common_setup_entry B {device.get('name', 'empty name')}")
-            #    _LOGGER.debug(f"async_common_setup_entry {device.get('type', 'Empty')} {entity_class._type}")
-            #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
-            #existing_entities.async_update_entity(entity_id, new_area_id=area_id)
         async_add_entities(entities, True)
-        #if DOMAIN not in hass.data:
-        #    hass.data[DOMAIN] = {}
-        #if entry.entry_id not in hass.data[DOMAIN]:
-        #    hass.data[DOMAIN][entry.entry_id] = {}
-        #hass.data[DOMAIN][entry.entry_id]["entities"] = entities
         return True
     return False
 
@@ -193,10 +174,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
             _LOGGER.debug(f"1 {item.get('address', 'NoID')} 2 {device_name} 3 {room_name} 4 {freq} 5 {item_type}")
 
     json_data = json.dumps(transformed_data)
-    #_LOGGER.debug(f"Generated JSON data: {json_data}")
-    #hass.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json.dumps(transformed_data)})
     hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
-    #hass.config_entries.async_update_entry(entry, data={CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
 async def setup_entry_components(hass: HomeAssistant, entry):

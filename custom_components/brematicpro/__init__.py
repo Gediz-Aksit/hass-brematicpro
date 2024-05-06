@@ -2,12 +2,10 @@
 import logging
 from datetime import timedelta
 import functools
-
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.event import async_track_time_interval
-#from homeassistant.helpers.entity_platform import async_get_platforms
 
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_CONFIG_FILE, CONF_ROOMS_FILE, CONF_INTERNAL_GATEWAYS
 from .BrematicProShared import read_and_transform_json, setup_entry_components, unload_entry_components, BrematicProJsonDownloadView, BrematicProCoordinator
@@ -46,10 +44,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
     _LOGGER.debug("async_setup_entry calls setup_entry_components")
     await setup_entry_components(hass, entry)#Setup components
-    #await hass.config_entries.async_reload(entry.entry_id)#Listener for future updates
-    #_LOGGER.debug("smartswitch Start")
-    #await hass.config_entries.async_forward_entry_setup(entry, 'smartswitch')
-    #_LOGGER.debug("smartswitch End")
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -61,7 +55,7 @@ async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     success = await hass.async_add_executor_job(
         read_and_transform_json, hass, entry, devices_filename, rooms_filename
     )
-    
+
     if success:
         _LOGGER.info("Configuration successfully updated for BrematicPro.")
         return True

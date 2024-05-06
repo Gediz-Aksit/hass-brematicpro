@@ -49,7 +49,6 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
     
     def __init__(self, device, hass):
         """Initialize the smart/metered switch."""
-        _LOGGER.debug("Class smartswitch __init__")
         super().__init__(device, hass)
         self._watt = 0.0
         self._voltage = 0.0

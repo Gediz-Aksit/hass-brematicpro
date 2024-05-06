@@ -17,7 +17,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                  async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) and \
                  async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
 
-
 class ContactState(Enum):
     OPEN = 'open'
     CLOSED = 'closed'
@@ -55,7 +54,6 @@ class BrematicProWater(BrematicProDevice, SensorEntity):
 
 class BrematicProMotion(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro motion sensor."""
-    
     _type = 'motion'
     
     def __init__(self, device, hass):
@@ -64,7 +62,6 @@ class BrematicProMotion(BrematicProDevice, SensorEntity):
         
 class BrematicProTemp(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
-    
     _type = 'temperature'
     
     def __init__(self, device, hass):
