@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 import aiohttp
+from enum import Enum
 from datetime import timedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
@@ -54,28 +55,40 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
         return data
 
+class BatteryState(Enum):
+    GOOD = 'good'
+    LOW = 'low'
+    UNKNOWN = 'unknown'
+    WIRED = 'wired'
+
 class BrematicProDevice(Entity):
     """Representation of a BrematicPro device."""
     _type = 'unknown_device'
 
     def __init__(self, device, hass):
-        """Initialize the switch."""
+        """Initialize the device."""
         self._unique_id = device['uniqueid']
         self._name = device['name']
         self._frequency =  device.get('freq', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(hass)
+        self._battery_state = BatteryState.UNKNOWN
 
     @property
     def unique_id(self):
-        """Return the unique ID of the switch."""
+        """Return the unique ID of the device."""
         return self._unique_id
 
     @property
     def name(self):
-        """Return the name of the switch."""
+        """Return the name of the device."""
         return self._name
+        
+    @property
+    def battery_state(self):
+        """Return the battery state of the device."""
+        return self._battery_state.value
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""
