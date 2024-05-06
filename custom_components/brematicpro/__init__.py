@@ -31,6 +31,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
     gateways = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
 
+    success = await hass.async_add_executor_job(
+        read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
+    )
+    _LOGGER.debug("async_setup_entry calls setup_entry_components")
+    await setup_entry_components(hass, entry)#Setup components
+    
     #Read Gateway sensors
     if not hass.data[DOMAIN][entry.entry_id]["coordinator"]:
         coordinator = BrematicProCoordinator(hass, entry)
@@ -38,12 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if not coordinator.last_update_success:
             raise ConfigEntryNotReady
         hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
-
-    success = await hass.async_add_executor_job(
-        read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
-    )
-    _LOGGER.debug("async_setup_entry calls setup_entry_components")
-    await setup_entry_components(hass, entry)#Setup components
+    
     return True
 
 async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
