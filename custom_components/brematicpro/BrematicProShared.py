@@ -157,6 +157,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
         hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
+        _LOGGER.debug(f"Adding {len(entities)} new entities: {entities}")
+        _LOGGER.debug(f"Final entities list: {hass.data[DOMAIN][entry.entry_id]['entities']}")
         return True
     return False
 
