@@ -19,8 +19,9 @@ _LOGGER = logging.getLogger(__name__)
 class BrematicProCoordinator(DataUpdateCoordinator):
     """Class to manage fetching BrematicPro data."""
 
-    def __init__(self, hass, system_code, gateways):
+    def __init__(self, hass, entry, system_code, gateways):
         """Initialize."""
+        self.entry = entry
         self.system_code = system_code
         self.gateways = gateways
         super().__init__(

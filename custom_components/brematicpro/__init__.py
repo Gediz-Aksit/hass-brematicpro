@@ -33,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     #Read Gateway sensors
     if not hass.data[DOMAIN][entry.entry_id]["coordinator"]:
-        coordinator = BrematicProCoordinator(hass, system_code, gateways)
+        coordinator = BrematicProCoordinator(hass, entry, system_code, gateways)
         await coordinator.async_config_entry_first_refresh()
         if not coordinator.last_update_success:
             raise ConfigEntryNotReady
