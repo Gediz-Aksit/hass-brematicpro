@@ -50,43 +50,44 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                     _LOGGER.debug(f"Entity 5 UID {BrematicPro_entities[5].unique_id}")
                 else:
                     _LOGGER.debug("BrematicPro_entities list is empty")
-                for domain_or_ip in gateways:
-                    url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
-                    _LOGGER.debug(f"URL {url}")
-                    try:
-                        async with session.get(url) as response:
-                            _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
-                            if response.status == 200:
-                                response_text = await response.text()
-                                device_states = json.loads(response_text).get('XC_SUC', [])
-                                relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
-                                if relevant_entities:
-                                    _LOGGER.debug(f"R Entity UID count {len(relevant_entities)}")
-                                    _LOGGER.debug(f"R Entity 1 UID {relevant_entities[0].unique_id}")
-                                    _LOGGER.debug(f"R Entity 2 UID {relevant_entities[2].unique_id}")
-                                    _LOGGER.debug(f"R Entity 3 UID {relevant_entities[3].unique_id}")
-                                    _LOGGER.debug(f"R Entity 4 UID {relevant_entities[4].unique_id}")
-                                    _LOGGER.debug(f"R Entity 5 UID {relevant_entities[5].unique_id}")
+                if BrematicPro_entities:
+                    for domain_or_ip in gateways:
+                        url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
+                        _LOGGER.debug(f"URL {url}")
+                        try:
+                            async with session.get(url) as response:
+                                _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
+                                if response.status == 200:
+                                    response_text = await response.text()
+                                    device_states = json.loads(response_text).get('XC_SUC', [])
+                                    relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
+                                    if relevant_entities:
+                                        _LOGGER.debug(f"R Entity UID count {len(relevant_entities)}")
+                                        _LOGGER.debug(f"R Entity 1 UID {relevant_entities[0].unique_id}")
+                                        _LOGGER.debug(f"R Entity 2 UID {relevant_entities[2].unique_id}")
+                                        _LOGGER.debug(f"R Entity 3 UID {relevant_entities[3].unique_id}")
+                                        _LOGGER.debug(f"R Entity 4 UID {relevant_entities[4].unique_id}")
+                                        _LOGGER.debug(f"R Entity 5 UID {relevant_entities[5].unique_id}")
+                                    else:
+                                        _LOGGER.debug("relevant_entities list is empty")
+                                    if device_states:
+                                        _LOGGER.debug(f"State UID count {len(device_states)}")
+                                        _LOGGER.debug(f"State 1 UID {device_states[0]['adr']}")
+                                        _LOGGER.debug(f"State 2 UID {device_states[2]['adr']}")
+                                        _LOGGER.debug(f"State 3 UID {device_states[3]['adr']}")
+                                        _LOGGER.debug(f"State 4 UID {device_states[4]['adr']}")
+                                        _LOGGER.debug(f"State 5 UID {device_states[5]['adr']}")
+                                    else:
+                                        _LOGGER.debug("device_states list is empty")
+                                    matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
+                                    [entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
+                                    key_values_str = ', '.join(map(lambda pair: ', '.join(pair[1].keys()), matching_pairs))
+                                    _LOGGER.debug(f"Keys from matching device states: {key_values_str}")
+                                    _LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                                 else:
-                                    _LOGGER.debug("relevant_entities list is empty")
-                                if device_states:
-                                    _LOGGER.debug(f"State UID count {len(device_states)}")
-                                    _LOGGER.debug(f"State 1 UID {device_states[0]['adr']}")
-                                    _LOGGER.debug(f"State 2 UID {device_states[2]['adr']}")
-                                    _LOGGER.debug(f"State 3 UID {device_states[3]['adr']}")
-                                    _LOGGER.debug(f"State 4 UID {device_states[4]['adr']}")
-                                    _LOGGER.debug(f"State 5 UID {device_states[5]['adr']}")
-                                else:
-                                    _LOGGER.debug("device_states list is empty")
-                                matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
-                                [entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
-                                key_values_str = ', '.join(map(lambda pair: ', '.join(pair[1].keys()), matching_pairs))
-                                _LOGGER.debug(f"Keys from matching device states: {key_values_str}")
-                                _LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
-                            else:
-                                _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
-                    except aiohttp.ClientError as e:
-                        _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
+                                    _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
+                        except aiohttp.ClientError as e:
+                            _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
 
 class BatteryState(Enum):
     GOOD = 'good'
