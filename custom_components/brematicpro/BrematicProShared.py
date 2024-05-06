@@ -36,6 +36,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         self.entry.data.get(CONF_SYSTEM_CODE, "")
         system_code = self.entry.data.get(CONF_SYSTEM_CODE, "")
         gateways = self.entry.data.get(CONF_INTERNAL_GATEWAYS, [])
+        _LOGGER.debug(f"_async_update_data DOMAIN {DOMAIN}")
+        _LOGGER.debug(f"_async_update_data entity id {self.entry.entry_id}")
         if gateways:
             async with aiohttp.ClientSession() as session:
                 BrematicPro_entities = self.hass.data[DOMAIN][self.entry.entry_id].get("entities", [])
@@ -82,9 +84,9 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                 _LOGGER.debug(f"Keys from matching device states: {key_values_str}")
                                 _LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                             else:
-                                raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
+                                _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                     except aiohttp.ClientError as e:
-                        raise UpdateFailed(f"Error contacting {domain_or_ip}: {str(e)}")
+                        _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
 
 class BatteryState(Enum):
     GOOD = 'good'
@@ -157,6 +159,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
         hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
+        _LOGGER.debug(f"async_common_setup_entry DOMAIN {DOMAIN}")
+        _LOGGER.debug(f"async_common_setup_entry entity ID {entry.entry_id}")
         _LOGGER.debug(f"Adding {len(entities)} new entities: {entities}")
         _LOGGER.debug(f"Final entities list: {hass.data[DOMAIN][entry.entry_id]['entities']}")
         return True
