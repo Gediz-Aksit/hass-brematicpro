@@ -2,13 +2,14 @@ import requests
 import json
 import logging
 import aiohttp
+from datetime import timedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry as ar
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from datetime import timedelta
+from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN, CONF_SYSTEM_CODE, CONF_INTERNAL_CONFIG_JSON, CONF_INTERNAL_GATEWAYS, CONF_INTERNAL_SENSOR_JSON
 
