@@ -35,7 +35,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Fetch data from API.")
         if self.gateways:
             async with aiohttp.ClientSession() as session:
-                BrematicPro_entities = self.hass.data[DOMAIN][self.entry_id].get("entities", [])
+                BrematicPro_entities = self.hass.data[DOMAIN][self.entry.entry_id].get("entities", [])
                 for domain_or_ip in self.gateways:
                     url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
                     _LOGGER.debug(f"URL {url}")
