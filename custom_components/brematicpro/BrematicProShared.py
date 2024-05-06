@@ -50,6 +50,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                 relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
                                 matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
                                 [entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
+                                key_values_str = ', '.join(map(lambda pair: ', '.join(pair[1].keys()), matching_pairs))
+                                _LOGGER.debug(f"Keys from matching device states: {key_values_str}")
                                 _LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                             else:
                                 raise UpdateFailed(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
@@ -103,7 +105,7 @@ class BrematicProDevice(Entity):
         
     def update_state(self, device_state):
         """Updates device state if applicable."""
-        _LOGGER.debug('BrematicProDevice got ' + json.dumps(device_state, indent=2))#Posting update
+        _LOGGER.warning('Unhandled BrematicProDevice got the update ' + json.dumps(device_state, indent=2))#Posting update
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     """Common setup for BrematicPro devices."""

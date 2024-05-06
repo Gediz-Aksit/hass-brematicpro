@@ -12,10 +12,10 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor) and \
-                 async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
-                 async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
-                 async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) and \
-                 async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
 
 class ContactState(Enum):
     OPEN = 'open'
