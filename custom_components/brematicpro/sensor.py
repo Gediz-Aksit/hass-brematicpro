@@ -30,7 +30,7 @@ class BrematicProDoor(BrematicProDevice, SensorEntity):
     def __init__(self, device, hass):
         """Initialize the door sensor."""
         super().__init__(device, hass)
-        self._contact_state = DoorState.UNKNOWN
+        self._contact_state = ContactState.UNKNOWN
 
     @property
     def state(self):
