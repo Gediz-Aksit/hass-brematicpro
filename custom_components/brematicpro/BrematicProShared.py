@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 import aiohttp
+from itertools import product
 from enum import Enum
 from datetime import timedelta
 from homeassistant.core import HomeAssistant
