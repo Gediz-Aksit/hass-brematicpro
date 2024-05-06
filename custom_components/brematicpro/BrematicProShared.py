@@ -20,22 +20,20 @@ _LOGGER = logging.getLogger(__name__)
 class BrematicProCoordinator(DataUpdateCoordinator):
     """Class to manage fetching BrematicPro data."""
 
-    def __init__(self, hass, entry, system_code, gateways):
+    def __init__(self, hass, entry):
         """Initialize."""
         self.entry = entry
-        self.system_code = system_code
-        self.gateways = gateways
         super().__init__(
             hass,
             logger=logging.getLogger(__name__),
-            name="BrematicPro",
+            name=DOMAIN,
             update_interval=timedelta(minutes=1),
         )
 
     async def _async_update_data(self):
         """Fetch data from API."""
         _LOGGER.debug("Fetch data from API.")
-        if self.gateways:
+        if CONF_INTERNAL_GATEWAYS:
             async with aiohttp.ClientSession() as session:
                 BrematicPro_entities = self.hass.data[DOMAIN][self.entry.entry_id].get("entities", [])
                 _LOGGER.debug(f"Entity 1 UID {BrematicPro_entities[0].unique_id}")
@@ -43,8 +41,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"Entity 3 UID {BrematicPro_entities[3].unique_id}")
                 _LOGGER.debug(f"Entity 4 UID {BrematicPro_entities[4].unique_id}")
                 _LOGGER.debug(f"Entity 5 UID {BrematicPro_entities[5].unique_id}")
-                for domain_or_ip in self.gateways:
-                    url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={self.system_code}"
+                for domain_or_ip in CONF_INTERNAL_GATEWAYS:
+                    url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={CONF_SYSTEM_CODE}"
                     _LOGGER.debug(f"URL {url}")
                     try:
                         async with session.get(url) as response:
