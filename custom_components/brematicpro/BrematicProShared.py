@@ -235,14 +235,14 @@ async def setup_entry_components(hass: HomeAssistant, entry):
     await hass.config_entries.async_forward_entry_setup(entry, 'switch')
     await hass.config_entries.async_forward_entry_setup(entry, 'light')
     await hass.config_entries.async_forward_entry_setup(entry, 'sensor')
-    await hass.config_entries.async_forward_entry_setup(entry, 'binary sensor')
+    await hass.config_entries.async_forward_entry_setup(entry, 'binary_sensor')
 
 async def unload_entry_components(hass: HomeAssistant, entry):
     """Unload entry components for BrematicPro devices."""
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'sensor') and \
-                await hass.config_entries.async_forward_entry_unload(entry, 'binary sensor')
+                await hass.config_entries.async_forward_entry_unload(entry, 'binary_sensor')
     return unload_ok
 
 async def send_command(url):
