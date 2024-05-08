@@ -33,7 +33,7 @@ class BrematicProDoor(BrematicProDevice, SensorEntity):
         if device_state:
             if device_state['state'] == '0001':
                 self._attr_is_on  = True
-            else if device_state['state'] == '0002':
+            elif device_state['state'] == '0002':
                 self._attr_is_on  = False
             else:
                 self._attr_is_on  = None
