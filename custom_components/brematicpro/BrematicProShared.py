@@ -104,7 +104,7 @@ class BrematicProDevice(Entity):
         self._frequency =  device.get('freq', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
-        self._session = async_get_clientsession(hass)
+        self._session = async_get_clientsession(self.hass)
         self._battery_state = BatteryState.UNKNOWN
 
     @property
