@@ -98,6 +98,15 @@ class BrematicProDevice(Entity):
         self._session = async_get_clientsession(hass)
         self._battery_state = BatteryState.UNKNOWN
 
+    def update_device(self, device):
+        self._unique_id = device['uniqueid']
+        self._name = device['name']
+        self._frequency =  device.get('freq', None)
+        self._suggested_area = device.get('room', None)
+        self._is_on = False
+        self._session = async_get_clientsession(hass)
+        self._battery_state = BatteryState.UNKNOWN
+
     @property
     def unique_id(self):
         """Return the unique ID of the device."""
