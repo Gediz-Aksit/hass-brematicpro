@@ -3,6 +3,7 @@ from enum import Enum
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .BrematicProShared import async_common_setup_entry, find_area_id, BrematicProDevice
@@ -23,7 +24,7 @@ class ContactState(Enum):
     CLOSED = 'closed'
     UNKNOWN = 'unknown'
 
-class BrematicProDoor(BrematicProDevice, SensorEntity):
+class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
     _type = 'door'
     _attr_is_on = None
@@ -43,12 +44,12 @@ class BrematicProWindow(BrematicProDoor):
     _type = 'window'
     _attr_device_class = BinarySensorDeviceClass.WINDOW
 
-class BrematicProWater(BrematicProDevice, SensorEntity):
+class BrematicProWater(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro moisture sensor."""
     _type = 'water'
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
 
-class BrematicProMotion(BrematicProDevice, SensorEntity):
+class BrematicProMotion(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
     _type = 'motion'
     _attr_device_class = BinarySensorDeviceClass.MOTION
