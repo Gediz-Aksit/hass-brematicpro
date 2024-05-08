@@ -15,6 +15,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProLight) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
 
 class ContactState(Enum):
@@ -25,45 +26,41 @@ class ContactState(Enum):
 class BrematicProDoor(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro door sensor."""
     _type = 'door'
-    
-    def __init__(self, device, hass):
-        """Initialize the door sensor."""
-        super().__init__(device, hass)
-        self._contact_state = ContactState.UNKNOWN
+    _attr_is_on = None
+    _attr_device_class = BinarySensorDeviceClass.DOOR
 
-    @property
-    def state(self):
-        """Return the current state of the door sensor."""
-        return self._contact_state.value
+    def update_state(self, device_state):
+        if device_state:
+            if device_state['state'] = '0001':
+                self._attr_is_on  = True
+            else if device_state['state'] = '0002':
+                self._attr_is_on  = False
+            else:
+                self._attr_is_on  = None
 
 class BrematicProWindow(BrematicProDoor):
     """Representation of a BrematicPro window sensor, inheriting from door sensor."""
     _type = 'window'
-    
-    def __init__(self, device, hass):
-        """Initialize the window."""
-        super().__init__(device, hass)
+    _attr_device_class = BinarySensorDeviceClass.WINDOW
 
 class BrematicProWater(BrematicProDevice, SensorEntity):
-    """Representation of a BrematicPro water sensor."""
+    """Representation of a BrematicPro moisture sensor."""
     _type = 'water'
-    
-    def __init__(self, device, hass):
-        """Initialize the window."""
-        super().__init__(device, hass)
+    _attr_device_class = BinarySensorDeviceClass.MOISTURE
 
 class BrematicProMotion(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro motion sensor."""
     _type = 'motion'
-    
-    def __init__(self, device, hass):
-        """Initialize the window."""
-        super().__init__(device, hass)
+    _attr_device_class = BinarySensorDeviceClass.MOTION
+
+class BrematicProLight(BrematicProDevice, SensorEntity):
+    """Representation of a BrematicPro photoluminescence sensor."""
+    _type = 'light'
+    _attr_device_class = SensorDeviceClass.ILLUMINANCE
+   
         
 class BrematicProTemp(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
     _type = 'temperature'
-    
-    def __init__(self, device, hass):
-        """Initialize the window."""
-        super().__init__(device, hass)
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
+
