@@ -84,12 +84,13 @@ class BatteryState(Enum):
     UNKNOWN = 'unknown'
     WIRED = 'wired'
 
-class BrematicProDevice(Entity):
+class BrematicProDevice(CoordinatorEntity):
     """Representation of a BrematicPro device."""
     _type = 'unknown_device'
 
-    def __init__(self, device, hass):
+    def __init__(self, coordinator, device, hass):
         """Initialize the device."""
+        super().__init__(coordinator)
         self._unique_id = device['uniqueid']
         self._name = device['name']
         self._frequency =  device.get('freq', None)
@@ -98,15 +99,10 @@ class BrematicProDevice(Entity):
         self._session = async_get_clientsession(hass)
         self._battery_state = BatteryState.UNKNOWN
 
-    def update_device(self, device):
-        #Does not work, needs to identify the device properly or something.
-        self._unique_id = device['uniqueid']
-        self._name = device['name']
-        self._frequency =  device.get('freq', None)
-        self._suggested_area = device.get('room', None)
-        self._is_on = False
-        self._session = async_get_clientsession(self.hass)
-        self._battery_state = BatteryState.UNKNOWN
+    async def async_added_to_hass(self):
+        """Register as a listener when added to hass."""
+        await super().async_added_to_hass()
+        self.async_on_remove(self.coordinator.async_add_listener(self.async_write_ha_state))
 
     @property
     def unique_id(self):
@@ -132,6 +128,16 @@ class BrematicProDevice(Entity):
     def battery_state(self):
         """Return the battery state of the device."""
         return self._battery_state.value
+
+    def update_device(self, device):
+        #Does not work, needs to identify the device properly or something.
+        self._unique_id = device['uniqueid']
+        self._name = device['name']
+        self._frequency =  device.get('freq', None)
+        self._suggested_area = device.get('room', None)
+        self._is_on = False
+        self._session = async_get_clientsession(self.hass)
+        self._battery_state = BatteryState.UNKNOWN
         
     def update_state(self, device_state):
         """Updates device state if applicable."""
@@ -153,7 +159,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                 if existing_entity:
                     existing_entity.update_device(device)
                 else:
-                    entity = entity_class(device, hass)
+                    entity = entity_class(coordinator, device, hass)
                     entities.append(entity)
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
