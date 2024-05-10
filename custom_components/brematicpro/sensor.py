@@ -19,10 +19,14 @@ class BrematicProLight(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro photoluminescence sensor."""
     _type = 'light'
     _attr_device_class = SensorDeviceClass.ILLUMINANCE
-   
-        
+
+    def update_state(self, device_state):
+        self._state = None
+
 class BrematicProTemp(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
     _type = 'temperature'
     _attr_device_class = SensorDeviceClass.TEMPERATURE
 
+    def update_state(self, device_state):
+        self._state = None

@@ -41,8 +41,26 @@ class BrematicProWater(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro moisture sensor."""
     _type = 'water'
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
+    
+    def update_state(self, device_state):
+        if device_state:
+            if device_state['state'] == '0001':
+                self._attr_is_on  = True
+            elif device_state['state'] == '0002':
+                self._attr_is_on  = False
+            else:
+                self._attr_is_on  = None
 
 class BrematicProMotion(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
     _type = 'motion'
     _attr_device_class = BinarySensorDeviceClass.MOTION
+
+    def update_state(self, device_state):
+        if device_state:
+            if device_state['state'] == '0001':
+                self._attr_is_on  = True
+            elif device_state['state'] == '0002':
+                self._attr_is_on  = False
+            else:
+                self._attr_is_on  = None
