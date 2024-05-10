@@ -16,7 +16,7 @@ class BrematicProLight(BrematicProSwitch, LightEntity):
     """Representation of a Brematic Light."""
     _type = 'light'
 
-    def __init__(self, device, hass):
+    def __init__(self, coordinator, device, hass):
         """Initialize the light."""
         super().__init__(device, hass)
         self._color_mode = COLOR_MODE_ONOFF

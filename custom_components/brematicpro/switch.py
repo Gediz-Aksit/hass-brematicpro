@@ -19,7 +19,7 @@ class BrematicProSwitch(SwitchEntity, BrematicProDevice):
     """Representation of a BrematicPro Switch."""
     _type = 'switch'
 
-    def __init__(self, device, hass):
+    def __init__(self, coordinator, device, hass):
         """Initialize the switch."""
         super().__init__(device, hass)
         self._commands = device.get('commands', [])
@@ -47,7 +47,7 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
     """Representation of a Brematic Metered Switch."""
     _type = 'smartswitch'
     
-    def __init__(self, device, hass):
+    def __init__(self, coordinator, device, hass):
         """Initialize the smart/metered switch."""
         super().__init__(device, hass)
         self._watt = 0.0
