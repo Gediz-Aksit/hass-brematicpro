@@ -24,6 +24,7 @@ class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
     _attr_device_class = BinarySensorDeviceClass.DOOR
 
     def update_state(self, device_state):
+        _LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
         if device_state:
             if device_state['state'] == '0001':
                 self._attr_is_on  = True
