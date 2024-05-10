@@ -35,7 +35,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
     )
     _LOGGER.debug("async_setup_entry calls setup_entry_components")
-    await setup_entry_components(hass, entry)#Setup components
     
     #Read Gateway sensors
     if not hass.data[DOMAIN][entry.entry_id]["coordinator"]:
@@ -44,6 +43,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if not coordinator.last_update_success:
             raise ConfigEntryNotReady
         hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
+
+    await setup_entry_components(hass, entry)#Setup components
     
     return True
 
