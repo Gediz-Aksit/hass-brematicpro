@@ -21,7 +21,7 @@ class BrematicProSwitch(SwitchEntity, BrematicProDevice):
 
     def __init__(self, coordinator, device, hass):
         """Initialize the switch."""
-        super().__init__(device, hass)
+        super().__init__(coordinator, device, hass)
         self._commands = device.get('commands', [])
 
     @property
@@ -49,7 +49,7 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
     
     def __init__(self, coordinator, device, hass):
         """Initialize the smart/metered switch."""
-        super().__init__(device, hass)
+        super().__init__(coordinator, device, hass)
         self._watt = 0.0
         self._voltage = 0.0
         self._kWh = 0.0
