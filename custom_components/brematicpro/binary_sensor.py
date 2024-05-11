@@ -26,12 +26,14 @@ class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
     def update_state(self, device_state):
         _LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
         if device_state:
-            if device_state['state'] == '0001':
+            if device_state['state'][-1] == '8':
                 self._attr_is_on  = True
-            elif device_state['state'] == '0002':
+            elif device_state['state'][-1] == '7':
                 self._attr_is_on  = False
             else:
                 self._attr_is_on  = None
+        else:
+            self._attr_is_on  = None
 
 class BrematicProWindow(BrematicProDoor):
     """Representation of a BrematicPro window sensor, inheriting from door sensor."""
