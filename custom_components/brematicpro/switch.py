@@ -47,13 +47,13 @@ class BrematicProSwitch(SwitchEntity, BrematicProDevice):
             self.async_write_ha_state()
 
     def update_state(self, device_state):
-        if device_state:
-            if device_state['state'] == '0001':
-                self._is_on  = True
-            elif device_state['state'] == '0002':
-                self._is_on  = False
-            else:
-                self._is_on  = None
+        if device_state['state'] == '0001':
+            self._is_on  = True
+        elif device_state['state'] == '0002':
+            self._is_on  = False
+        else:
+            self._is_on  = None
+        self.async_write_ha_state()
 
 class BrematicProMeteredSwitch(BrematicProSwitch):
     """Representation of a Brematic Metered Switch."""

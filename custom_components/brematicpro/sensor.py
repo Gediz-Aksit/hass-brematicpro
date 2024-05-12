@@ -38,6 +38,7 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
 
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
+        self.async_write_ha_state()
 
 class BrematicProHumidity(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor,  humidity component."""
@@ -53,3 +54,4 @@ class BrematicProHumidity(BrematicProDevice, SensorEntity):
 
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
+        self.async_write_ha_state()
