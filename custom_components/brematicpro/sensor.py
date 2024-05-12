@@ -17,9 +17,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProLight) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
 
-class BrematicProLight(BrematicProDevice, SensorEntity):
+class BrematicProPhoton(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro photoluminescence sensor."""
-    _type = 'light'
+    _type = 'photon'
     _attr_device_class = SensorDeviceClass.ILLUMINANCE
 
     def update_state(self, device_state):
