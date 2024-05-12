@@ -78,7 +78,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                             #lEntity = list(filter(lambda pair: temp_device_state['adr'] in pair[0].unique_id, product(relevant_entities, device_states)))
                                             lEntity = list(filter(lambda entity: temp_device_state['adr'] in entity.unique_id, relevant_entities))
                                             for entity in lEntity:
-                                                _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {temp_device_state}')
+                                                if entity.device_type == 'temperature' or entity.device_type == 'water' or entity.device_type == 'motion':
+                                                    _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {temp_device_state}')
                                                 entity.update_state(temp_device_state)
                                         #_LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Name: {entity.name}, Device State: {device_state}")
                                     #_LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses

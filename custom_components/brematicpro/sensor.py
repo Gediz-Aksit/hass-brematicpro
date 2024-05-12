@@ -31,6 +31,8 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
     _type = 'temperature'
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _has_battery = True
+    #00:00CA:0271
+    #00:00AD:0362
 
     def update_state(self, device_state):
         self._state = None
