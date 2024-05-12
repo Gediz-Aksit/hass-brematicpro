@@ -139,7 +139,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}")
+        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:
                 unique_id = 'BrematicPro_' + device['unique_id']
