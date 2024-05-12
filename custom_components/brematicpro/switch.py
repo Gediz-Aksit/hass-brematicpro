@@ -20,6 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicProSwitch(SwitchEntity, BrematicProDevice):
     """Representation of a BrematicPro Switch."""
     _type = 'switch'
+    _is_on = False
 
     def __init__(self, coordinator, device, hass):
         """Initialize the switch."""
