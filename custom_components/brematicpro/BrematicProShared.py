@@ -153,7 +153,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     #Battery
                     if entity.frequency == 868 and ((entity.device_type == 'door') or (entity.device_type == 'window')):
                         entity = BrematicProBattery(coordinator, device, hass)
-                         .append(entity)
+                        entities.append(entity)
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
