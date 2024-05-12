@@ -71,6 +71,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                     #[entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
                                     for entity, device_state in matching_pairs:
                                         entity.update_state(device_state)
+                                        #if entity.has_battery:
+                                            
                                         #_LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Name: {entity.name}, Device State: {device_state}")
                                     #_LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                                 else:
@@ -90,6 +92,7 @@ class BrematicProDevice(CoordinatorEntity):
         self._frequency =  device.get('frequency', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
+        self._has_battery = False
         self._session = async_get_clientsession(hass)
 
     async def async_added_to_hass(self):
@@ -117,6 +120,11 @@ class BrematicProDevice(CoordinatorEntity):
         """Return the device frequency."""
         return self._frequency
 
+    @property
+    def has_battery(self):
+        """Return the device frequency."""
+        return self._has_battery
+
     def update_device(self, device):
         #Does not work, needs to identify the device properly or something.
         self._unique_id = device['unique_id']
@@ -142,7 +150,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:
-                unique_id = 'BrematicPro_' + device['unique_id']
+                unique_id = device['unique_id']
                 existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
                 #area_id = find_area_id(hass, device.get('room'))
                 if existing_entity:
@@ -151,7 +159,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     entity = entity_class(coordinator, device, hass)
                     entities.append(entity)
                     #Battery
-                    if entity.frequency == 868 and ((entity.device_type == 'door') or (entity.device_type == 'window')):
+                    if entity.frequency == 868 and entity.has_battery:
                         entity = BrematicProBattery(coordinator, device, hass)
                         entities.append(entity)
         async_add_entities(entities, True)
@@ -221,7 +229,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         commands = {cmd: f"{item_local}{item_commands[cmd]['url']}&at={system_code}" for cmd in item_commands}
 
         transformed_data.append({
-            "unique_id": 'BrematicPro_' + item.get('address', 'NoID'),
+            "unique_id": item.get('address', 'NoID'),
             "name": device_name,
             "room": room_name,
             "frequency": freq,

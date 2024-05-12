@@ -48,6 +48,7 @@ class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
     _type = 'door'
     _attr_is_on = None
     _attr_device_class = BinarySensorDeviceClass.DOOR
+    _has_battery = True;
 
     def update_state(self, device_state):
         _LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
