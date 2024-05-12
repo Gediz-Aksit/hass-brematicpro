@@ -29,6 +29,7 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
     _type = 'temperature'
     _attr_device_class = SensorDeviceClass.TEMPERATURE
+    _has_battery = True
 
     def update_state(self, device_state):
         self._state = None

@@ -23,8 +23,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro device battery status."""
     _type = 'battery'
-    _attr_is_on = None
     _attr_device_class = BinarySensorDeviceClass.BATTERY
+    _attr_is_on = None
     
     def __init__(self, coordinator, device, hass):
         """Initialize the switch."""
@@ -36,7 +36,7 @@ class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
         if device_state:
             if device_state['state'][-3] == '0':
                 self._attr_is_on  = False
-            elif device_state['state'][-3] == '1':
+            elif device_state['state'][-3] == '3':
                 self._attr_is_on  = True
             elif device_state['state'][-3] == '4':
                 self._attr_is_on  = None
@@ -48,9 +48,9 @@ class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
 class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
     _type = 'door'
-    _attr_is_on = None
     _attr_device_class = BinarySensorDeviceClass.DOOR
-    _has_battery = True;
+    _attr_is_on = None
+    _has_battery = True
 
     def update_state(self, device_state):
         #_LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
@@ -73,11 +73,13 @@ class BrematicProWater(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro moisture sensor."""
     _type = 'water'
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
+    _has_battery = True
 
 class BrematicProMotion(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
     _type = 'motion'
     _attr_device_class = BinarySensorDeviceClass.MOTION
+    _has_battery = True
 
     def update_state(self, device_state):
         if device_state:
