@@ -32,6 +32,7 @@ class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
         self._commands = []
         self._unique_id = device['uniqueid'] + '.battery'
 
+    def update_state(self, device_state):
         if device_state:
             if device_state['state'][-3] == '0':
                 self._attr_is_on  = True
