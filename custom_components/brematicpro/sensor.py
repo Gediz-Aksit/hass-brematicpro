@@ -14,8 +14,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     """Set up BrematicPro device from a config entry."""
     from .BrematicProShared import async_common_setup_entry
     
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProLight) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
+    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProPhoton) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProHumidity)
 
 class BrematicProPhoton(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro photoluminescence sensor."""
