@@ -125,8 +125,7 @@ class BrematicProDevice(CoordinatorEntity):
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(self.hass)
-        self._battery_state = BatteryState.UNKNOWN
-        
+
     def update_state(self, device_state):
         """Updates device state if applicable."""
         _LOGGER.warning('Unhandled BrematicProDevice got the update ' + json.dumps(device_state, indent=2))#Posting update
