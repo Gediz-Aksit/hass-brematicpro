@@ -67,22 +67,16 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                         _LOGGER.debug(f"State 1 UID {device_states[0]['adr']}")
                                     else:
                                         _LOGGER.debug("device_states list is empty")
-                                    #matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
-                                    #[entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
                                     matching_device_states = [device_state for entity, device_state in product(relevant_entities, device_states) if entity.unique_id == device_state['adr']]
-                                    #_LOGGER.debug('matching_device_states {matching_device_states}')
-                                    #for entity, device_state in matching_pairs:
                                     for temp_device_state in matching_device_states:
-                                        #_LOGGER.debug(f'temp_device_state {temp_device_state}')
                                         if len(temp_device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
-                                            #lEntity = list(filter(lambda pair: temp_device_state['adr'] in pair[0].unique_id, product(relevant_entities, device_states)))
                                             lEntity = list(filter(lambda entity: temp_device_state['adr'] in entity.unique_id, relevant_entities))
                                             for entity in lEntity:
                                                 if entity.device_type == 'temperature' or entity.device_type == 'water' or entity.device_type == 'motion':
                                                     _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {temp_device_state}')
+                                                if entity.unique_id == '74230189116E':
+                                                    _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {temp_device_state}')
                                                 entity.update_state(temp_device_state)
-                                        #_LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Name: {entity.name}, Device State: {device_state}")
-                                    #_LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                                 else:
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                         except aiohttp.ClientError as e:
