@@ -69,13 +69,14 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                         _LOGGER.debug("device_states list is empty")
                                     #matching_pairs = list(filter(lambda pair: pair[0].unique_id == pair[1]['adr'], product(relevant_entities, device_states)))# Find the entities that matches the 'adr' key
                                     #[entity.update_state(device_state) for entity, device_state in matching_pairs if entity.unique_id == device_state['adr']]# Update the status of matching entities
-                                    matching_device_states = [device_state for entity, device_state in product(relevant_entities, device_states) if entity.unique_id == device_state['adr']]
+                                    #matching_device_states = [device_state for entity, device_state in product(relevant_entities, device_states) if entity.unique_id == device_state['adr']]
+                                    
                                     #for entity, device_state in matching_pairs:
-                                    for device_state in matching_device_states:
-                                        if len(device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
-                                            lEntity = list(filter(lambda pair: device_state['adr'] in pair[0].unique_id, product(relevant_entities, device_states)))
+                                    for temp_device_state in matching_device_states:
+                                        if len(temp_device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
+                                            lEntity = set(filter(lambda pair: temp_device_state['adr'] in pair[0].unique_id, product(relevant_entities, device_states)))
                                             for entity, _ in lEntity:
-                                                entity.update_state(device_state)
+                                                entity.update_state(temp_device_state)
                                         #_LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Name: {entity.name}, Device State: {device_state}")
                                     #_LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
                                 else:
