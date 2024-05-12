@@ -87,7 +87,7 @@ class BrematicProDevice(CoordinatorEntity):
         super().__init__(coordinator)
         self._unique_id = device['uniqueid']
         self._name = device['name']
-        self._frequency =  device.get('freq', None)
+        self._frequency =  device.get('frequency', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(hass)
@@ -152,8 +152,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     entity = entity_class(coordinator, device, hass)
                     entities.append(entity)
                     #Battery
-                    entity = entity_class(coordinator, device, hass)
-                    entities.append(entity)
+                    if entity.frequency == 868 and ((entity.device_type == 'door') or (entity.device_type == 'window')):
+                        entity = BrematicProBattery(coordinator, device, hass)
+                        entities.append(entity)
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
@@ -221,7 +222,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
             "uniqueid": item.get('address', 'NoID'),
             "name": device_name,
             "room": room_name,
-            "freq": freq,
+            "frequency": freq,
             "type": item_type,
             "commands": commands
         })
