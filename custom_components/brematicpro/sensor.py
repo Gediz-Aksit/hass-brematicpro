@@ -36,6 +36,11 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
     #00:00C9:0273 20.1 C  62.7%
     #00:00AD:0362 17.3 C  86.6%
 
+    @property
+    def state(self):
+        """Return the current state of the sensor."""
+        return self._state
+
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
         _LOGGER.debug(f"Temp: {self._state} C")
