@@ -85,7 +85,7 @@ class BrematicProDevice(CoordinatorEntity):
     def __init__(self, coordinator, device, hass):
         """Initialize the device."""
         super().__init__(coordinator)
-        self._unique_id = device['uniqueid']
+        self._unique_id = device['unique_id']
         self._name = device['name']
         self._frequency =  device.get('frequency', None)
         self._suggested_area = device.get('room', None)
@@ -119,9 +119,9 @@ class BrematicProDevice(CoordinatorEntity):
 
     def update_device(self, device):
         #Does not work, needs to identify the device properly or something.
-        self._unique_id = device['uniqueid']
+        self._unique_id = device['unique_id']
         self._name = device['name']
-        self._frequency =  device.get('freq', None)
+        self._frequency =  device.get('frequency', None)
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(self.hass)
@@ -142,7 +142,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:
-                unique_id = device['uniqueid']
+                unique_id = 'BrematicPro_' + device['unique_id']
                 existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
                 #area_id = find_area_id(hass, device.get('room'))
                 if existing_entity:
@@ -153,7 +153,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     #Battery
                     if entity.frequency == 868 and ((entity.device_type == 'door') or (entity.device_type == 'window')):
                         entity = BrematicProBattery(coordinator, device, hass)
-                        entities.append(entity)
+                         .append(entity)
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
@@ -218,7 +218,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         commands = {cmd: f"{item_local}{item_commands[cmd]['url']}&at={system_code}" for cmd in item_commands}
 
         transformed_data.append({
-            "uniqueid": item.get('address', 'NoID'),
+            "unique_id": 'BrematicPro_' + item.get('address', 'NoID'),
             "name": device_name,
             "room": room_name,
             "frequency": freq,
