@@ -36,9 +36,12 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
     #00:00C9:0273 20.1 C  62.7%
     #00:00AD:0362 17.3 C  86.6%
 
+    @property
+    def state(self):
+        return self._state
+
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
-        _LOGGER.debug(f"Temp: {self._state} C")
         self.async_write_ha_state()
 
 class BrematicProHumidity(BrematicProDevice, SensorEntity):
@@ -53,7 +56,10 @@ class BrematicProHumidity(BrematicProDevice, SensorEntity):
         self._commands = []
         self._unique_id = device['unique_id'] + '.humidity'
 
+    @property
+    def state(self):
+        return self._state
+
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
-        _LOGGER.debug(f"Humidity: {self._state} %")
         self.async_write_ha_state()

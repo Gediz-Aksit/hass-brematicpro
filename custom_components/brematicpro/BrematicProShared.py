@@ -132,11 +132,6 @@ class BrematicProDevice(CoordinatorEntity):
         """Return the device frequency."""
         return self._has_battery
 
-    @property
-    def state(self):
-        """Return the current state of the sensor."""
-        return self._state
-
     def update_device(self, device):
         #Does not work, needs to identify the device properly or something.
         self._unique_id = device['unique_id']
