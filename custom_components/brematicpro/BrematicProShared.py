@@ -169,7 +169,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         if entity.has_battery:
                             entity2 = BrematicProBattery(coordinator, device, hass)
                             entities.append(entity2)
-                        if entity.device_type = 'temperature':
+                        if entity.device_type == 'temperature':
                             entity2 = BrematicProHumidity(coordinator, device, hass)
                             entities.append(entity2)                            
         async_add_entities(entities, True)
