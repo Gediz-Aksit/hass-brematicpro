@@ -160,7 +160,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
         _LOGGER.debug(f"async_common_setup_entry DOMAIN {DOMAIN}")
         _LOGGER.debug(f"async_common_setup_entry entity ID {entry.entry_id}")
-        if entities:
+        if len(entities) > 0:
             _LOGGER.debug(f"Adding {len(entities)} new entities (first): {entities[0]}")
             _LOGGER.debug(f"Final entities list (first with unique id): {hass.data[DOMAIN][entry.entry_id]['entities'][0].unique_id} {hass.data[DOMAIN][entry.entry_id]['entities'][0]}")
         else:
