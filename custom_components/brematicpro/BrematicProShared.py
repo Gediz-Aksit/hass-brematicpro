@@ -74,7 +74,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                     for device_state in matching_device_states:
                                         if len(device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
                                             lEntity = list(filter(lambda pair: device_state['adr'] in pair[0].unique_id, product(relevant_entities, device_states)))
-                                            for entity in lEntity:
+                                            for entity, _ in lEntity:
                                                 entity.update_state(device_state)
                                         #_LOGGER.debug(f"Matching Pair - Entity UID: {entity.unique_id}, Name: {entity.name}, Device State: {device_state}")
                                     #_LOGGER.debug('_async_update_data ' + json.dumps(json.loads(response_text), indent=2))#Posting statuses
