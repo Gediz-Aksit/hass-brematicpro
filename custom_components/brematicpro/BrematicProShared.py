@@ -89,6 +89,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
 class BrematicProDevice(CoordinatorEntity):
     """Representation of a BrematicPro device."""
     _type = 'unknown_device'
+    _has_battery = False
 
     def __init__(self, coordinator, device, hass):
         """Initialize the device."""
@@ -97,8 +98,6 @@ class BrematicProDevice(CoordinatorEntity):
         self._name = device['name']
         self._frequency =  device.get('frequency', None)
         self._suggested_area = device.get('room', None)
-        self._is_on = False
-        self._has_battery = False
         self._session = async_get_clientsession(hass)
 
     async def async_added_to_hass(self):
@@ -166,8 +165,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     entities.append(entity)
                     #Battery
                     if entity.frequency == 868 and entity.has_battery:
-                        entity = BrematicProBattery(coordinator, device, hass)
-                        entities.append(entity)
+                        entity2 = BrematicProBattery(coordinator, device, hass)
+                        entities.append(entity2)
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
