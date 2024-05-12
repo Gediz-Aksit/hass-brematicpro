@@ -139,7 +139,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices}")
+        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:
                 unique_id = 'BrematicPro_' + device['unique_id']
@@ -160,8 +160,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
         _LOGGER.debug(f"async_common_setup_entry DOMAIN {DOMAIN}")
         _LOGGER.debug(f"async_common_setup_entry entity ID {entry.entry_id}")
-        _LOGGER.debug(f"Adding {len(entities)} new entities: {entities}")
-        _LOGGER.debug(f"Final entities list: {hass.data[DOMAIN][entry.entry_id]['entities']}")
+        _LOGGER.debug(f"Adding {len(entities)} new entities (first): {entities[0]}")
+        _LOGGER.debug(f"Final entities list (first with unique id): {hass.data[DOMAIN][entry.entry_id]['entities'][0].unique_id} {hass.data[DOMAIN][entry.entry_id]['entities'][0]}")
         return True
     return False
 
