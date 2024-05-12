@@ -90,7 +90,6 @@ class BrematicProDevice(CoordinatorEntity):
     def __init__(self, coordinator, device, hass):
         """Initialize the device."""
         super().__init__(coordinator)
-        self._state = None
         self._unique_id = device['unique_id']
         self._name = device['name']
         self._frequency =  device.get('frequency', None)
@@ -126,11 +125,6 @@ class BrematicProDevice(CoordinatorEntity):
     def has_battery(self):
         """Return the device frequency."""
         return self._has_battery
-
-    @property
-    def state(self):
-        """Return the device state."""
-        return self._state
         
     def update_device(self, device):
         #Does not work, needs to identify the device properly or something.

@@ -24,6 +24,11 @@ class BrematicProPhoton(BrematicProDevice, SensorEntity):
     _type = 'photon'
     _attr_device_class = SensorDeviceClass.ILLUMINANCE
 
+    @property
+    def state(self):
+        """Return the device state."""
+        return self._state
+
     def update_state(self, device_state):
         self._state = None
 
@@ -35,6 +40,15 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
     _has_battery = True
     #00:00C9:0273 20.1 C  62.7%
     #00:00AD:0362 17.3 C  86.6%
+
+    def __init__(self, coordinator, device, hass):
+        super().__init__(coordinator, device, hass)
+        self._state = None
+
+    @property
+    def state(self):
+        """Return the device state."""
+        return self._state
 
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
@@ -49,8 +63,13 @@ class BrematicProHumidity(BrematicProDevice, SensorEntity):
 
     def __init__(self, coordinator, device, hass):
         super().__init__(coordinator, device, hass)
-        self._commands = []
+        self._state = None
         self._unique_id = device['unique_id'] + '.humidity'
+
+    @property
+    def state(self):
+        """Return the device state."""
+        return self._state
 
     def update_state(self, device_state):
         self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
