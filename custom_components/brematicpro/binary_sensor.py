@@ -27,7 +27,7 @@ class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
     _attr_is_on = None
     
     def __init__(self, coordinator, device, hass):
-        """Initialize the switch."""
+        """Initialize the battery status indicator."""
         super().__init__(coordinator, device, hass)
         self._commands = []
         self._unique_id = device['unique_id'] + '.battery'

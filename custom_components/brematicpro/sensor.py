@@ -33,3 +33,17 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
 
     def update_state(self, device_state):
         self._state = None
+
+class BrematicProHumidity(BrematicProDevice, SensorEntity):
+    """Representation of a BrematicPro temperature sensor,  humidity component."""
+    _type = 'humidity'
+    _attr_device_class = SensorDeviceClass.HUMIDITY
+    _has_battery = True
+
+    def __init__(self, coordinator, device, hass):
+        super().__init__(coordinator, device, hass)
+        self._commands = []
+        self._unique_id = device['unique_id'] + '.humidity'
+
+    def update_state(self, device_state):
+        self._state = None

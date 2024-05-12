@@ -145,6 +145,7 @@ class BrematicProDevice(CoordinatorEntity):
         #_LOGGER.warning('Unhandled BrematicProDevice got the update ' + json.dumps(device_state, indent=2))#Posting update
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
+    from.sensor import BrematicProHumidity
     from.binary_sensor import BrematicProBattery
     
     """Common setup for BrematicPro devices."""
@@ -164,10 +165,13 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                 else:
                     entity = entity_class(coordinator, device, hass)
                     entities.append(entity)
-                    #Battery
-                    if entity.frequency == 868 and entity.has_battery:
-                        entity2 = BrematicProBattery(coordinator, device, hass)
-                        entities.append(entity2)
+                    if entity.frequency == 868:
+                        if entity.has_battery:
+                            entity2 = BrematicProBattery(coordinator, device, hass)
+                            entities.append(entity2)
+                        if entity.device_type = 'temperature':
+                            entity2 = BrematicProHumidity(coordinator, device, hass)
+                            entities.append(entity2)                            
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
