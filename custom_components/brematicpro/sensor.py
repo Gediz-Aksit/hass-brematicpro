@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 from homeassistant.core import HomeAssistant
+from homeassistant.const import TEMP_CELSIUS, PERCENTAGE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
@@ -30,17 +31,19 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
     _type = 'temperature'
     _attr_device_class = SensorDeviceClass.TEMPERATURE
+    _attr_unit_of_measurement = TEMP_CELSIUS
     _has_battery = True
-    #00:00CA:0271
-    #00:00AD:0362
+    #00:00C9:0273 20.1 C  62.7%
+    #00:00AD:0362 17.3 C  86.6%
 
     def update_state(self, device_state):
-        self._state = None
+        self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
 
 class BrematicProHumidity(BrematicProDevice, SensorEntity):
     """Representation of a BrematicPro temperature sensor,  humidity component."""
     _type = 'humidity'
     _attr_device_class = SensorDeviceClass.HUMIDITY
+    _attr_unit_of_measurement = PERCENTAGE
     _has_battery = True
 
     def __init__(self, coordinator, device, hass):
@@ -49,4 +52,4 @@ class BrematicProHumidity(BrematicProDevice, SensorEntity):
         self._unique_id = device['unique_id'] + '.humidity'
 
     def update_state(self, device_state):
-        self._state = None
+        self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
