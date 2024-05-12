@@ -6,12 +6,14 @@ from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .BrematicProShared import async_common_setup_entry, find_area_id, BrematicProDevice
+from .BrematicProShared import find_area_id, BrematicProDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
+    from .BrematicProShared import async_common_setup_entry
+    
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProLight) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
 

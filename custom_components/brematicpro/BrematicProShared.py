@@ -78,12 +78,6 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         except aiohttp.ClientError as e:
                             _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
 
-class BatteryState(Enum):
-    GOOD = 'good'
-    LOW = 'low'
-    UNKNOWN = 'unknown'
-    WIRED = 'wired'
-
 class BrematicProDevice(CoordinatorEntity):
     """Representation of a BrematicPro device."""
     _type = 'unknown_device'
@@ -97,7 +91,6 @@ class BrematicProDevice(CoordinatorEntity):
         self._suggested_area = device.get('room', None)
         self._is_on = False
         self._session = async_get_clientsession(hass)
-        self._battery_state = BatteryState.UNKNOWN
 
     async def async_added_to_hass(self):
         """Register as a listener when added to hass."""
@@ -124,11 +117,6 @@ class BrematicProDevice(CoordinatorEntity):
         """Return the device frequency."""
         return self._frequency
 
-    @property
-    def battery_state(self):
-        """Return the battery state of the device."""
-        return self._battery_state.value
-
     def update_device(self, device):
         #Does not work, needs to identify the device properly or something.
         self._unique_id = device['uniqueid']
@@ -144,6 +132,8 @@ class BrematicProDevice(CoordinatorEntity):
         _LOGGER.warning('Unhandled BrematicProDevice got the update ' + json.dumps(device_state, indent=2))#Posting update
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
+    from.binary_sensor import BrematicProBattery
+    
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
@@ -159,6 +149,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                 if existing_entity:
                     existing_entity.update_device(device)
                 else:
+                    entity = entity_class(coordinator, device, hass)
+                    entities.append(entity)
+                    #Battery
                     entity = entity_class(coordinator, device, hass)
                     entities.append(entity)
         async_add_entities(entities, True)

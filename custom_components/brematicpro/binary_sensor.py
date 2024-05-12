@@ -6,16 +6,41 @@ from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .BrematicProShared import async_common_setup_entry, find_area_id, BrematicProDevice
+from .BrematicProShared import find_area_id, BrematicProDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor) and \
+    from .BrematicProShared import async_common_setup_entry
+    
+    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion)
+
+class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
+    """Representation of a BrematicPro device battery status."""
+    _type = 'battery'
+    _attr_is_on = None
+    _attr_device_class = BinarySensorDeviceClass.BATTERY
+    
+    def __init__(self, coordinator, device, hass):
+        """Initialize the switch."""
+        super().__init__(coordinator, device, hass)
+        self._commands = device.get('commands', [])
+        self._unique_id = device['uniqueid'] + '.battery'
+
+        if device_state:
+            if device_state['state'][-3] == '0':
+                self._attr_is_on  = True
+            elif device_state['state'][-3] == '4':
+                self._attr_is_on  = False
+            else:
+                self._attr_is_on  = None
+        else:
+            self._attr_is_on  = None
 
 class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
@@ -44,15 +69,6 @@ class BrematicProWater(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro moisture sensor."""
     _type = 'water'
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
-    
-    def update_state(self, device_state):
-        if device_state:
-            if device_state['state'] == '0001':
-                self._attr_is_on  = True
-            elif device_state['state'] == '0002':
-                self._attr_is_on  = False
-            else:
-                self._attr_is_on  = None
 
 class BrematicProMotion(BrematicProDevice, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
