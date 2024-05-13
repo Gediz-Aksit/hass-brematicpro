@@ -116,11 +116,14 @@ class BrematicProEntity(CoordinatorEntity):
     def device_info(self):
         """Return the device info from the passed device_entry."""
         return {
-            "identifiers": {(DOMAIN, self.device_entry.id)},
-            "name": self.device_entry.name,
+        (
+            "config_entry_id": self.device_entry.entry_id
+            "identifiers": {(DOMAIN, self.device['unique_id'])},
             "manufacturer": self.device_entry.manufacturer,
             "model": self.device_entry.model,
-            "via_device": (DOMAIN, self.device_entry.via_device_id),
+            "name": self.device_entry.name,
+            "suggested_area": self.device.get('room', None),
+            "via_device": (DOMAIN, self.device_entry.via_device_id)
         }
 
     @property
@@ -169,7 +172,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         manufacturer='Brennenstuhl',
                         model='BrematicPRO',
                         name=device['name'],
-                        suggested_area=device.get('room', None)#,
+                        suggested_area=device.get('room', None),
+                        via_device=(DOMAIN, "HubIdentifier")#,
                         #sw_version="Software Version"
                     )
                 unique_entity_id = f"{DOMAIN}_{device['unique_id']}_{entity_class._type}"
