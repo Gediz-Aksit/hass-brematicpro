@@ -87,14 +87,20 @@ class BrematicProEntity(CoordinatorEntity):
     _type = 'unknown_entity'
     _has_battery = False
 
-    def __init__(self, hass, coordinator, device, device_id):
+    def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the device."""
         super().__init__(coordinator)
         self.hass = hass
         self.device = device
-        self._device_id = device_id
+        self._device_id = device_entry.id
         self._attr_unique_id = f"{device['unique_id']}_{self._type}"
-        self._attr_device_info = self.get_device_info()
+        self._attr_device_info = {
+            'identifiers': {(DOMAIN, device_entry.id)},
+            'name': device_entry.name,
+            'manufacturer': device_entry.manufacturer,
+            #'model': device_entry.model,
+            'via_device': (DOMAIN, device_entry.via_device) if device_entry.via_device else None
+        }
         self._frequency =  device.get('frequency', None)        
 
     async def async_added_to_hass(self):
@@ -158,15 +164,15 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     )
                 unique_entity_id = f"{DOMAIN}_{device['unique_id']}_{entity_class._type}"
                 if not entity_registry.async_get(unique_entity_id):
-                    entity = entity_class(hass, coordinator, device, device_entry.id)
+                    entity = entity_class(hass, coordinator, device, device_entry)
                     entities.append(entity)
                 if device.get('frequency', 0) == 868:
                     if device.get('device_name', '') == 'temperature':
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_humidity"):
-                            entities.append(BrematicProHumidity(hass, coordinator, device, device_entry.id))
+                            entities.append(BrematicProHumidity(hass, coordinator, device, device_entry))
                     if device.get('has_battery', False):
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
-                            entities.append(BrematicProBattery(hass, coordinator, device, device_entry.id))
+                            entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
