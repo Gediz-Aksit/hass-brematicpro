@@ -107,6 +107,11 @@ class BrematicProEntity(CoordinatorEntity):
         return self._attr_unique_id
 
     @property
+    def device_type(self):
+        """Return the device type."""
+        return self._type
+
+    @property
     def frequency(self):
         """Return the device frequency."""
         return self._frequency
@@ -156,14 +161,15 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         #sw_version="Software Version"
                     )
                 unique_entity_id = f"{DOMAIN}_{device['unique_id']}_{entity_class._type}"
-                if not entity_registry.async_get(unique_entity_id):
+                entity = entity_registry.async_get(unique_entity_id)
+                if not entity:
                     entity = entity_class(hass, coordinator, device, device_entry)
-                    entities.append(entity)
-                if device.get('frequency', 0) == 868:
-                    if device.get('device_name', '') == 'temperature':
+                    entities.append(entity)                    
+                if entity.get('frequency', 0) == 868:
+                    if entity.get('type', '') == 'temperature':
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_humidity"):
                             entities.append(BrematicProHumidity(hass, coordinator, device, device_entry))
-                    if device.get('has_battery', False):
+                    if entity.get('has_battery', False):
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
         async_add_entities(entities, True)
@@ -225,7 +231,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
                 room_name = room
                 device_name = device_name.replace(room, '').strip()
         item_sys = item.get('sys')
-        freq = 868 if item_sys == 'B8' else 433 if item_sys == 'B4' else 0
+        frequency = 868 if item_sys == 'B8' else 433 if item_sys == 'B4' else 0
         item_local = item.get('local', '')
         item_commands = item.get('commands', [])
         if item_local:
@@ -236,7 +242,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
             "unique_id": item.get('address', 'NoID'),
             "name": device_name,
             "room": room_name,
-            "frequency": freq,
+            "frequency": frequency,
             "type": item_name,
             "commands": commands
         })
