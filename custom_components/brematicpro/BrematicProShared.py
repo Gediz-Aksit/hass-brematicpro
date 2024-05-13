@@ -122,7 +122,7 @@ class BrematicProEntity(CoordinatorEntity):
         self._device_id = device_id
         self._attr_unique_id = f"{device_info['unique_id']}_{self.entity_name()}"
         self._attr_device_info = self.get_device_info()
-        self._frequency =  device.get('frequency', None
+        self._frequency =  device.get('frequency', None)
 
     def update_state(self, device_state):
         """Updates device state if applicable."""
