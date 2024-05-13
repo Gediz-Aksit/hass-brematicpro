@@ -156,8 +156,12 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        device_registry = await hass.helpers.device_registry.async_get_registry()#hass.helpers.device_registry.async_get(hass)#await hass.helpers.device_registry.async_get_registry()
-        entity_registry = await hass.helpers.entity_registry.async_get_registry()#hass.helpers.entity_registry.async_get(hass)#await hass.helpers.entity_registry.async_get_registry()
+        device_registry = await hass.helpers.device_registry.async_get(hass)
+        #hass.helpers.device_registry.async_get(hass)
+        #await hass.helpers.device_registry.async_get_registry()
+        entity_registry = await hass.helpers.entity_registry.async_get(hass)
+        #hass.helpers.entity_registry.async_get(hass)
+        #await hass.helpers.entity_registry.async_get_registry()
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:
