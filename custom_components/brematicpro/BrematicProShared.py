@@ -94,13 +94,6 @@ class BrematicProEntity(CoordinatorEntity):
         self.device = device
         self._device_id = device_entry.id
         self._attr_unique_id = f"{device['unique_id']}_{self._type}"
-        self._attr_device_info = {
-            'identifiers': {(DOMAIN, device_entry.id)},
-            'name': device_entry.name,
-            'manufacturer': device_entry.manufacturer,
-            'model': device_entry.model,
-            'via_device': (DOMAIN, device_entry.via_device_id) if device_entry.via_device_id else None
-        }
         self._frequency =  device.get('frequency', None)        
 
     async def async_added_to_hass(self):
