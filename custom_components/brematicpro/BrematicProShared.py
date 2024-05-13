@@ -25,7 +25,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
         self.entry = entry
         super().__init__(
             hass,
-            logger=logging.getLogger(__name__),
+            logger=_LOGGER,
             name=DOMAIN,
             update_interval=timedelta(minutes=1),
         )
@@ -56,6 +56,9 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                 if response.status == 200:
                                     response_text = await response.text()
                                     device_states = json.loads(response_text).get('XC_SUC', [])
+                                    
+                                    
+                                    
                                     relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
                                     if relevant_entities:
                                         _LOGGER.debug(f"R Entity UID count {len(relevant_entities)}")
@@ -67,16 +70,18 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                         _LOGGER.debug(f"State 1 UID {device_states[0]['adr']}")
                                     else:
                                         _LOGGER.debug("device_states list is empty")
+                                        
                                     matching_device_states = [device_state for entity, device_state in product(relevant_entities, device_states) if entity.unique_id == device_state['adr']]
-                                    for temp_device_state in matching_device_states:
-                                        if len(temp_device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
-                                            lEntity = list(filter(lambda entity: temp_device_state['adr'] in entity.unique_id, relevant_entities))
-                                            for entity in lEntity:
+                                    for device_state in device_states:
+                                    
+                                        if len(device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
+                                            relevant_entities = filter(lambda entity: device_state['adr'] in entity.unique_id, BrematicPro_entities)
+                                            for entity in relevant_entities:
                                                 if entity.device_name == 'temperature' or entity.device_name == 'water' or entity.device_name == 'motion':
                                                     _LOGGER.debug(f'entity {entity.device_name} {entity.unique_id} {temp_device_state}')
                                                 if entity.unique_id == '74230189116E':
                                                     _LOGGER.debug(f'battery entity {entity.device_name} {entity.unique_id} {temp_device_state}')
-                                                entity.update_state(temp_device_state)
+                                                entity.update_state(device_state)
                                 else:
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                         except aiohttp.ClientError as e:
@@ -94,7 +99,7 @@ class BrematicProEntity(CoordinatorEntity):
         self.device = device
         self.device_entry = device_entry
         self._device_id = device_entry.id
-        self._attr_unique_id = f"{device['unique_id']}_{self._type}"
+        self._attr_unique_id = f"{DOMAIN}_{device['unique_id']}_{self._type}"#f"{device['unique_id']}_{self._type}"
         self._frequency =  device.get('frequency', 0)        
 
     async def async_added_to_hass(self):
