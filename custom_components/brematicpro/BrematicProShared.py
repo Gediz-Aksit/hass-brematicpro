@@ -169,7 +169,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     if entity.get('device_type', '') == 'temperature':
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_humidity"):
                             entities.append(BrematicProHumidity(hass, coordinator, device, device_entry))
-                    if entity.has_battery, False):
+                    if entity.has_battery:
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
         async_add_entities(entities, True)
