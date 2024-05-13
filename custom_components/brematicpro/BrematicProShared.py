@@ -116,7 +116,6 @@ class BrematicProEntity(CoordinatorEntity):
     def device_info(self):
         """Return the device info from the passed device_entry."""
         return {
-        (
             "config_entry_id": self.device_entry.entry_id
             "identifiers": {(DOMAIN, self.device['unique_id'])},
             "manufacturer": self.device_entry.manufacturer,
