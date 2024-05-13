@@ -87,12 +87,12 @@ class BrematicProEntity(CoordinatorEntity):
     _type = 'unknown_entity'
     _has_battery = False
 
-    def __init__(self, hass, coordinator, device, device_id):
+    def __init__(self, hass, coordinator, device, device_info):
         """Initialize the device."""
         super().__init__(coordinator)
         self.hass = hass
         self.device_info = device_info
-        self._device_id = device_id
+        self._device_id = device_info.id
         self._attr_unique_id = f"{device_info['unique_id']}_{self.entity_name()}"
         self._attr_device_info = self.get_device_info()
         self._frequency =  device.get('frequency', None)        

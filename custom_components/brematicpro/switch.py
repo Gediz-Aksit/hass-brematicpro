@@ -21,9 +21,9 @@ class BrematicProSwitch(SwitchEntity, BrematicProEntity):
     """Representation of a BrematicPro Switch."""
     _type = 'switch'
 
-    def __init__(self, hass, coordinator, device, device_id):
+    def __init__(self, hass, coordinator, device, device_info):
         """Initialize the switch."""
-        super().__init__(hass, coordinator, device, device_id)
+        super().__init__(hass, coordinator, device, device_info)
         self._is_on = False
         self._commands = device.get('commands', [])
 
