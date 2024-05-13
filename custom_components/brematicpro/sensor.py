@@ -41,8 +41,8 @@ class BrematicProTemp(BrematicProEntity, SensorEntity):
     #00:00C9:0273 20.1 C  62.7%
     #00:00AD:0362 17.3 C  86.6%
 
-    def __init__(self, hass, coordinator, device, device_info):
-        super().__init__(hass, coordinator, device, device_info)
+    def __init__(self, hass, coordinator, device, device_id):
+        super().__init__(hass, coordinator, device, device_id)
         self._state = None
 
     @property
@@ -61,8 +61,8 @@ class BrematicProHumidity(BrematicProEntity, SensorEntity):
     _attr_unit_of_measurement = PERCENTAGE
     _has_battery = True
 
-    def __init__(self, hass, coordinator, device, device_info):
-        super().__init__(hass, coordinator, device, device_info)
+    def __init__(self, hass, coordinator, device, device_id):
+        super().__init__(hass, coordinator, device, device_id)
         self._state = None
         self._unique_id = device['unique_id'] + '.humidity'
 
