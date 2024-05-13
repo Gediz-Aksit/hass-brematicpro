@@ -92,6 +92,7 @@ class BrematicProEntity(CoordinatorEntity):
         super().__init__(coordinator)
         self.hass = hass
         self.device = device
+        self.device_entry = device_entry
         self._device_id = device_entry.id
         self._attr_unique_id = f"{device['unique_id']}_{self._type}"
         self._frequency =  device.get('frequency', 0)        
@@ -110,6 +111,17 @@ class BrematicProEntity(CoordinatorEntity):
     def device_type(self):
         """Return the device type."""
         return self._type
+
+    @property
+    def device_info(self):
+        """Return the device info from the passed device_entry."""
+        return {
+            "identifiers": {(DOMAIN, self.device_entry.id)},
+            "name": self.device_entry.name,
+            "manufacturer": self.device_entry.manufacturer,
+            "model": self.device_entry.model,
+            "via_device": (DOMAIN, self.device_entry.via_device_id),
+        }
 
     @property
     def frequency(self):
