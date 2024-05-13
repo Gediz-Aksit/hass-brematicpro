@@ -111,7 +111,7 @@ class BrematicProEntity(CoordinatorEntity):
     @property
     def unique_id(self):
         """Return the unique ID of the device."""
-        return self._unique_id
+        return self._attr_unique_id
 
     @property
     def frequency(self):
