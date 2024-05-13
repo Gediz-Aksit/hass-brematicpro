@@ -7,7 +7,7 @@ from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .BrematicProShared import find_area_id, BrematicProDevice
+from .BrematicProShared import find_area_id, BrematicProEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProHumidity)
 
-class BrematicProPhoton(BrematicProDevice, SensorEntity):
+class BrematicProPhoton(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro photoluminescence sensor."""
     _type = 'photon'
     _attr_device_class = SensorDeviceClass.ILLUMINANCE
@@ -32,7 +32,7 @@ class BrematicProPhoton(BrematicProDevice, SensorEntity):
     def update_state(self, device_state):
         self._state = None
 
-class BrematicProTemp(BrematicProDevice, SensorEntity):
+class BrematicProTemp(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
     _type = 'temperature'
     _attr_device_class = SensorDeviceClass.TEMPERATURE
@@ -54,7 +54,7 @@ class BrematicProTemp(BrematicProDevice, SensorEntity):
         self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
         self.async_write_ha_state()
 
-class BrematicProHumidity(BrematicProDevice, SensorEntity):
+class BrematicProHumidity(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro temperature sensor,  humidity component."""
     _type = 'humidity'
     _attr_device_class = SensorDeviceClass.HUMIDITY

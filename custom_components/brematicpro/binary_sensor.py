@@ -6,7 +6,7 @@ from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .BrematicProShared import find_area_id, BrematicProDevice
+from .BrematicProShared import find_area_id, BrematicProEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion)
 
-class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
+class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro device battery status."""
     _type = 'battery'
     _attr_device_class = BinarySensorDeviceClass.BATTERY
@@ -46,7 +46,7 @@ class BrematicProBattery(BrematicProDevice, BinarySensorEntity):
             self._attr_is_on  = None
         self.async_write_ha_state()
 
-class BrematicProDoor(BrematicProDevice, BinarySensorEntity):
+class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
     _type = 'door'
     _attr_device_class = BinarySensorDeviceClass.DOOR
@@ -68,13 +68,13 @@ class BrematicProWindow(BrematicProDoor):
     _type = 'window'
     _attr_device_class = BinarySensorDeviceClass.WINDOW
 
-class BrematicProWater(BrematicProDevice, BinarySensorEntity):
+class BrematicProWater(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro moisture sensor."""
     _type = 'water'
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
     _has_battery = True
 
-class BrematicProMotion(BrematicProDevice, BinarySensorEntity):
+class BrematicProMotion(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
     _type = 'motion'
     _attr_device_class = BinarySensorDeviceClass.MOTION

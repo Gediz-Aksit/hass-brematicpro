@@ -72,29 +72,30 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                         if len(temp_device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
                                             lEntity = list(filter(lambda entity: temp_device_state['adr'] in entity.unique_id, relevant_entities))
                                             for entity in lEntity:
-                                                if entity.device_type == 'temperature' or entity.device_type == 'water' or entity.device_type == 'motion':
-                                                    _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {temp_device_state}')
+                                                if entity.device_name == 'temperature' or entity.device_name == 'water' or entity.device_name == 'motion':
+                                                    _LOGGER.debug(f'entity {entity.device_name} {entity.unique_id} {temp_device_state}')
                                                 if entity.unique_id == '74230189116E':
-                                                    _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {temp_device_state}')
+                                                    _LOGGER.debug(f'battery entity {entity.device_name} {entity.unique_id} {temp_device_state}')
                                                 entity.update_state(temp_device_state)
                                 else:
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                         except aiohttp.ClientError as e:
                             _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
 
-class BrematicProDevice(CoordinatorEntity):
-    """Representation of a BrematicPro device."""
-    _type = 'unknown_device'
+class BrematicProEntity(CoordinatorEntity):
+    """Representation of a BrematicPro entity."""
+    _type = 'unknown_entity'
     _has_battery = False
 
-    def __init__(self, coordinator, device, hass):
+    def __init__(self, hass, coordinator, device, device_id):
         """Initialize the device."""
         super().__init__(coordinator)
-        self._unique_id = device['unique_id']
-        self._name = device['name']
-        self._frequency =  device.get('frequency', None)
-        self._suggested_area = device.get('room', None)
-        self._session = async_get_clientsession(hass)
+        self.hass = hass
+        self.device_info = device_info
+        self._device_id = device_id
+        self._attr_unique_id = f"{device_info['unique_id']}_{self.entity_name()}"
+        self._attr_device_info = self.get_device_info()
+        self._frequency =  device.get('frequency', None)        
 
     async def async_added_to_hass(self):
         """Register as a listener when added to hass."""
@@ -107,16 +108,6 @@ class BrematicProDevice(CoordinatorEntity):
         return self._unique_id
 
     @property
-    def name(self):
-        """Return the name of the device."""
-        return self._name
-
-    @property
-    def device_type(self):
-        """Return the device type."""
-        return self._type
-
-    @property
     def frequency(self):
         """Return the device frequency."""
         return self._frequency
@@ -126,18 +117,16 @@ class BrematicProDevice(CoordinatorEntity):
         """Return the device frequency."""
         return self._has_battery
         
-    def update_device(self, device):
-        #Does not work, needs to identify the device properly or something.
-        self._unique_id = device['unique_id']
-        self._name = device['name']
-        self._frequency =  device.get('frequency', None)
-        self._suggested_area = device.get('room', None)
-        self._is_on = False
-        self._session = async_get_clientsession(self.hass)
+    def update_device(self, device, device_id):
+        self.device_info = device_info
+        self._device_id = device_id
+        self._attr_unique_id = f"{device_info['unique_id']}_{self.entity_name()}"
+        self._attr_device_info = self.get_device_info()
+        self._frequency =  device.get('frequency', None
 
     def update_state(self, device_state):
         """Updates device state if applicable."""
-        #_LOGGER.warning('Unhandled BrematicProDevice got the update ' + json.dumps(device_state, indent=2))#Posting update
+        #_LOGGER.warning('Unhandled BrematicProEntity got the update ' + json.dumps(device_state, indent=2))#Posting update
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     from.sensor import BrematicProHumidity
@@ -149,22 +138,37 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
+        device_registry = await hass.helpers.device_registry.async_get_registry()
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        _LOGGER.debug(f"async_common_setup_entry for {entity_class._name}. Device zero {devices[0]}")
         for device in devices:
-            if device.get('type', 'Invalid') == entity_class._type:
-                unique_id = device['unique_id']
-                existing_entity = next((e for e in hass.data[DOMAIN][entry.entry_id]["entities"] if e.unique_id == unique_id), None)
-                #area_id = find_area_id(hass, device.get('room'))
-                if existing_entity:
-                    existing_entity.update_device(device)
-                else:
-                    entity = entity_class(coordinator, device, hass)
-                    entities.append(entity)
-                    if entity.frequency == 868:
-                        if entity.device_type == 'temperature':
-                            entities.append(BrematicProHumidity(coordinator, device, hass))
-                        if entity.has_battery:
-                            entities.append(BrematicProBattery(coordinator, device, hass))
+            if device.get('type', 'Invalid') == entity_class._name:
+                device_id = (DOMAIN, device['unique_id'])
+                device_entry = device_registry.async_get_device({device_id}, [])
+                if not device_entry:
+                    # Device not found, create a new one
+                    device_entry = device_registry.async_get_or_create(
+                        config_entry_id=entry.entry_id,
+                        identifiers={device_id},
+                        manufacturer='Brennenstuhl',
+                        model='BrematicPRO',
+                        name=device['name'],
+                        suggested_area = self._suggested_area#,
+                        device.get('room', None)  
+                        #sw_version="Software Version"
+                    )
+                if device.get('type', 'Invalid') == entity_class._name:
+                    unique_entity_id = f"{DOMAIN}_{device['unique_id']}_{entity_class._name}"
+                    if not entity_registry.async_get(unique_entity_id):
+                        entity = entity_class(hass, coordinator, device, device_entry.id)
+                        entities.append(entity)
+                    if device.get('frequency', 0) == 868:
+                        if device.get('device_name', '') == 'temperature':
+                            if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_humidity"):
+                                entities.append(BrematicProHumidity(hass, coordinator, device, device_entry.id))
+                        if device.get('has_battery', False):
+                            if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
+                                entities.append(BrematicProBattery(hass, coordinator, device, device_entry.id))
         async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
@@ -217,7 +221,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
     gateways = set()  # Using a set to prevent duplicates
     for item in devices.values():
         device_name = item.get('name','')
-        item_type = item.get('type', None)
+        item_name = item.get('type', None)
         room_name = 'Unknown'
         for room in rooms:
             if room in device_name:
@@ -236,7 +240,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
             "name": device_name,
             "room": room_name,
             "frequency": freq,
-            "type": item_type,
+            "type": item_name,
             "commands": commands
         })
     json_data = json.dumps(transformed_data)
@@ -294,11 +298,11 @@ class BrematicProJsonDownloadView(HomeAssistantView):
         if entry:
             json_data = entry.data[CONF_INTERNAL_CONFIG_JSON]
             _LOGGER.warning(f"BrematicProJsonDownloadView called Data")
-            return web.Response(body=json_data, content_type='application/json', headers={
-                'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
+            return web.Response(body=json_data, content_name='application/json', headers={
+                'Content-Disposition': 'attachment; filename="BrematicProEntitys.json"'
             })
         _LOGGER.warning(f"BrematicProJsonDownloadView called 404")
-        return web.Response(body={}, content_type='application/json', headers={
-            'Content-Disposition': 'attachment; filename="BrematicProDevices.json"'
+        return web.Response(body={}, content_name='application/json', headers={
+            'Content-Disposition': 'attachment; filename="BrematicProEntitys.json"'
         })
         #return web.Response(status=404, text="Configuration data not found.")
