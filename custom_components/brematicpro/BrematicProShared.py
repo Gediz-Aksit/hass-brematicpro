@@ -94,7 +94,7 @@ class BrematicProEntity(CoordinatorEntity):
         self.device = device
         self._device_id = device_entry.id
         self._attr_unique_id = f"{device['unique_id']}_{self._type}"
-        self._frequency =  device.get('frequency', None)        
+        self._frequency =  device.get('frequency', 0)        
 
     async def async_added_to_hass(self):
         """Register as a listener when added to hass."""
@@ -165,11 +165,11 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                 if not entity:
                     entity = entity_class(hass, coordinator, device, device_entry)
                     entities.append(entity)                    
-                if entity.get('frequency', 0) == 868:
-                    if entity.get('type', '') == 'temperature':
+                if entity.frequency == 868:
+                    if entity.get('device_type', '') == 'temperature':
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_humidity"):
                             entities.append(BrematicProHumidity(hass, coordinator, device, device_entry))
-                    if entity.get('has_battery', False):
+                    if entity.has_battery, False):
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
         async_add_entities(entities, True)
