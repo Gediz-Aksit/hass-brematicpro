@@ -156,13 +156,14 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
     if json_data:
         devices = json.loads(json_data)
         entities = []
-        device_registry = hass.helpers.device_registry.async_get(hass)#await hass.helpers.device_registry.async_get_registry()
-        entity_registry = hass.helpers.entity_registry.async_get(hass)#await hass.helpers.entity_registry.async_get_registry()
+        device_registry = await hass.helpers.device_registry.async_get_registry()#hass.helpers.device_registry.async_get(hass)#await hass.helpers.device_registry.async_get_registry()
+        entity_registry = await hass.helpers.entity_registry.async_get_registry()#hass.helpers.entity_registry.async_get(hass)#await hass.helpers.entity_registry.async_get_registry()
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:
                 device_id = (DOMAIN, device['unique_id'])
-                device_entry = device_registry.async_get_device({device_id}, [])
+                #device_entry = device_registry.async_get_device({device_id}, [])
+                device_entry = device_registry.async_get_device(identifiers={device_id}, connections=set())
                 if not device_entry:
                     # Device not found, create a new one
                     device_entry = device_registry.async_get_or_create(
@@ -187,7 +188,8 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     if entity.has_battery:
                         if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
-        async_add_entities(entities, True)
+        if entities:
+            async_add_entities(entities, True)
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
         hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
