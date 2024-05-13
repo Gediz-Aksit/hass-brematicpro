@@ -153,7 +153,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         manufacturer='Brennenstuhl',
                         model='BrematicPRO',
                         name=device['name'],
-                        suggested_area = self._suggested_area#,
+                        suggested_area = device.get('room', None)#,
                         device.get('room', None)  
                         #sw_version="Software Version"
                     )
