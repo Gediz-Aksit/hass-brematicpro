@@ -99,7 +99,7 @@ class BrematicProEntity(CoordinatorEntity):
             'name': device_entry.name,
             'manufacturer': device_entry.manufacturer,
             #'model': device_entry.model,
-            'via_device': (DOMAIN, device_entry.via_device_id) if device_entry.via_device else None
+            'via_device': (DOMAIN, device_entry.via_device_id) if device_entry.via_device_id else None
         }
         self._frequency =  device.get('frequency', None)        
 
