@@ -93,7 +93,7 @@ class BrematicProEntity(CoordinatorEntity):
         self.hass = hass
         self.device = device
         self._device_id = device_id
-        self._attr_unique_id = f"{device['unique_id']}_{self.entity_name()}"
+        self._attr_unique_id = f"{device['unique_id']}_{self._type}"
         self._attr_device_info = self.get_device_info()
         self._frequency =  device.get('frequency', None)        
 
