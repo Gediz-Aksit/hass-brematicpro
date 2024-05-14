@@ -175,7 +175,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         via_device=(DOMAIN, "HubIdentifier")#,
                         #sw_version="Software Version"
                     )
-                if entity_class._type == 'battery' 
+                if entity_class._type == 'battery':
                     if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'tempersture', 'photon']:
                         _LOGGER.debug(f"Battery adding to {device}")
                         if not entity_registry.async_get(f"{device['unique_id']}_battery"):
