@@ -76,7 +76,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                             for entity in relevant_entities:
                                                 if entity.device_type == 'temperature' or entity.device_type == 'water' or entity.device_type == 'motion':
                                                     _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {device_state}')
-                                                if '74230189116E' in entity.unique_id:
+                                                if "74230189116E" in entity.unique_id:
                                                     _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 entity.update_state(device_state)
                                 else:
