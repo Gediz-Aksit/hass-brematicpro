@@ -97,7 +97,7 @@ class BrematicProEntity(CoordinatorEntity):
         self.device_entry = device_entry
         self._device_id = device_entry.id
         self._attr_unique_id = f"{DOMAIN}_{device['unique_id']}_{self._type}"#f"{device['unique_id']}_{self._type}"
-        self._name = f"{device.name}.{self._type}"
+        self._attr_name = f"{device['name']}.{self._type}"
         self._frequency =  device.get('frequency', 0)        
 
     async def async_added_to_hass(self):
@@ -139,7 +139,7 @@ class BrematicProEntity(CoordinatorEntity):
         
     def update_device(self, device, device_entry):
         #self._attr_unique_id = f"{DOMAIN}_{device_info['unique_id']}_{self._type}"
-        self._name = f"{device.name}.{self._type}"
+        self._attr_name = f"{device['name']}.{self._type}"
 
     def update_state(self, device_state):
         """Updates device state if applicable."""
