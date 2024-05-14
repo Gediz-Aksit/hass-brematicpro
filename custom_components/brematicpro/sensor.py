@@ -4,7 +4,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.const import TEMP_CELSIUS, PERCENTAGE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
-from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .BrematicProShared import find_area_id, BrematicProEntity
@@ -16,8 +15,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     from .BrematicProShared import async_common_setup_entry
     
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProPhoton) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProHumidity)
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
 
 class BrematicProPhoton(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro photoluminescence sensor."""
