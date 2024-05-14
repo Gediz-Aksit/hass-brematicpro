@@ -186,6 +186,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                             entities.append(BrematicProHumidity(hass, coordinator, device, device_entry))
                     if entity.has_battery and entity_class._type == 'battery':
                         if not entity_registry.async_get(f"{device['unique_id']}_battery"):
+                            _LOGGER.debug(f"Battery add to {device}")
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
         if entities:
             async_add_entities(entities, True)
