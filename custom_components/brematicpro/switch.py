@@ -15,8 +15,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     from .BrematicProShared import async_common_setup_entry
     
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSiren)
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
 
 class BrematicProSwitch(SwitchEntity, BrematicProEntity):
     """Representation of a BrematicPro Switch."""
