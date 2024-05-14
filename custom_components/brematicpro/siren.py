@@ -1,7 +1,7 @@
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.components.light import LightEntity, COLOR_MODE_ONOFF
+from homeassistant.components.siren import SirenEntity
 
 from .switch import BrematicProSwitch
 from .BrematicProShared import async_common_setup_entry
