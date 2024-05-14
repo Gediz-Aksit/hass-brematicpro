@@ -37,7 +37,10 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
         try:
             if device_state:
                 if '1105' == device_state['config']:
-                    _LOGGER.debug(f'battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
+                    if device_state['state'][1] == '0':
+                        _LOGGER.debug(f'yes battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
+                    else:
+                        _LOGGER.debug(f'no battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
                 if device_state['state'][1] == '0':
                     self._attr_is_on  = False
                 elif device_state['state'][1] == '3':
