@@ -96,7 +96,7 @@ class BrematicProEntity(CoordinatorEntity):
         self.device = device
         self.device_entry = device_entry
         self._device_id = device_entry.id
-        self._attr_unique_id = f"{DOMAIN}_{device['unique_id']}_{self._type}"#f"{device['unique_id']}_{self._type}"
+        self._attr_unique_id = f"{device['unique_id']}_{self._type}"#f"{device['unique_id']}_{self._type}"
         self._attr_name = f"{device['name']}.{self._type}"
         self._frequency =  device.get('frequency', 0)        
 
