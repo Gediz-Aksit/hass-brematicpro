@@ -15,7 +15,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     from .BrematicProShared import async_common_setup_entry
     
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSwitch) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch)
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMeteredSwitch) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSiren)
 
 class BrematicProSwitch(SwitchEntity, BrematicProEntity):
     """Representation of a BrematicPro Switch."""
@@ -69,3 +70,18 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
         self._voltage = 0.0
         self._kWh = 0.0
         self._Wh = 0.0
+
+class BrematicProSiren(SwitchEntity, BrematicProSwitch):
+    """Representation of a Brematic Siren."""
+    _type = 'siren'
+    
+    async def async_turn_reset(self, **kwargs):
+        """Instruct the switch reset."""
+        response_status = await send_command(self._commands["reset"])
+        if response_status == 200:
+            self._is_on = False
+            self.async_write_ha_state()
+
+    @property
+    def icon(self):
+        return "mdi:alarm-light"
