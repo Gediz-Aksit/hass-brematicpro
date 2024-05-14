@@ -73,7 +73,7 @@ class BrematicProHumidity(BrematicProEntity, SensorEntity):
 
     def __init__(self, hass, coordinator, device, device_entry):
         super().__init__(hass, coordinator, device, device_entry)
-        self._unique_id = device['unique_id'] + '.humidity'
+        self._unique_id = device['unique_id'] + '_humidity'
 
     @property
     def state(self):

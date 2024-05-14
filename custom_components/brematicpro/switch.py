@@ -47,12 +47,15 @@ class BrematicProSwitch(SwitchEntity, BrematicProEntity):
             self.async_write_ha_state()
 
     def update_state(self, device_state):
-        if device_state['state'] == '0001':
-            self._is_on  = True
-        elif device_state['state'] == '0002':
-            self._is_on  = False
-        else:
-            self._is_on  = None
+        try:
+            if device_state['state'][-1] == '1':
+                self._is_on  = True
+            elif device_state['state'][-1] == '2':
+                self._is_on  = False
+            else:
+                self._is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()
 
 class BrematicProMeteredSwitch(BrematicProSwitch):
