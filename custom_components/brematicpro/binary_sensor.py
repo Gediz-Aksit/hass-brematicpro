@@ -17,13 +17,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion)
-
-async def async_setup_entry_battery(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    """Set up BrematicPro device from a config entry."""
-    from .BrematicProShared import async_common_setup_entry
-    
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery)
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) and \
+           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery)
 
 class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro device battery status."""

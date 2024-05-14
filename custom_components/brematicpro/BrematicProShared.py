@@ -159,7 +159,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         entity_registry = hass.helpers.entity_registry.async_get(hass)
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
-            if device.get('type', 'Invalid') == entity_class._type:
+            if device.get('type', 'Invalid') == entity_class._type or entity_class._type == 'battery':
                 device_id = (DOMAIN, device['unique_id'])
                 #device_entry = device_registry.async_get_device({device_id}, [])
                 device_entry = device_registry.async_get_device(identifiers={device_id}, connections=set())
@@ -175,17 +175,17 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         via_device=(DOMAIN, "HubIdentifier")#,
                         #sw_version="Software Version"
                     )
-                unique_entity_id = f"{DOMAIN}_{device['unique_id']}_{entity_class._type}"
+                unique_entity_id = f"{device['unique_id']}_{entity_class._type}"
                 entity = entity_registry.async_get(unique_entity_id)
                 if not entity:
                     entity = entity_class(hass, coordinator, device, device_entry)
                     entities.append(entity)                    
                 if entity.frequency == 868:
                     if entity.device_type == 'temperature':
-                        if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_humidity"):
+                        if not entity_registry.async_get(f"{device['unique_id']}_humidity"):
                             entities.append(BrematicProHumidity(hass, coordinator, device, device_entry))
-                    if entity.has_battery:
-                        if not entity_registry.async_get(f"{DOMAIN}_{device['unique_id']}_battery"):
+                    if entity.has_battery and entity_class._type == 'battery':
+                        if not entity_registry.async_get(f"{device['unique_id']}_battery"):
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
         if entities:
             async_add_entities(entities, True)
