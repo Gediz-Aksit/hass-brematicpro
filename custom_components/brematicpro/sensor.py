@@ -32,7 +32,11 @@ class BrematicProPhoton(BrematicProEntity, SensorEntity):
         return self._state
 
     def update_state(self, device_state):
-        self._state = None
+        try:
+            self._state = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
+        self.async_write_ha_state()
 
 class BrematicProTemp(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
@@ -53,7 +57,10 @@ class BrematicProTemp(BrematicProEntity, SensorEntity):
         return self._state
 
     def update_state(self, device_state):
-        self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
+        try:
+            self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()
 
 class BrematicProHumidity(BrematicProEntity, SensorEntity):
@@ -74,5 +81,8 @@ class BrematicProHumidity(BrematicProEntity, SensorEntity):
         return self._state
 
     def update_state(self, device_state):
-        self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
+        try:
+            self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()

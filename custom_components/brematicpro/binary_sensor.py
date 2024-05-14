@@ -34,19 +34,22 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
         self._unique_id = device['unique_id'] + '_battery'
 
     def update_state(self, device_state):
-        if device_state:
-            if ':' in device_state:
-                _LOGGER.debug(f'battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
-            if device_state['state'][1] == '0':
-                self._attr_is_on  = False
-            elif device_state['state'][1] == '3':
-                self._attr_is_on  = True
-            elif device_state['state'][1] == '4':
-                self._attr_is_on  = None
+        try:
+            if device_state:
+                if ':' in device_state:
+                    _LOGGER.debug(f'battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
+                if device_state['state'][1] == '0':
+                    self._attr_is_on  = False
+                elif device_state['state'][1] == '3':
+                    self._attr_is_on  = True
+                elif device_state['state'][1] == '4':
+                    self._attr_is_on  = None
+                else:
+                    self._attr_is_on  = None
             else:
                 self._attr_is_on  = None
-        else:
-            self._attr_is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()
 
 class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
@@ -57,13 +60,16 @@ class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
     _attr_is_on = None
 
     def update_state(self, device_state):
-        #_LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
-        if device_state['state'][-1] == '7':
-            self._attr_is_on  = True
-        elif device_state['state'][-1] == '8':
-            self._attr_is_on  = False
-        else:
-            self._attr_is_on  = None
+        try:
+            #_LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
+            if device_state['state'][-1] == '7':
+                self._attr_is_on  = True
+            elif device_state['state'][-1] == '8':
+                self._attr_is_on  = False
+            else:
+                self._attr_is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()
 
 class BrematicProWindow(BrematicProDoor):
@@ -77,6 +83,18 @@ class BrematicProWater(BrematicProEntity, BinarySensorEntity):
     _attr_device_class = BinarySensorDeviceClass.MOISTURE
     _has_battery = True
 
+    def update_state(self, device_state):
+        try:
+            if device_state:
+                if device_state['state'] == '0001':
+                    self._attr_is_on  = True
+                elif device_state['state'] == '0002':
+                    self._attr_is_on  = False
+                else:
+                    self._attr_is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
+
 class BrematicProMotion(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
     _type = 'motion'
@@ -84,10 +102,13 @@ class BrematicProMotion(BrematicProEntity, BinarySensorEntity):
     _has_battery = True
 
     def update_state(self, device_state):
-        if device_state:
-            if device_state['state'] == '0001':
-                self._attr_is_on  = True
-            elif device_state['state'] == '0002':
-                self._attr_is_on  = False
-            else:
-                self._attr_is_on  = None
+        try:
+            if device_state:
+                if device_state['state'] == '0001':
+                    self._attr_is_on  = True
+                elif device_state['state'] == '0002':
+                    self._attr_is_on  = False
+                else:
+                    self._attr_is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
