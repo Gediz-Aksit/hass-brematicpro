@@ -56,9 +56,6 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                 if response.status == 200:
                                     response_text = await response.text()
                                     device_states = json.loads(response_text).get('XC_SUC', [])
-                                    
-                                    
-                                    
                                     relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
                                     if relevant_entities:
                                         _LOGGER.debug(f"R Entity UID count {len(relevant_entities)}")
@@ -161,11 +158,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         devices = json.loads(json_data)
         entities = []
         device_registry = hass.helpers.device_registry.async_get(hass)
-        #hass.helpers.device_registry.async_get(hass)
-        #await hass.helpers.device_registry.async_get_registry()
         entity_registry = hass.helpers.entity_registry.async_get(hass)
-        #hass.helpers.entity_registry.async_get(hass)
-        #await hass.helpers.entity_registry.async_get_registry()
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type:

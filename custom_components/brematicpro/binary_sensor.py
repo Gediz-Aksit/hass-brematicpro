@@ -24,16 +24,19 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro device battery status."""
     _type = 'battery'
     _attr_device_class = BinarySensorDeviceClass.BATTERY
+    _has_battery = False#A battery does not have its own battery :P
     _attr_is_on = None
     
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the battery status indicator."""
         super().__init__(hass, coordinator, device, device_entry)
         self._commands = []
-        self._unique_id = device['unique_id'] + '.battery'
+        self._unique_id = device['unique_id'] + '_battery'
 
     def update_state(self, device_state):
         if device_state:
+            if ':' in device_state
+                _LOGGER.debug(f'battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
             if device_state['state'][1] == '0':
                 self._attr_is_on  = False
             elif device_state['state'][1] == '3':
@@ -50,8 +53,8 @@ class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
     _type = 'door'
     _attr_device_class = BinarySensorDeviceClass.DOOR
-    _attr_is_on = None
     _has_battery = True
+    _attr_is_on = None
 
     def update_state(self, device_state):
         #_LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
