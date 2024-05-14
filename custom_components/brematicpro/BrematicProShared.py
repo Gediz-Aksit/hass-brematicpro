@@ -74,7 +74,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                         if len(device_state['adr']) > 6:#Unique ID needs to be longer than 6 characters. Just an assuption.
                                             relevant_entities = filter(lambda entity: device_state['adr'] in entity.unique_id, BrematicPro_entities)
                                             for entity in relevant_entities:
-                                                if entity.device_type == 'temperature' or entity.device_type == 'water' or entity.device_type == 'motion':
+                                                if entity.device_type == 'temperature' or entity.device_type == 'water' or entity.device_type == 'motion' or entity.device_type == 'light':
                                                     _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 if "74230189116E" in entity.unique_id:
                                                     _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {device_state}')
