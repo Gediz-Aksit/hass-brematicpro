@@ -176,7 +176,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         #sw_version="Software Version"
                     )
                 if entity_class._type == 'battery':
-                    if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'temperature', 'photon']:
+                    if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'temperature', 'photon', 'siren']:
                         _LOGGER.debug(f"Battery adding to {device}")
                         if not entity_registry.async_get(f"{device['unique_id']}_battery"):
                             _LOGGER.debug(f"Battery adding...")
@@ -276,6 +276,7 @@ async def setup_entry_components(hass: HomeAssistant, entry):
     await hass.config_entries.async_forward_entry_setup(entry, 'switch')
     await hass.config_entries.async_forward_entry_setup(entry, 'light')
     await hass.config_entries.async_forward_entry_setup(entry, 'sensor')
+    await hass.config_entries.async_forward_entry_setup(entry, 'siren')
     await hass.config_entries.async_forward_entry_setup(entry, 'binary_sensor')
 
 async def unload_entry_components(hass: HomeAssistant, entry):
@@ -283,6 +284,7 @@ async def unload_entry_components(hass: HomeAssistant, entry):
     unload_ok = await hass.config_entries.async_forward_entry_unload(entry, 'switch') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'light') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'sensor') and \
+                await hass.config_entries.async_forward_entry_unload(entry, 'siren') and \
                 await hass.config_entries.async_forward_entry_unload(entry, 'binary_sensor')
     return unload_ok
 

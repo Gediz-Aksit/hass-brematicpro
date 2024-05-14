@@ -70,18 +70,3 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
         self._voltage = 0.0
         self._kWh = 0.0
         self._Wh = 0.0
-
-class BrematicProSiren(BrematicProSwitch):
-    """Representation of a Brematic Siren."""
-    _type = 'siren'
-    
-    async def async_turn_reset(self, **kwargs):
-        """Instruct the switch reset."""
-        response_status = await send_command(self._commands["reset"])
-        if response_status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
-
-    @property
-    def icon(self):
-        return "mdi:alarm-light"
