@@ -35,7 +35,7 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
 
     def update_state(self, device_state):
         if device_state:
-            if ':' in device_state
+            if ':' in device_state:
                 _LOGGER.debug(f'battery state: full {device_state}; st {device_state['state']}; indx1 {device_state['state'][1]}')
             if device_state['state'][1] == '0':
                 self._attr_is_on  = False
