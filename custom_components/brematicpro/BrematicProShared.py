@@ -292,6 +292,7 @@ async def send_command(url):
     """Send command to the Brematic device."""
     async with aiohttp.ClientSession() as session:
         try:
+            _LOGGER.debug(f"url {url}")
             async with session.get(url, timeout=5) as response:
                 response.raise_for_status()  # This will raise an error for bad HTTP status
                 return response.status
