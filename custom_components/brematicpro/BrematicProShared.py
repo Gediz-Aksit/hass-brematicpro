@@ -175,7 +175,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         via_device=(DOMAIN, "HubIdentifier")#,
                         #sw_version="Software Version"
                     )
-                if entity_class._type != 'battery'
+                if entity_class._type != 'battery':
                     unique_entity_id = f"{device['unique_id']}_{device['type']}"
                     entity = entity_registry.async_get(unique_entity_id)
                     if not entity:
