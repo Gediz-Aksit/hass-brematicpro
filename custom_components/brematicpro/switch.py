@@ -71,7 +71,7 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
         self._kWh = 0.0
         self._Wh = 0.0
 
-class BrematicProSiren(SwitchEntity, BrematicProSwitch):
+class BrematicProSiren(BrematicProSwitch):
     """Representation of a Brematic Siren."""
     _type = 'siren'
     
