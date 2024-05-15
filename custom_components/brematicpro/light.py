@@ -13,11 +13,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
  
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProLight)
 
-class BrematicProLight(BrematicProEntityWithCommands, LightEntity):
+class BrematicProLight(LightEntity, BrematicProEntityWithCommands):
     """Representation of a BrematicPro Light."""
     _type = 'light'
 
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the light."""
         super().__init__(hass, coordinator, device, device_entry)
-        self._color_mode = COLOR_MODE_ONOFF
+        self._color_mode = ColorMode.ONOFF
+
+    @property
+    def is_on(self):
+        """Return the on/off state of the device."""
+        if self._frequency == 868:
+            return self._is_on
+        else:
+            return None

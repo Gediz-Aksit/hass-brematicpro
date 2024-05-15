@@ -154,17 +154,18 @@ class BrematicProEntityWithCommands(BrematicProEntity):
         self._is_on = False
         self._commands = device.get('commands', [])
 
-    @property
-    def is_on(self):
-        """Return the on/off state of the device."""
-        return self._is_on
-
+    def turn_on(self, **kwargs):
+        await async_turn_on()
+    
     async def async_turn_on(self, **kwargs):
         """Instruct the device on."""
         response_status = await send_command(self._commands["on"])
         if response_status == 200:
             self._is_on = True
             self.async_write_ha_state()
+
+    def turn_off(self, **kwargs):
+        await async_turn_off()
 
     async def async_turn_off(self, **kwargs):
         """Instruct the device off."""

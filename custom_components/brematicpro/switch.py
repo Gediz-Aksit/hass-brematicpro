@@ -21,6 +21,14 @@ class BrematicProSwitch(SwitchEntity, BrematicProEntityWithCommands):
     """Representation of a BrematicPro Switch."""
     _type = 'switch'
 
+    @property
+    def is_on(self):
+        """Return the on/off state of the device."""
+        if self._frequency == 868:
+            return self._is_on
+        else:
+            return None
+
     def update_state(self, device_state):
         try:
             if device_state['state'][-1] == '1':
@@ -44,3 +52,7 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
         self._voltage = 0.0
         self._kWh = 0.0
         self._Wh = 0.0
+
+    def update_state(self, device_state):
+
+        super().update_state(device_state)
