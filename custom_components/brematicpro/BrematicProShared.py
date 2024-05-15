@@ -146,35 +146,35 @@ class BrematicProEntity(CoordinatorEntity):
         #_LOGGER.warning('Unhandled BrematicProEntity got the update ' + json.dumps(device_state, indent=2))#Posting update
 
 class BrematicProEntityWithCommands(BrematicProEntity):
-   """Representation of a BrematicPro with commands."""
+    """Representation of a BrematicPro with commands."""
 
     def __init__(self, hass, coordinator, device, device_entry):
-        """Initialize the switch."""
+        """Initialize the device with commands."""
         super().__init__(hass, coordinator, device, device_entry)
         self._is_on = False
         self._commands = device.get('commands', [])
 
     @property
     def is_on(self):
-        """Return the on/off state of the switch."""
+        """Return the on/off state of the device."""
         return self._is_on
 
     async def async_turn_on(self, **kwargs):
-        """Instruct the switch on."""
+        """Instruct the device on."""
         response_status = await send_command(self._commands["on"])
         if response_status == 200:
             self._is_on = True
             self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
-        """Instruct the switch off."""
+        """Instruct the device off."""
         response_status = await send_command(self._commands["off"])
         if response_status == 200:
             self._is_on = False
             self.async_write_ha_state()
 
     async def async_turn_reset(self, **kwargs):
-        """Instruct the siren reset."""
+        """Instruct the device reset."""
         response_status = await send_command(self._commands["reset"])
         if response_status == 200:
             self._is_on = False
