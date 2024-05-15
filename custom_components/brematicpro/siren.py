@@ -1,8 +1,9 @@
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.components.siren import SirenEntity
+from homeassistant.components.siren import SirenEntity, SIREN_SUPPORT_TURN_ON, SIREN_SUPPORT_TURN_OFF
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 
 from .BrematicProShared import send_command, BrematicProEntity
 #from .switch import BrematicProSwitch
@@ -18,11 +19,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicProSiren(SirenEntity, BrematicProEntity):
     """Representation of a Brematic Siren."""
     _type = 'siren'
-    _attr_supported_features = (
-        SirenEntityFeature.TURN_ON
-        | SirenEntityFeature.TURN_OFF
-        #| SirenEntityFeature.RESET
-    )
 
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the siren."""
@@ -34,6 +30,11 @@ class BrematicProSiren(SirenEntity, BrematicProEntity):
     def is_on(self):
         """Return the on/off state of the siren."""
         return self._is_on
+
+    @property
+    def supported_features(self):
+        """Return the list of supported features."""
+        return SirenEntityFeature.TURN_ON | SirenEntityFeature.TURN_OFF
 
     async def async_turn_on(self, **kwargs):
         """Instruct the siren on."""
