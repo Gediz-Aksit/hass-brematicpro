@@ -159,27 +159,6 @@ class BrematicProEntityWithCommands(BrematicProEntity):
         """Return the on/off state of the device."""
         return self._is_on
 
-    async def async_turn_on(self, **kwargs):
-        """Instruct the device on."""
-        response_status = await send_command(self._commands["on"])
-        if response_status == 200:
-            self._is_on = True
-            self.async_write_ha_state()
-
-    async def async_turn_off(self, **kwargs):
-        """Instruct the device off."""
-        response_status = await send_command(self._commands["off"])
-        if response_status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
-
-    async def async_turn_reset(self, **kwargs):
-        """Instruct the device reset."""
-        response_status = await send_command(self._commands["reset"])
-        if response_status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
-
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     from.sensor import BrematicProHumidity
     from.binary_sensor import BrematicProBattery
