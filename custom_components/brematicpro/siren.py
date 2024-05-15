@@ -18,6 +18,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicProSiren(SirenEntity, BrematicProEntity):
     """Representation of a Brematic Siren."""
     _type = 'siren'
+    _attr_supported_features = (
+        SirenEntityFeature.TURN_ON
+        | SirenEntityFeature.TURN_OFF
+        #| SirenEntityFeature.RESET
+    )
 
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the siren."""
