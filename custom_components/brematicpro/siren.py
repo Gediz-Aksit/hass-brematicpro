@@ -14,7 +14,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     
     return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSiren)
 
-class BrematicProSiren(SirenEntity, BrematicProEntityWithCommands):
+class BrematicProSiren(BrematicProEntityWithCommands, SirenEntity):
     """Representation of a BrematicPro Siren."""
     _type = 'siren'
 
@@ -22,20 +22,6 @@ class BrematicProSiren(SirenEntity, BrematicProEntityWithCommands):
     def supported_features(self):
         """Return the list of supported features."""
         return SirenEntityFeature.TURN_ON | SirenEntityFeature.TURN_OFF
-
-    async def async_turn_on(self, **kwargs):
-        """Instruct the device on."""
-        response_status = await send_command(self._commands["on"])
-        if response_status == 200:
-            self._is_on = True
-            self.async_write_ha_state()
-
-    async def async_turn_off(self, **kwargs):
-        """Instruct the device off."""
-        response_status = await send_command(self._commands["off"])
-        if response_status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
 
     async def async_turn_reset(self, **kwargs):
         """Instruct the device reset."""
