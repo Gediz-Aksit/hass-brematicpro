@@ -21,20 +21,6 @@ class BrematicProSwitch(SwitchEntity, BrematicProEntityWithCommands):
     """Representation of a BrematicPro Switch."""
     _type = 'switch'
 
-    async def async_turn_on(self, **kwargs):
-        """Instruct the device on."""
-        response_status = await send_command(self._commands["on"])
-        if response_status == 200:
-            self._is_on = True
-            self.async_write_ha_state()
-
-    async def async_turn_off(self, **kwargs):
-        """Instruct the device off."""
-        response_status = await send_command(self._commands["off"])
-        if response_status == 200:
-            self._is_on = False
-            self.async_write_ha_state()
-
     def update_state(self, device_state):
         try:
             if device_state['state'][-1] == '1':
