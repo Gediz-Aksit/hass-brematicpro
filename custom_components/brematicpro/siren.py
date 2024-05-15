@@ -1,7 +1,7 @@
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.components.siren import SirenEntity, SIREN_SUPPORT_TURN_ON, SIREN_SUPPORT_TURN_OFF
+from homeassistant.components.siren import SirenEntity, SirenEntityFeature
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
