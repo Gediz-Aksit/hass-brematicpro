@@ -1,7 +1,7 @@
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.components.light import LightEntity, COLOR_MODE_ONOFF
+from homeassistant.components.light import LightEntity, ColorMode
 
 from .BrematicProShared import BrematicProEntityWithCommands
 
@@ -20,7 +20,8 @@ class BrematicProLight(LightEntity, BrematicProEntityWithCommands):
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the light."""
         super().__init__(hass, coordinator, device, device_entry)
-        self._color_mode = ColorMode.ONOFF
+        self._attr_color_mode = ColorMode.ONOFF
+        self._attr_supported_color_modes = {ColorMode.ONOFF}
 
     @property
     def is_on(self):
