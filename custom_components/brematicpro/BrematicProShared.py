@@ -153,9 +153,6 @@ class BrematicProEntityWithCommands(BrematicProEntity):
         super().__init__(hass, coordinator, device, device_entry)
         self._is_on = False
         self._commands = device.get('commands', [])
-
-    def turn_on(self, **kwargs):
-        await async_turn_on()
     
     async def async_turn_on(self, **kwargs):
         """Instruct the device on."""
@@ -163,9 +160,6 @@ class BrematicProEntityWithCommands(BrematicProEntity):
         if response_status == 200:
             self._is_on = True
             self.async_write_ha_state()
-
-    def turn_off(self, **kwargs):
-        await async_turn_off()
 
     async def async_turn_off(self, **kwargs):
         """Instruct the device off."""
