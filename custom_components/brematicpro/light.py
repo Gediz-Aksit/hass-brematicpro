@@ -30,3 +30,15 @@ class BrematicProLight(BrematicProEntityWithCommands, LightEntity):
             return self._is_on
         else:
             return None
+
+    def update_state(self, device_state):
+        try:
+            if device_state['state'][-1] == '1':
+                self._is_on  = True
+            elif device_state['state'][-1] == '2':
+                self._is_on  = False
+            else:
+                self._is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
+        self.async_write_ha_state()
