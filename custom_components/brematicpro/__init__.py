@@ -31,9 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
     gateways = entry.data.get(CONF_INTERNAL_GATEWAYS, [])
 
-    success = await hass.async_add_executor_job(
-        read_and_transform_json, hass, entry, devices_filename, rooms_filename, system_code
-    )
+    success = await read_and_transform_json(hass, entry, devices_filename, rooms_filename, system_code)
     _LOGGER.debug("async_setup_entry calls setup_entry_components")
     
     #Read Gateway sensors
@@ -54,9 +52,7 @@ async def async_update_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     devices_filename = entry.data.get(CONF_CONFIG_FILE, 'BrematicPro.json')
     rooms_filename = entry.data.get(CONF_ROOMS_FILE, 'BrematicProRooms.json')
     
-    success = await hass.async_add_executor_job(
-        read_and_transform_json, hass, entry, devices_filename, rooms_filename
-    )
+    success = await read_and_transform_json(hass, entry, devices_filename, rooms_filename)
 
     if success:
         _LOGGER.info("Configuration successfully updated for BrematicPro.")

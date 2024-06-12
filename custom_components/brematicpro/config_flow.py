@@ -36,8 +36,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         
             if user_input.get('read_json'):
                 _LOGGER.debug("common_flow_handler B")
-                success = await self.hass.async_add_executor_job(
-                    read_and_transform_json,
+                success = await read_and_transform_json(
                     self.hass,
                     entry,
                     user_input[CONF_CONFIG_FILE],
