@@ -292,9 +292,7 @@ def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json,
         })
     json_data = json.dumps(transformed_data)
     #hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})    
-    async def update_entry():
-        hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
-    hass.loop.call_soon_threadsafe(update_entry)    
+    await hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
 async def setup_entry_components(hass: HomeAssistant, entry):
