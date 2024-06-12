@@ -291,7 +291,6 @@ async def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms
             "commands": commands
         })
     json_data = json.dumps(transformed_data)
-    #hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})    
     hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_INTERNAL_CONFIG_JSON: json_data, CONF_INTERNAL_GATEWAYS: list(gateways)})
     return True
 
