@@ -36,13 +36,7 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         
             if user_input.get('read_json'):
                 _LOGGER.debug("common_flow_handler B")
-                success = await read_and_transform_json(
-                    self.hass,
-                    entry,
-                    user_input[CONF_CONFIG_FILE],
-                    user_input[CONF_ROOMS_FILE],
-                    user_input[CONF_SYSTEM_CODE]
-                )
+                success = await read_and_transform_json(self.hass, entry, user_input[CONF_CONFIG_FILE], user_input[CONF_ROOMS_FILE], user_input[CONF_SYSTEM_CODE])
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"
 
