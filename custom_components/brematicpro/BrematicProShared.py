@@ -80,7 +80,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                                 #    _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 matched = True
                                                 entity.update_state(device_state)
-                                        if not matched:
+                                        if not matched and device_state and device_state['type'] == 'B8':
                                             _LOGGER.debug(f'Unknown device: {device_state}')
                                 else:
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
