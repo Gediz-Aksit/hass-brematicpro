@@ -78,7 +78,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                                 #    _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 #if "74230189116E" in entity.unique_id:
                                                 #    _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {device_state}')
-                                                if "32210020032A" in entity.unique_id:
+                                                if "32210020032A" in entity.unique_id:#13880020032A
                                                     _LOGGER.debug(f'!!!! motion entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 matched = True
                                                 entity.update_state(device_state)
@@ -93,6 +93,7 @@ class BrematicProEntity(CoordinatorEntity):
     """Representation of a BrematicPro entity."""
     _type = 'unknown_entity'
     _has_battery = False
+    _has_sabotage = False
 
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the device."""
@@ -175,7 +176,7 @@ class BrematicProEntityWithCommands(BrematicProEntity):
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
     from.sensor import BrematicProHumidity
-    from.binary_sensor import BrematicProBattery
+    from.binary_sensor import BrematicProBattery, BrematicProSabotage
     
     """Common setup for BrematicPro devices."""
     json_data = entry.data.get(CONF_INTERNAL_CONFIG_JSON, {})
@@ -187,7 +188,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         entity_registry = hass.helpers.entity_registry.async_get()
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
-            if device.get('type', 'Invalid') == entity_class._type or entity_class._type == 'battery':
+            if device.get('type', 'Invalid') == entity_class._type or entity_class._type == 'battery' or entity_class._type == 'sabotage':
                 device_id = (DOMAIN, device['unique_id'])
                 #device_entry = device_registry.async_get_device({device_id}, [])
                 device_entry = device_registry.async_get_device(identifiers={device_id}, connections=set())
@@ -205,10 +206,14 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                     )
                 if entity_class._type == 'battery':
                     if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'temperature', 'photon', 'siren']:
-                        _LOGGER.debug(f"Battery adding to {device}")
                         if not entity_registry.async_get(f"{device['unique_id']}_battery"):
-                            _LOGGER.debug(f"Battery adding...")
-                            entities.append(BrematicProBattery(hass, coordinator, device, device_entry))                
+                            entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
+                elif entity_class._type == 'sabotage':
+                    if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'temperature', 'photon', 'siren']:
+                        _LOGGER.debug(f"Sabotage adding to {device}")
+                        if not entity_registry.async_get(f"{device['unique_id']}_battery"):
+                            _LOGGER.debug(f"Sabotage adding...")
+                            entities.append(BrematicProSabotage(hass, coordinator, device, device_entry))
                 else:
                     unique_entity_id = f"{device['unique_id']}_{device['type']}"
                     entity = entity_registry.async_get(unique_entity_id)

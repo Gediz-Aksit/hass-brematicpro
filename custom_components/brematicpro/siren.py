@@ -17,6 +17,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class BrematicProSiren(BrematicProEntityWithCommands, SirenEntity):
     """Representation of a BrematicPro Siren."""
     _type = 'siren'
+    _has_battery = True
+    _has_sabotage = True
 
     @property
     def supported_features(self):

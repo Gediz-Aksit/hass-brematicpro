@@ -18,7 +18,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) 
-    step2 = await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery) 
+    step2 = await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery) and \ 
+            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSabotage)
     return step1 and step2
 
 class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
@@ -26,6 +27,7 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
     _type = 'battery'
     _attr_device_class = BinarySensorDeviceClass.BATTERY
     _has_battery = False#A battery does not have its own battery :P
+    _has_sabotage = False#A batery does not have its own sabotage status
     _attr_is_on = None
     
     def __init__(self, hass, coordinator, device, device_entry):
@@ -51,11 +53,41 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
             _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()
 
+class BrematicProSabotage(BrematicProEntity, BinarySensorEntity):
+    """Representation of a BrematicPro device sabotage status."""
+    _type = 'sabotage'
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
+    _has_battery = False#A sabotage status does not have its own battery
+    _has_sabotage = False#A sabotage status does not have its own sabotage status :P
+    _attr_is_on = None
+    
+    def __init__(self, hass, coordinator, device, device_entry):
+        """Initialize the sabotage status indicator."""
+        super().__init__(hass, coordinator, device, device_entry)
+        self._commands = []
+        self._unique_id = device['unique_id'] + '_sabotage'
+
+    def update_state(self, device_state):
+        try:
+            if device_state:
+                if device_state['state'][1] == '0':
+                    self._attr_is_on  = False
+                elif device_state['state'][1] == '1':
+                    self._attr_is_on  = True
+                else:
+                    self._attr_is_on  = None
+            else:
+                self._attr_is_on  = None
+        except Exception as e:
+            _LOGGER.error("Failed to update state: %s", e)
+        self.async_write_ha_state()
+
 class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
     _type = 'door'
     _attr_device_class = BinarySensorDeviceClass.DOOR
     _has_battery = True
+    _has_sabotage = True
     _attr_is_on = None
 
     def update_state(self, device_state):
@@ -85,9 +117,9 @@ class BrematicProWater(BrematicProEntity, BinarySensorEntity):
     def update_state(self, device_state):
         try:
             if device_state:
-                if device_state['state'] == '0001':
+                if device_state['state'][-1] == '1':
                     self._attr_is_on  = True
-                elif device_state['state'] == '0002':
+                elif device_state['state'][-1] == '2':
                     self._attr_is_on  = False
                 else:
                     self._attr_is_on  = None
@@ -99,13 +131,14 @@ class BrematicProMotion(BrematicProEntity, BinarySensorEntity):
     _type = 'motion'
     _attr_device_class = BinarySensorDeviceClass.MOTION
     _has_battery = True
+    _has_sabotage = True
 
     def update_state(self, device_state):
         try:
             if device_state:
-                if device_state['state'] == '0001':
+                if device_state['state'][-1] == 'D':
                     self._attr_is_on  = True
-                elif device_state['state'] == '0002':
+                elif device_state['state'][-1] == 'E':
                     self._attr_is_on  = False
                 else:
                     self._attr_is_on  = None

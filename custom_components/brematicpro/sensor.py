@@ -22,6 +22,7 @@ class BrematicProPhoton(BrematicProEntity, SensorEntity):
     _type = 'photon'
     _attr_device_class = SensorDeviceClass.ILLUMINANCE
     _has_battery = True
+    _has_sabotage = True
     _state = None
 
     @property
@@ -31,7 +32,7 @@ class BrematicProPhoton(BrematicProEntity, SensorEntity):
 
     def update_state(self, device_state):
         try:
-            self._state = None
+            self._state = int(device_state['state'][-4:], 16)
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
         self.async_write_ha_state()
@@ -42,6 +43,7 @@ class BrematicProTemp(BrematicProEntity, SensorEntity):
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_unit_of_measurement = TEMP_CELSIUS
     _has_battery = True
+    _has_sabotage = True
     _state = None
     #00:00C9:0273 20.1 C  62.7%
     #00:00AD:0362 17.3 C  86.6%
@@ -66,7 +68,6 @@ class BrematicProHumidity(BrematicProEntity, SensorEntity):
     _type = 'humidity'
     _attr_device_class = SensorDeviceClass.HUMIDITY
     _attr_unit_of_measurement = PERCENTAGE
-    _has_battery = True
     _state = None
 
     def __init__(self, hass, coordinator, device, device_entry):
