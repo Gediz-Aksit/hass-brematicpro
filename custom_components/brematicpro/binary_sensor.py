@@ -53,20 +53,21 @@ class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
 
     def update_state(self, device_state):
         try:
-            if device_state:
-                if device_state['state'][1] == '0':
-                    self._attr_is_on  = False
-                elif device_state['state'][1] == '3':
-                    self._attr_is_on  = True
-                elif device_state['state'][1] == '4':
-                    self._attr_is_on  = None
-                else:
-                    self._attr_is_on  = None
-            else:
-                self._attr_is_on  = None
+            new_state = None
+            if device_state['state'][1] == '0':
+                new_state = False
+            elif device_state['state'][1] == '3':
+                new_state = True
+            elif device_state['state'][1] == '4':
+                new_state = None
+            if self._attr_is_on != new_state:
+                self._attr_is_on = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
-        self.async_write_ha_state()
+            if self._attr_is_on != None:
+                self._attr_is_on = None
+                self.async_write_ha_state()
 
 class BrematicProSabotage(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro device sabotage status."""
@@ -84,18 +85,19 @@ class BrematicProSabotage(BrematicProEntity, BinarySensorEntity):
 
     def update_state(self, device_state):
         try:
-            if device_state:
-                if device_state['state'][1] == '0':
-                    self._attr_is_on  = False
-                elif device_state['state'][1] == '1':
-                    self._attr_is_on  = True
-                else:
-                    self._attr_is_on  = None
-            else:
-                self._attr_is_on  = None
+            new_state = None
+            if device_state['state'][1] == '0':
+                new_state = False
+            elif device_state['state'][1] == '1':
+                new_state = True
+            if self._attr_is_on != new_state:
+                self._attr_is_on = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
-        self.async_write_ha_state()
+            if self._attr_is_on != None:
+                self._attr_is_on = None
+                self.async_write_ha_state()
 
 class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro door sensor."""
@@ -108,15 +110,19 @@ class BrematicProDoor(BrematicProEntity, BinarySensorEntity):
     def update_state(self, device_state):
         try:
             #_LOGGER.debug(f"Matching Pair - Entity UID: {self._unique_id}, Name: {self._name}, Device State: {device_state}")
+            new_state = None
             if device_state['state'][-1] == '7':
-                self._attr_is_on  = True
+                new_state = True
             elif device_state['state'][-1] == '8':
-                self._attr_is_on  = False
-            else:
-                self._attr_is_on  = None
+                new_state = False
+            if self._attr_is_on != new_state:
+                self._attr_is_on = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
-        self.async_write_ha_state()
+            if self._attr_is_on != None:
+                self._attr_is_on = None
+                self.async_write_ha_state()
 
 class BrematicProWindow(BrematicProDoor):
     """Representation of a BrematicPro window sensor, inheriting from door sensor."""
@@ -131,15 +137,19 @@ class BrematicProWater(BrematicProEntity, BinarySensorEntity):
 
     def update_state(self, device_state):
         try:
-            if device_state:
-                if device_state['state'][-1] == '1':
-                    self._attr_is_on  = True
-                elif device_state['state'][-1] == '2':
-                    self._attr_is_on  = False
-                else:
-                    self._attr_is_on  = None
+            new_state = None
+            if device_state['state'][-1] == '1':
+                new_state = True
+            elif device_state['state'][-1] == '2':
+                new_state = False
+            if self._attr_is_on != new_state:
+                self._attr_is_on = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
+            if self._attr_is_on != None:
+                self._attr_is_on = None
+                self.async_write_ha_state()
 
 class BrematicProMotion(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro motion sensor."""
@@ -150,12 +160,16 @@ class BrematicProMotion(BrematicProEntity, BinarySensorEntity):
 
     def update_state(self, device_state):
         try:
-            if device_state:
-                if device_state['state'][-1] == 'D':
-                    self._attr_is_on  = True
-                elif device_state['state'][-1] == 'E':
-                    self._attr_is_on  = False
-                else:
-                    self._attr_is_on  = None
+            new_state = None
+            if device_state['state'][-1] == 'D':
+                new_state = True
+            elif device_state['state'][-1] == 'E':
+                new_state = False
+            if self._attr_is_on != new_state:
+                self._attr_is_on = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
+            if self._attr_is_on != None:
+                self._attr_is_on = None
+                self.async_write_ha_state()

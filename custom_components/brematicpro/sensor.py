@@ -32,10 +32,15 @@ class BrematicProPhoton(BrematicProEntity, SensorEntity):
 
     def update_state(self, device_state):
         try:
-            self._state = int(device_state['state'][-4:], 16)
+            new_state = int(device_state['state'][-4:], 16)
+            if self._state != new_state:
+                self._state = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
-        self.async_write_ha_state()
+            if self._state != None:
+                self._state = None
+                self.async_write_ha_state()
 
 class BrematicProTemp(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro temperature sensor."""
@@ -58,10 +63,15 @@ class BrematicProTemp(BrematicProEntity, SensorEntity):
 
     def update_state(self, device_state):
         try:
-            self._state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
+            new_state = float(int(device_state['state'].split(':')[1], 16)) / 10.0
+            if self._state != new_state:
+                self._state = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
-        self.async_write_ha_state()
+            if self._state != None:
+                self._state = None
+                self.async_write_ha_state()
 
 class BrematicProHumidity(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro temperature sensor,  humidity component."""
@@ -81,7 +91,12 @@ class BrematicProHumidity(BrematicProEntity, SensorEntity):
 
     def update_state(self, device_state):
         try:
-            self._state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
+            new_state = float(int(device_state['state'].split(':')[2], 16)) / 10.0
+            if self._state != new_state:
+                self._state = new_state
+                self.async_write_ha_state()
         except Exception as e:
             _LOGGER.error("Failed to update state: %s", e)
-        self.async_write_ha_state()
+            if self._state != None:
+                self._state = None
+                self.async_write_ha_state()
