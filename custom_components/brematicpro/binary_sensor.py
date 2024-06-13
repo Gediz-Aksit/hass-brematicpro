@@ -18,7 +18,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) 
-    step2 = await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery) and \ 
+    step2 = await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery) and \
             await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSabotage)
     return step1 and step2
 
