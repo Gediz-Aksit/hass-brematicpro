@@ -13,14 +13,28 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
     from .BrematicProShared import async_common_setup_entry
-    
-    step1 = await async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor) and \
-            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow) and \
-            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater) and \
-            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion) 
-    step2 = await async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery) and \
-            await async_common_setup_entry(hass, entry, async_add_entities, BrematicProSabotage)
-    return step1 and step2
+
+    step1_tasks = [
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProDoor),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProWindow),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProWater),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProMotion)
+    ]
+    step1_results = await asyncio.gather(*step1_tasks)
+    step1_success = all(step1_results)
+    if not step1_success:
+        _LOGGER.error("Failed to set up primary entities")
+        return False
+    step2_tasks = [
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProBattery),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSabotage)
+    ]
+    step2_results = await asyncio.gather(*step2_tasks)
+    step2_success = all(step2_results)
+    if not step2_success:
+        _LOGGER.error("Failed to set up secondary entities")
+        return False    
+    return True
 
 class BrematicProBattery(BrematicProEntity, BinarySensorEntity):
     """Representation of a BrematicPro device battery status."""
