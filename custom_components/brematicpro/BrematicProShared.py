@@ -78,6 +78,8 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                                 #    _LOGGER.debug(f'entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 #if "74230189116E" in entity.unique_id:
                                                 #    _LOGGER.debug(f'battery entity {entity.device_type} {entity.unique_id} {device_state}')
+                                                if "32210020032A" in entity.unique_id:
+                                                    _LOGGER.debug(f'!!!! motion entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 matched = True
                                                 entity.update_state(device_state)
                                         if not matched and device_state and device_state['type'] == 'B8':
