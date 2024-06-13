@@ -32,24 +32,24 @@ class BrematicProCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Fetch data from API."""
-        _LOGGER.debug("Fetch data from API.")
+        #_LOGGER.debug("Fetch data from API.")
         self.entry.data.get(CONF_SYSTEM_CODE, "")
         system_code = self.entry.data.get(CONF_SYSTEM_CODE, "")
         gateways = self.entry.data.get(CONF_INTERNAL_GATEWAYS, [])
-        _LOGGER.debug(f"_async_update_data DOMAIN {DOMAIN}")
-        _LOGGER.debug(f"_async_update_data entity id {self.entry.entry_id}")
+        #_LOGGER.debug(f"_async_update_data DOMAIN {DOMAIN}")
+        #_LOGGER.debug(f"_async_update_data entity id {self.entry.entry_id}")
         if gateways:
             async with aiohttp.ClientSession() as session:
                 BrematicPro_entities = self.hass.data[DOMAIN][self.entry.entry_id].get("entities", [])
-                if BrematicPro_entities:
-                    _LOGGER.debug(f"Entity UID count {len(BrematicPro_entities)}")
-                    _LOGGER.debug(f"Entity 1 UID {BrematicPro_entities[0].unique_id}")
-                else:
+                if not BrematicPro_entities:
                     _LOGGER.debug("BrematicPro_entities list is empty")
+                #else:
+                #    _LOGGER.debug(f"Entity UID count {len(BrematicPro_entities)}")
+                #    _LOGGER.debug(f"Entity 1 UID {BrematicPro_entities[0].unique_id}")
                 if BrematicPro_entities:
                     for domain_or_ip in gateways:
                         url = f"{domain_or_ip}/cmd?XC_FNC=getStates&at={system_code}"
-                        _LOGGER.debug(f"URL {url}")
+                        #_LOGGER.debug(f"URL {url}")
                         try:
                             async with session.get(url) as response:
                                 _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
@@ -57,16 +57,16 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                     response_text = await response.text()
                                     device_states = json.loads(response_text).get('XC_SUC', [])
                                     relevant_entities = list(filter(lambda ent: ent.frequency == 868, BrematicPro_entities))# Filter entities to include only those with a frequency of 868
-                                    if relevant_entities:
-                                        _LOGGER.debug(f"R Entity UID count {len(relevant_entities)}")
-                                        _LOGGER.debug(f"R Entity 1 UID {relevant_entities[0].unique_id}")
-                                    else:
-                                        _LOGGER.debug("relevant_entities list is empty")
-                                    if device_states:
-                                        _LOGGER.debug(f"State UID count {len(device_states)}")
-                                        _LOGGER.debug(f"State 1 UID {device_states[0]['adr']}")
-                                    else:
-                                        _LOGGER.debug("device_states list is empty")
+                                    #if relevant_entities:
+                                    #    _LOGGER.debug(f"R Entity UID count {len(relevant_entities)}")
+                                    #    _LOGGER.debug(f"R Entity 1 UID {relevant_entities[0].unique_id}")
+                                    #else:
+                                    #    _LOGGER.debug("relevant_entities list is empty")
+                                    #if device_states:
+                                    #    _LOGGER.debug(f"State UID count {len(device_states)}")
+                                    #    _LOGGER.debug(f"State 1 UID {device_states[0]['adr']}")
+                                    #else:
+                                    #    _LOGGER.debug("device_states list is empty")
                                         
                                     matching_device_states = [device_state for entity, device_state in product(relevant_entities, device_states) if entity.unique_id == device_state['adr']]
                                     for device_state in device_states:
