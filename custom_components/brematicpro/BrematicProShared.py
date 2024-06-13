@@ -211,7 +211,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                 elif entity_class._type == 'sabotage':
                     if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'temperature', 'photon', 'siren']:
                         _LOGGER.debug(f"Sabotage adding to {device}")
-                        if not entity_registry.async_get(f"{device['unique_id']}_battery"):
+                        if not entity_registry.async_get(f"{device['unique_id']}_sabotage"):
                             _LOGGER.debug(f"Sabotage adding...")
                             entities.append(BrematicProSabotage(hass, coordinator, device, device_entry))
                 else:
