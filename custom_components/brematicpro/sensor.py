@@ -13,9 +13,20 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     """Set up BrematicPro device from a config entry."""
     from .BrematicProShared import async_common_setup_entry
-    
-    return await async_common_setup_entry(hass, entry, async_add_entities, BrematicProPhoton) and \
-           await async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)
+
+    tasks = [
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProPhoton),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchEnergy),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchVoltage),
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchPower)
+    ]
+    results = await asyncio.gather(*tasks)
+    success = all(results)
+    if not success:
+        _LOGGER.error("Failed to set up entities")
+        return False
+    return True
 
 class BrematicProPhoton(BrematicProEntity, SensorEntity):
     """Representation of a BrematicPro photoluminescence sensor."""

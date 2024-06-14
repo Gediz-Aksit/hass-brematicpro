@@ -177,7 +177,7 @@ class BrematicProEntityWithCommands(BrematicProEntity):
             self.async_write_ha_state()
 
 async def async_common_setup_entry(hass, entry, async_add_entities, entity_class):
-    from.sensor import BrematicProHumidity
+    from.sensor import BrematicProHumidity, BrematicProSmartSwitchEnergy, BrematicProSmartSwitchVoltage, BrematicProSmartSwitchPower
     from.binary_sensor import BrematicProBattery, BrematicProSabotage
     
     """Common setup for BrematicPro devices."""
@@ -216,6 +216,18 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                         if not entity_registry.async_get(f"{device['unique_id']}_sabotage"):
                             _LOGGER.debug(f"Sabotage adding...")
                             entities.append(BrematicProSabotage(hass, coordinator, device, device_entry))
+                elif entity_class._type == 'smartswitch_energy':
+                    if device['frequency'] == 868 and device['type'] in ['smartswitch']:
+                        if not entity_registry.async_get(f"{device['unique_id']}_energy"):
+                            entities.append(BrematicProSmartSwitchEnergy(hass, coordinator, device, device_entry))                    
+                elif entity_class._type == 'smartswitch_voltage':
+                    if device['frequency'] == 868 and device['type'] in ['smartswitch']:
+                        if not entity_registry.async_get(f"{device['unique_id']}_energy"):
+                            entities.append(BrematicProSmartSwitchVoltage(hass, coordinator, device, device_entry))                    
+                elif entity_class._type == 'smartswitch_power':
+                    if device['frequency'] == 868 and device['type'] in ['smartswitch']:
+                        if not entity_registry.async_get(f"{device['unique_id']}_energy"):
+                            entities.append(BrematicProSmartSwitchPower(hass, coordinator, device, device_entry))                    
                 else:
                     unique_entity_id = f"{device['unique_id']}_{device['type']}"
                     entity = entity_registry.async_get(unique_entity_id)
