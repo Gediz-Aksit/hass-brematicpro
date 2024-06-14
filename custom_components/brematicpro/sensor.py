@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from enum import Enum
 from homeassistant.core import HomeAssistant
