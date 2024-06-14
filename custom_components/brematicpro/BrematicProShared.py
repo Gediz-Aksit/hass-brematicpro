@@ -190,7 +190,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         entity_registry = hass.helpers.entity_registry.async_get()
         _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
-            if device.get('type', 'Invalid') == entity_class._type or entity_class._type in ['battery', 'sabotage'] or 'smartswitch' in entity_class._type:
+            if device.get('type', 'Invalid') == entity_class._type or entity_class._type == 'battery' or entity_class._type == 'sabotage'] or 'smartswitch_' in entity_class._type:
                 device_id = (DOMAIN, device['unique_id'])
                 #device_entry = device_registry.async_get_device({device_id}, [])
                 device_entry = device_registry.async_get_device(identifiers={device_id}, connections=set())
