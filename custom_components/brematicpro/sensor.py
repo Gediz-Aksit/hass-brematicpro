@@ -17,10 +17,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     tasks = [
         async_common_setup_entry(hass, entry, async_add_entities, BrematicProPhoton),
-        async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp),
-        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchEnergy),
-        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchVoltage),
-        async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchPower)
+        async_common_setup_entry(hass, entry, async_add_entities, BrematicProTemp)#,
+        #async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchEnergy),
+        #async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchVoltage),
+        #async_common_setup_entry(hass, entry, async_add_entities, BrematicProSmartSwitchPower)
     ]
     results = await asyncio.gather(*tasks)
     success = all(results)
