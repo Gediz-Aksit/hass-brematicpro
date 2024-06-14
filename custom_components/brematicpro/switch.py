@@ -48,10 +48,6 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
     def __init__(self, hass, coordinator, device, device_entry):
         """Initialize the smart/metered switch."""
         super().__init__(hass, coordinator, device, device_entry)
-        self._watt = 0.0
-        self._voltage = 0.0
-        self._kWh = 0.0
-        self._Wh = 0.0
 
     def update_state(self, device_state):
         super().update_state(device_state)

@@ -90,7 +90,6 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                         except aiohttp.ClientError as e:
                             _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
-                    _LOGGER.debug(f"!!!!!!!!!!!!!!!!!!!")
 
 class BrematicProEntity(CoordinatorEntity):
     """Representation of a BrematicPro entity."""
