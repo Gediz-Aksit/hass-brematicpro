@@ -52,7 +52,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                         #_LOGGER.debug(f"URL {url}")
                         try:
                             async with session.get(url) as response:
-                                _LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
+                                #_LOGGER.debug(f"Received response from {domain_or_ip} with HTTP status: {response.status}")
                                 if response.status == 200:
                                     response_text = await response.text()
                                     device_states = json.loads(response_text).get('XC_SUC', [])
@@ -90,6 +90,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                     _LOGGER.warning(f"Failed to fetch data from {domain_or_ip}: HTTP {response.status}")
                         except aiohttp.ClientError as e:
                             _LOGGER.warning(f"Error contacting {domain_or_ip}: {str(e)}")
+                    _LOGGER.debug(f"!!!!!!!!!!!!!!!!!!!")
 
 class BrematicProEntity(CoordinatorEntity):
     """Representation of a BrematicPro entity."""
@@ -188,7 +189,7 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         entities = []
         device_registry = hass.helpers.device_registry.async_get()
         entity_registry = hass.helpers.entity_registry.async_get()
-        _LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
+        #_LOGGER.debug(f"async_common_setup_entry for {entity_class._type}. Device zero {devices[0]}")
         for device in devices:
             if device.get('type', 'Invalid') == entity_class._type or entity_class._type in ['battery', 'sabotage'] or 'smartswitch_' in entity_class._type:
                 device_id = (DOMAIN, device['unique_id'])
@@ -212,9 +213,9 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
                             entities.append(BrematicProBattery(hass, coordinator, device, device_entry))
                 elif entity_class._type == 'sabotage':
                     if device['frequency'] == 868 and device['type'] in ['door', 'window', 'motion', 'water', 'temperature', 'photon', 'siren']:
-                        _LOGGER.debug(f"Sabotage adding to {device}")
+                        #_LOGGER.debug(f"Sabotage adding to {device}")
                         if not entity_registry.async_get(f"{device['unique_id']}_sabotage"):
-                            _LOGGER.debug(f"Sabotage adding...")
+                            #_LOGGER.debug(f"Sabotage adding...")
                             entities.append(BrematicProSabotage(hass, coordinator, device, device_entry))
                 elif entity_class._type == 'smartswitch_energy':
                     if device['frequency'] == 868 and device['type'] in ['smartswitch']:
@@ -244,13 +245,13 @@ async def async_common_setup_entry(hass, entry, async_add_entities, entity_class
         if "entities" not in hass.data[DOMAIN][entry.entry_id]:
             hass.data[DOMAIN][entry.entry_id]["entities"] = []
         hass.data[DOMAIN][entry.entry_id]["entities"].extend(entities)
-        _LOGGER.debug(f"async_common_setup_entry DOMAIN {DOMAIN}")
-        _LOGGER.debug(f"async_common_setup_entry entity ID {entry.entry_id}")
-        if len(entities) > 0:
-            _LOGGER.debug(f"Adding {len(entities)} new entities (first): {entities[0]}")
-            _LOGGER.debug(f"Final entities list (first with unique id): {hass.data[DOMAIN][entry.entry_id]['entities'][0].unique_id} {hass.data[DOMAIN][entry.entry_id]['entities'][0]}")
-        else:
-            _LOGGER.debug("Empty entities")
+        #_LOGGER.debug(f"async_common_setup_entry DOMAIN {DOMAIN}")
+        #_LOGGER.debug(f"async_common_setup_entry entity ID {entry.entry_id}")
+        #if len(entities) > 0:
+        #    _LOGGER.debug(f"Adding {len(entities)} new entities (first): {entities[0]}")
+        #    _LOGGER.debug(f"Final entities list (first with unique id): {hass.data[DOMAIN][entry.entry_id]['entities'][0].unique_id} {hass.data[DOMAIN][entry.entry_id]['entities'][0]}")
+        #else:
+        #    _LOGGER.debug("Empty entities")
         return True
     return False
 
@@ -261,14 +262,14 @@ def find_area_id(hass, room_name):
         area_registry = ar.async_get(hass)
         for area in area_registry.areas.values():
             if area.name.lower().strip() == room_name:
-                _LOGGER.debug(f"Match found: {area.name}")
+                #_LOGGER.debug(f"Match found: {area.name}")
                 return area.id
-        _LOGGER.debug("No match found")
+        #_LOGGER.debug("No match found")
     return None
 
 async def read_and_transform_json(hass: HomeAssistant, entry, config_json, rooms_json, system_code = ''):
     """Reads and transforms JSON data from specified files and updates entry data."""
-    _LOGGER.debug("read_and_transform_json")
+    #_LOGGER.debug("read_and_transform_json")
     config_json_path = hass.config.path(config_json)
     rooms_json_path = hass.config.path(rooms_json)
 
@@ -339,7 +340,7 @@ async def send_command(url):
     """Send command to the Brematic device."""
     async with aiohttp.ClientSession() as session:
         try:
-            _LOGGER.debug(f"url {url}")
+            #_LOGGER.debug(f"url {url}")
             async with session.get(url, timeout=5) as response:
                 response.raise_for_status()  # This will raise an error for bad HTTP status
                 return response.status

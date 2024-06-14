@@ -21,12 +21,12 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def common_flow_handler(self, user_input):
         """Handle common logic for user and options flows."""
-        _LOGGER.debug("common_flow_handler")
+        #_LOGGER.debug("common_flow_handler")
         errors = {}
         _LOGGER.debug(f"Entry updated with user input: {user_input}")
 
         if user_input is not None:
-            _LOGGER.debug("common_flow_handler A")
+            #_LOGGER.debug("common_flow_handler A")
             entry = self.hass.config_entries.async_get_entry(self.context.get("entry_id"))
             _LOGGER.debug(f"Entry retrieved: {entry}")
             if entry:
@@ -35,13 +35,13 @@ class BrematicProConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(title="BrematicPro", data=user_input)
         
             if user_input.get('read_json'):
-                _LOGGER.debug("common_flow_handler B")
+                #_LOGGER.debug("common_flow_handler B")
                 success = await read_and_transform_json(self.hass, entry, user_input[CONF_CONFIG_FILE], user_input[CONF_ROOMS_FILE], user_input[CONF_SYSTEM_CODE])
                 if not success:
                     errors['read_json'] = "Failed to read or transform JSON"
 
             if user_input.get('process_data'):
-                _LOGGER.debug("Configuration. common_flow_handler calls setup_entry_components")
+                #_LOGGER.debug("Configuration. common_flow_handler calls setup_entry_components")
                 await setup_entry_components(self.hass, entry)
 
         return self.async_show_form(
