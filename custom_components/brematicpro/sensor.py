@@ -116,7 +116,7 @@ class BrematicProHumidity(BrematicProEntity, SensorEntity):
 class BrematicProSmartSwitchEnergy(BrematicProEntity, SensorEntity):
     _type = 'smartswitch_energy'
     _attr_device_class = SensorDeviceClass.ENERGY
-    _attr_unit_of_measurement = UnitOfEnergy.WATT_HOUR
+    _attr_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
     _state = None
     #000243672F7600000000000F004F
     #                    000F004F Energy in Watt Hours
@@ -132,7 +132,7 @@ class BrematicProSmartSwitchEnergy(BrematicProEntity, SensorEntity):
 
     def update_state(self, device_state):
         try:
-            new_state = new_state = float(int(device_state['state'].split(':')[0][-8:], 16))
+            new_state = new_state = float(int(device_state['state'].split(':')[0][-8:], 16)) / 1000.0
             if self._state != new_state:
                 self._state = new_state
                 self.async_write_ha_state()
@@ -145,7 +145,7 @@ class BrematicProSmartSwitchEnergy(BrematicProEntity, SensorEntity):
 class BrematicProSmartSwitchVoltage(BrematicProEntity, SensorEntity):
     _type = 'smartswitch_voltage'
     _attr_device_class = SensorDeviceClass.VOLTAGE
-    _attr_unit_of_measurement = UnitOfElectricPotential.MILLIVOLT
+    _attr_unit_of_measurement = UnitOfElectricPotential.VOLT
     _state = None
     #000243672F7600000000000F004F
     #     3672F                   Voltage in volts
@@ -161,8 +161,7 @@ class BrematicProSmartSwitchVoltage(BrematicProEntity, SensorEntity):
 
     def update_state(self, device_state):
         try:
-            _LOGGER.debug(f"Voltage hex {device_state['state'].split(':')[0][4:9]} which is {int(device_state['state'].split(':')[0][4:9], 16)} mV.")
-            new_state = int(device_state['state'].split(':')[0][5:10], 16)
+            new_state = float(int(device_state['state'].split(':')[0][5:10], 16)) / 1000.0
             if self._state != new_state:
                 self._state = new_state
                 self.async_write_ha_state()
