@@ -31,9 +31,9 @@ class BrematicProSwitch(BrematicProEntityWithCommands, SwitchEntity):
 
     def update_state(self, device_state):
         try:
-            if device_state['state'][-1] == '1':
+            if device_state['state'][3] == '1':
                 self._is_on  = True
-            elif device_state['state'][-1] == '2':
+            elif device_state['state'][3] == '2':
                 self._is_on  = False
             else:
                 self._is_on  = None
@@ -54,5 +54,4 @@ class BrematicProMeteredSwitch(BrematicProSwitch):
         self._Wh = 0.0
 
     def update_state(self, device_state):
-
         super().update_state(device_state)

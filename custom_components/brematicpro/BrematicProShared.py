@@ -81,7 +81,7 @@ class BrematicProCoordinator(DataUpdateCoordinator):
                                                 if "32210020032A" in entity.unique_id:#13880020032A
                                                     _LOGGER.debug(f'!!!! motion entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 if "947100B4E20C" in entity.unique_id:#Smart switch
-                                                    _LOGGER.debug(f'!!!! motion entity {entity.device_type} {entity.unique_id} {device_state}')
+                                                    _LOGGER.debug(f'Smart switch entity {entity.device_type} {entity.unique_id} {device_state}')
                                                 matched = True
                                                 entity.update_state(device_state)
                                         if not matched and device_state and device_state['type'] == 'B8':
