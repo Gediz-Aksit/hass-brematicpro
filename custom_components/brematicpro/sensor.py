@@ -162,7 +162,7 @@ class BrematicProSmartSwitchVoltage(BrematicProEntity, SensorEntity):
     def update_state(self, device_state):
         try:
             _LOGGER.debug(f"Voltage hex {device_state['state'].split(':')[0][4:9]} which is {int(device_state['state'].split(':')[0][4:9], 16)} mV.")
-S            new_state = int(device_state['state'].split(':')[0][4:9], 16)
+S           new_state = int(device_state['state'].split(':')[0][4:9], 16)
             if self._state != new_state:
                 self._state = new_state
                 self.async_write_ha_state()
